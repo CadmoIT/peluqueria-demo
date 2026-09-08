@@ -1,0 +1,70 @@
+# Verificación continua: formato, linteo, tipos, pruebas y build.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  verificar:
+    name: Verificar
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: manly
+          POSTGRES_PASSWORD: manly
+          POSTGRES_DB: manly_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U manly"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://manly:manly@localhost:5432/manly_test
+      DATABASE_URL_DIRECTA: postgresql://manly:manly@localhost:5432/manly_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Verificar formato
+        run: pnpm formato:verificar
+
+      - name: Linteo
+        run: pnpm lint
+
+      - name: Tipos
+        run: pnpm typecheck
+
+      - name: Pruebas
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

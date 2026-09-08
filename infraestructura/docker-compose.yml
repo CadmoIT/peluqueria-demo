@@ -1,0 +1,27 @@
+# PostgreSQL local para desarrollo. En staging y producción se usa Neon.
+# Levantar con: docker compose -f infraestructura/docker-compose.yml up -d
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: manly-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: manly
+      POSTGRES_PASSWORD: manly
+      POSTGRES_DB: manly
+      # Coincide con la zona horaria de presentación del negocio.
+      TZ: America/Argentina/Buenos_Aires
+    ports:
+      - '5432:5432'
+    volumes:
+      - datos-postgres:/var/lib/postgresql/data
+      - ./inicializacion:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U manly -d manly']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  datos-postgres:
