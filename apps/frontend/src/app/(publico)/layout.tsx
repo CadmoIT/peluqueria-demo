@@ -1,21 +1,22 @@
-// Estructura común de las páginas institucionales: navegación y pie.
-// El contenido definitivo de ambos se construye en la Fase 5.
+// Estructura común de las páginas públicas: encabezado, contenido y pie.
+import { Encabezado } from '@/componentes/navegacion/encabezado';
+import { PieDePagina } from '@/componentes/navegacion/pie-de-pagina';
+
 export default function LayoutPublico({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-neutral-200">
-        <nav aria-label="Principal" className="mx-auto max-w-6xl px-4 py-4">
-          <span className="font-semibold uppercase tracking-widest">Manly</span>
-        </nav>
-      </header>
+      {/* Permite saltear la navegación con el teclado. Sólo visible al enfocarlo. */}
+      <a href="#contenido" className="salto-al-contenido versales text-menor">
+        Saltar al contenido
+      </a>
 
-      <main className="flex-1">{children}</main>
+      <Encabezado />
 
-      <footer className="border-t border-neutral-200">
-        <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-neutral-600">
-          © {new Date().getFullYear()} Manly
-        </div>
-      </footer>
+      <main id="contenido" className="flex-1">
+        {children}
+      </main>
+
+      <PieDePagina />
     </div>
   );
 }

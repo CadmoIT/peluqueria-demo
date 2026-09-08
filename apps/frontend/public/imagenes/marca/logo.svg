@@ -1,0 +1,14 @@
+<!-- Logotipo provisorio de Manly. Reemplazar por el archivo oficial de la marca
+     conservando el nombre y la relación de aspecto (3:1). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" role="img" aria-label="Manly">
+  <text
+    x="120"
+    y="52"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="34"
+    letter-spacing="10"
+    fill="currentColor"
+  >MANLY</text>
+  <line x1="60" y1="64" x2="180" y2="64" stroke="currentColor" stroke-width="1" />
+</svg>

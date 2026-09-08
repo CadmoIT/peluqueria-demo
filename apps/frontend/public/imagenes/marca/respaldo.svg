@@ -1,0 +1,17 @@
+<!-- Imagen de respaldo: se muestra cuando una fotografía del catálogo todavía
+     no fue cargada. Deliberadamente sobria y evidente. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Imagen pendiente">
+  <rect width="1200" height="800" fill="#f2f2f2" />
+  <g stroke="#e0e0e0" stroke-width="2">
+    <path d="M0 800 L1200 0 M-200 800 L1000 0 M200 800 L1400 0" />
+  </g>
+  <text
+    x="600"
+    y="410"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="30"
+    letter-spacing="10"
+    fill="#9a9a9a"
+  >MANLY</text>
+</svg>

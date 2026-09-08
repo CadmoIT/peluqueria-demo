@@ -1,29 +1,10 @@
-/* Hoja de estilos raíz de la web. Importa Tailwind y los tokens de la marca. */
+/* Hoja de estilos raíz del sitio.
+   Los tokens y las capas base viven en @manly/interfaz: acá sólo se arma el
+   pipeline de Tailwind y se declaran las fuentes de clases a escanear. */
+
 @import 'tailwindcss';
 @import '@manly/interfaz/tokens.css';
 
-@layer base {
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    background-color: var(--color-manly-blanco);
-    color: var(--color-manly-negro);
-    font-family: var(--font-texto);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1,
-  h2,
-  h3 {
-    font-family: var(--font-titulo);
-    letter-spacing: -0.01em;
-  }
-
-  /* El foco visible es requisito de accesibilidad WCAG 2.2 AA. */
-  :focus-visible {
-    outline: 2px solid var(--color-manly-negro);
-    outline-offset: 2px;
-  }
-}
+/* El paquete de interfaz está fuera de apps/frontend, así que Tailwind no lo
+   descubre solo: hay que declararlo o sus clases no se generan. */
+@source "../../../../packages/interfaz/src";
