@@ -1,22 +1,146 @@
-/* Tokens visuales de la marca Manly: estética negro/blanco premium.
-   Los valores concretos se ajustan en la Fase 2 tras auditar la identidad actual. */
+/* Tokens visuales de Manly: estética negro y blanco, premium y sobria.
+   Todo el sistema se define acá; ningún componente escribe un color, una
+   tipografía ni una duración a mano. Cambiar la marca es cambiar este archivo.
+
+   Los valores son provisorios hasta auditar la identidad actual de Manly:
+   el logo, la paleta real y las fotografías todavía no están cargados. */
 
 @theme {
-  /* ── Color ────────────────────────────────────────────────── */
-  --color-manly-negro: oklch(0.15 0 0);
-  --color-manly-carbon: oklch(0.24 0 0);
-  --color-manly-grafito: oklch(0.42 0 0);
-  --color-manly-humo: oklch(0.72 0 0);
-  --color-manly-niebla: oklch(0.93 0 0);
-  --color-manly-blanco: oklch(0.99 0 0);
+  /* ── Color ──────────────────────────────────────────────────────────────
+     Escala neutra de un solo tono. El acento de la marca es el contraste
+     mismo, no un color: negro pleno sobre blanco cálido. */
+  --color-tinta: oklch(0.14 0 0); /* Texto principal, fondos invertidos */
+  --color-carbon: oklch(0.27 0 0); /* Superficies oscuras secundarias */
+  --color-grafito: oklch(0.44 0 0); /* Texto secundario sobre claro */
+  --color-humo: oklch(0.66 0 0); /* Texto deshabilitado, iconos suaves */
+  --color-borde: oklch(0.89 0 0); /* Divisores y bordes de campos */
+  --color-niebla: oklch(0.96 0 0); /* Fondos alternos de sección */
+  --color-lino: oklch(0.985 0.002 90); /* Fondo base, blanco apenas cálido */
+  --color-papel: oklch(1 0 0); /* Tarjetas y superficies elevadas */
 
-  /* ── Tipografía ───────────────────────────────────────────── */
-  --font-titulo: var(--fuente-titulo), Georgia, serif;
-  --font-texto: var(--fuente-texto), system-ui, sans-serif;
+  /* Estados. Se usan sólo para retroalimentación, nunca como decoración. */
+  --color-exito: oklch(0.55 0.13 155);
+  --color-atencion: oklch(0.68 0.15 75);
+  --color-error: oklch(0.55 0.2 27);
 
-  /* ── Espaciado y radios ───────────────────────────────────── */
-  --radius-manly: 0.25rem;
+  /* ── Tipografía ─────────────────────────────────────────────────────────
+     Las variables --fuente-* las inyecta next/font desde el layout raíz. */
+  --font-titulo: var(--fuente-titulo), 'Times New Roman', serif;
+  --font-texto: var(--fuente-texto), system-ui, -apple-system, sans-serif;
 
-  /* ── Movimiento ───────────────────────────────────────────── */
+  /* Escala tipográfica fluida: crece con el ancho de la ventana sin saltos.
+     Diseñada a 360 px y escalada hasta 1440 px. */
+  --text-nota: 0.75rem;
+  --text-menor: 0.875rem;
+  --text-base: 1rem;
+  --text-guia: clamp(1.0625rem, 0.25vw + 1rem, 1.1875rem);
+  --text-subtitulo: clamp(1.25rem, 0.6vw + 1.1rem, 1.5rem);
+  --text-titulo: clamp(1.75rem, 1.6vw + 1.35rem, 2.5rem);
+  --text-portada: clamp(2.5rem, 5vw + 1.2rem, 5rem);
+
+  /* Interletrado: el uso en versales pide más aire. */
+  --tracking-versales: 0.18em;
+  --tracking-titulo: -0.02em;
+
+  /* ── Espaciado ──────────────────────────────────────────────────────────
+     Ritmo vertical de las secciones, también fluido. */
+  --spacing-seccion: clamp(3.5rem, 6vw, 7rem);
+  --spacing-bloque: clamp(1.5rem, 3vw, 3rem);
+
+  /* Ancho máximo de lectura y de contenido. */
+  --container-lectura: 68ch;
+  --container-contenido: 72rem;
+
+  /* ── Formas ─────────────────────────────────────────────────────────────
+     Radios mínimos: el trazo recto es parte de la identidad. */
+  --radius-manly: 0.125rem;
+  --radius-tarjeta: 0.25rem;
+
+  /* ── Movimiento ─────────────────────────────────────────────────────────
+     Curvas de salida suave: el movimiento acompaña, no llama la atención. */
   --ease-manly: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-entrada: cubic-bezier(0.32, 0, 0.67, 0);
+
+  --duracion-rapida: 150ms;
+  --duracion-media: 280ms;
+  --duracion-lenta: 480ms;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Compensa el encabezado fijo cuando se navega a un ancla. */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-lino);
+    color: var(--color-tinta);
+    font-family: var(--font-texto);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-titulo);
+    letter-spacing: var(--tracking-titulo);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Foco visible en todo elemento interactivo: requisito WCAG 2.2 AA.
+     Nunca se elimina; si molesta visualmente, se ajusta el offset. */
+  :focus-visible {
+    outline: 2px solid var(--color-tinta);
+    outline-offset: 3px;
+    border-radius: var(--radius-manly);
+  }
+
+  /* Respeta a quien pidió menos movimiento en su sistema operativo. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility versales {
+  /* Versales espaciadas: el recurso tipográfico de la marca para etiquetas,
+     navegación y llamadas a la acción. */
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-versales);
+  font-weight: 500;
+}
+
+@utility salto-al-contenido {
+  /* Enlace de salto: invisible hasta que recibe foco por teclado. */
+  position: absolute;
+  left: 0.5rem;
+  top: -100%;
+  z-index: 100;
+  background-color: var(--color-tinta);
+  color: var(--color-lino);
+  padding: 0.75rem 1.25rem;
+  transition: top var(--duracion-rapida) var(--ease-manly);
+
+  &:focus {
+    top: 0.5rem;
+  }
 }

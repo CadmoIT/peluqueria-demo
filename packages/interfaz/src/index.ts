@@ -1,3 +1,16 @@
 // Punto de entrada de la biblioteca de interfaz compartida.
-// Los componentes de marca se agregan en la Fase 2.
-export * from './utilidades.js';
+// Expone los primitivos del sistema de diseño; los componentes propios del
+// sitio (navegación, marca, reservas) viven en apps/frontend/src/componentes.
+export { Boton, EnlaceBoton, clasesBoton } from './componentes/boton';
+export type {
+  PropiedadesBoton,
+  PropiedadesEnlaceBoton,
+  TamanioBoton,
+  VarianteBoton,
+} from './componentes/boton';
+
+export { Contenedor } from './componentes/contenedor';
+export { Seccion } from './componentes/seccion';
+export { EncabezadoSeccion } from './componentes/encabezado-seccion';
+
+export * from './utilidades';

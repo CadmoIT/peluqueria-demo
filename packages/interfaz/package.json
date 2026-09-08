@@ -13,7 +13,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
     "lint": "eslint src",
-    "limpiar": "rm -rf dist *.tsbuildinfo"
+    "limpiar": "rm -rf dist *.tsbuildinfo",
+    "test": "vitest run"
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -25,9 +26,13 @@
   },
   "devDependencies": {
     "@manly/configuracion": "workspace:*",
+    "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "eslint": "^9.17.0",
-    "typescript": "^5.7.2"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }
