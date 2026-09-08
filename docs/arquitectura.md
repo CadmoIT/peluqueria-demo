@@ -43,6 +43,42 @@ proveedores externos:
 Todo archivo propio que admita comentarios abre con una línea breve en español que
 explica su responsabilidad. No se crean README por carpeta.
 
+## Sistema visual
+
+Todos los tokens viven en `packages/interfaz/src/tokens.css`, dentro de un bloque
+`@theme` de Tailwind v4: color, tipografía, escala de texto, espaciado, radios y
+movimiento. Ningún componente escribe un color, un tamaño ni una duración a mano.
+Cambiar la identidad de la marca es cambiar ese archivo.
+
+Las tipografías las inyecta `next/font` desde el layout raíz como las variables
+`--fuente-titulo` y `--fuente-texto`, que los tokens consumen. Cambiar la
+tipografía de la marca son dos declaraciones en `apps/frontend/src/app/layout.tsx`.
+
+Los archivos se sirven desde el repositorio (`next/font/local`), no desde
+`next/font/google`. Ese descarga las tipografías **durante el build**, así que un
+corte de red, un proxy o un bloqueo de salida rompe el despliegue; ya falló acá de
+forma intermitente. Con los woff2 versionados el build es reproducible y funciona
+sin red.
+
+La escala de texto y el espaciado de sección son fluidos (`clamp`): crecen con el
+ancho de la ventana sin saltos. El diseño se hace primero a 360 px y se escala.
+
+### Dos trampas que ya costaron caro
+
+**Sintaxis de variables en Tailwind v4.** `py-[--spacing-seccion]` no resuelve la
+variable: produce una declaración inválida y el estilo se pierde en silencio. Los
+tokens declarados bajo un espacio de nombres de Tailwind generan su utilidad
+directamente (`--spacing-seccion` → `py-seccion`, `--text-nota` → `text-nota`,
+`--ease-manly` → `ease-manly`). Para una variable fuera de esos espacios, la
+sintaxis es con paréntesis: `duration-(--duracion-rapida)`.
+
+**tailwind-merge y los tokens propios.** `cn()` usa tailwind-merge, que no conoce
+los tokens de la marca: sin configurarlo clasifica `text-nota` como color y lo
+descarta al encontrar `text-grafito`, dejando el texto en el tamaño heredado. La
+extensión está en `packages/interfaz/src/utilidades.ts` y hay pruebas que la
+protegen. **Cada token nuevo de `--text-*` o `--color-*` tiene que sumarse a esas
+dos listas**, o el token se va a perder sin ningún error visible.
+
 ## Base de datos
 
 PostgreSQL administrado en Neon, accedido con Drizzle ORM.

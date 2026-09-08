@@ -54,6 +54,13 @@ administrador. Activando el Modo Desarrollador en _Configuración → Sistema �
 desarrolladores_ se puede quitar esa línea y recuperar el aislamiento estricto de
 dependencias que da pnpm por defecto.
 
+## Vitest en los paquetes
+
+Todo paquete que declare `vitest` tiene que declarar también `@types/node`. Vitest
+lo tiene como peer opcional y, sin él, pnpm resuelve una variante del paquete que
+con `node-linker=hoisted` queda como un enlace roto: el binario no se instala y el
+script `test` falla con "vitest no se reconoce como un comando".
+
 ## Base de datos
 
 `DATABASE_URL` (agrupada) es para la API. `DATABASE_URL_DIRECTA` es para el worker

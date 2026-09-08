@@ -61,6 +61,19 @@ Mal:   "las-canitas-interior"
 Mal:   "Foto"
 ```
 
+## Entradas pendientes
+
+Las entradas del catálogo marcadas con `pendiente` apuntan a
+`marca/respaldo.svg` en vez de a una fotografía. El sitio se ve completo y sin
+huecos rotos, pero esas imágenes todavía no son las definitivas.
+
+Para cargar una: dejar el archivo en la carpeta que corresponda y reemplazar la
+llamada a `pendiente(...)` por la entrada real con su `ruta`, `alt`, `ancho` y
+`alto`. Al quitar el `pendiente` la imagen deja de usar el respaldo.
+
+El logotipo y el respaldo actuales también son provisorios: son marcadores hasta
+que llegue el material oficial de Manly.
+
 ## Derechos
 
 Sólo fotografías propias o con licencia comercial verificada. Ante la duda, no se
