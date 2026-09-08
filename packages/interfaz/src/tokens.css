@@ -1,0 +1,22 @@
+/* Tokens visuales de la marca Manly: estética negro/blanco premium.
+   Los valores concretos se ajustan en la Fase 2 tras auditar la identidad actual. */
+
+@theme {
+  /* ── Color ────────────────────────────────────────────────── */
+  --color-manly-negro: oklch(0.15 0 0);
+  --color-manly-carbon: oklch(0.24 0 0);
+  --color-manly-grafito: oklch(0.42 0 0);
+  --color-manly-humo: oklch(0.72 0 0);
+  --color-manly-niebla: oklch(0.93 0 0);
+  --color-manly-blanco: oklch(0.99 0 0);
+
+  /* ── Tipografía ───────────────────────────────────────────── */
+  --font-titulo: var(--fuente-titulo), Georgia, serif;
+  --font-texto: var(--fuente-texto), system-ui, sans-serif;
+
+  /* ── Espaciado y radios ───────────────────────────────────── */
+  --radius-manly: 0.25rem;
+
+  /* ── Movimiento ───────────────────────────────────────────── */
+  --ease-manly: cubic-bezier(0.16, 1, 0.3, 1);
+}

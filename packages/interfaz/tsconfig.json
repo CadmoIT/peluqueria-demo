@@ -1,0 +1,4 @@
+{
+  "extends": "@manly/configuracion/tsconfig/nextjs",
+  "include": ["src/**/*"]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "@manly/base-datos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Esquemas Drizzle, migraciones, repositorios y semillas de PostgreSQL",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "generar": "drizzle-kit generate",
+    "migrar": "tsx src/migrar.ts",
+    "semillas": "tsx src/semillas/index.ts",
+    "estudio": "drizzle-kit studio",
+    "limpiar": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.38.2",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@manly/configuracion": "workspace:*",
+    "@types/pg": "^8.11.10",
+    "drizzle-kit": "^0.30.1",
+    "eslint": "^9.17.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
