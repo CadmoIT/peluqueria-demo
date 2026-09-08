@@ -1,0 +1,14 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm bloquea por defecto los scripts de instalación de las dependencias.
+# Se habilitan sólo los que compilan binarios necesarios; el resto queda denegado.
+allowBuilds:
+  '@nestjs/core': true
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+  # Telemetría de instalación: se deniega explícitamente.
+  '@scarf/scarf': false

@@ -12,6 +12,9 @@ out/
 .output/
 *.tsbuildinfo
 
+# ── Turborepo ─────────────────────────────────────────────────
+.turbo/
+
 # ── Variables de entorno ──────────────────────────────────────
 .env
 .env.*
@@ -34,11 +37,14 @@ pnpm-debug.log*
 # ── Tests / cobertura ─────────────────────────────────────────
 coverage/
 .nyc_output/
+playwright-report/
+test-results/
 
 # ── Base de datos local ───────────────────────────────────────
 *.sqlite
 *.sqlite3
 *.db
+datos-postgres/
 
 # ── Editores ──────────────────────────────────────────────────
 .vscode/
@@ -49,3 +55,7 @@ coverage/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ── Vercel / Sentry ───────────────────────────────────────────
+.vercel/
+.sentryclirc
