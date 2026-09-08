@@ -13,7 +13,7 @@ credenciales con otro.
 
 ## Web (Vercel)
 
-- Directorio raíz: `apps/web`
+- Directorio raíz: `apps/frontend`
 - Comando de build: `pnpm build`
 - Comando de instalación: `pnpm install --frozen-lockfile`
 - Variables: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_URL_PUBLICA`, `NEXT_PUBLIC_SENTRY_DSN`
@@ -25,10 +25,10 @@ real va del lado de la API.
 
 Dos servicios separados desde el mismo repositorio.
 
-| Servicio | Directorio    | Arranque     | Conexión                  |
-| -------- | ------------- | ------------ | ------------------------- |
-| API      | `apps/api`    | `pnpm start` | `DATABASE_URL` (agrupada) |
-| Worker   | `apps/worker` | `pnpm start` | `DATABASE_URL_DIRECTA`    |
+| Servicio | Directorio     | Arranque     | Conexión                  |
+| -------- | -------------- | ------------ | ------------------------- |
+| API      | `apps/backend` | `pnpm start` | `DATABASE_URL` (agrupada) |
+| Worker   | `apps/worker`  | `pnpm start` | `DATABASE_URL_DIRECTA`    |
 
 El worker con la conexión agrupada arranca pero falla de forma intermitente: pg-boss
 necesita locks de sesión que PgBouncer en modo transacción no mantiene.

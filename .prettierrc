@@ -5,6 +5,8 @@
   "printWidth": 100,
   "tabWidth": 2,
   "endOfLine": "lf",
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindStylesheet": "./apps/web/src/estilos/global.css"
+  "plugins": [
+    "prettier-plugin-tailwindcss"
+  ],
+  "tailwindStylesheet": "./apps/frontend/src/estilos/global.css"
 }

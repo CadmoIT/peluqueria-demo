@@ -9,8 +9,8 @@ email, y panel para gerencia y profesionales.
 ```text
 manly/
 ├─ apps/
-│  ├─ web/       Next.js — sitio, reserva y panel
-│  ├─ api/       NestJS — API REST y OpenAPI
+│  ├─ frontend/  Next.js — sitio, reserva y panel
+│  ├─ backend/   NestJS — API REST y OpenAPI
 │  └─ worker/    Node + pg-boss — recordatorios y expiraciones
 ├─ packages/
 │  ├─ contratos/      Esquemas Zod compartidos

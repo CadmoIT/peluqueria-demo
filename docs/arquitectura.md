@@ -5,13 +5,13 @@
 Monorepo TypeScript con tres aplicaciones desplegables y cuatro paquetes compartidos.
 
 ```text
-apps/web      Next.js App Router — sitio institucional, reserva y panel  → Vercel
-apps/api      NestJS REST + OpenAPI — dominio, pagos y panel             → Railway
-apps/worker   Node + pg-boss — recordatorios, expiraciones y reintentos  → Railway
+apps/frontend  Next.js App Router — sitio institucional, reserva y panel  → Vercel
+apps/backend   NestJS REST + OpenAPI — dominio, pagos y panel              → Railway
+apps/worker    Node + pg-boss — recordatorios, expiraciones y reintentos   → Railway
 ```
 
 ```text
-packages/contratos      Esquemas Zod compartidos entre web, API y worker
+packages/contratos      Esquemas Zod compartidos entre frontend, backend y worker
 packages/base-datos     Esquemas Drizzle, migraciones, repositorios y semillas
 packages/interfaz       Componentes y tokens visuales de la marca
 packages/configuracion  Presets de TypeScript y ESLint
@@ -25,7 +25,7 @@ La orquestación de tareas es Turborepo; el gestor de paquetes es pnpm con works
 - `packages/*` nunca depende de `apps/*`.
 - `packages/contratos` no depende de ningún otro paquete interno: es la base.
 - `packages/interfaz` es la única que puede depender de React.
-- La web nunca importa `@manly/base-datos`: habla con la API por HTTP.
+- El frontend nunca importa `@manly/base-datos`: habla con la API por HTTP.
 
 ## Convenciones de nombres
 

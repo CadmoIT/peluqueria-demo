@@ -1,10 +1,10 @@
 # Guía de imágenes
 
-Las fotografías viven en `apps/web/public/imagenes` y forman parte del despliegue.
+Las fotografías viven en `apps/frontend/public/imagenes` y forman parte del despliegue.
 La carga desde el panel queda fuera de la primera versión.
 
 Ningún componente referencia rutas sueltas: todo pasa por el catálogo tipado de
-`apps/web/src/utilidades/imagenes.ts`. Reemplazar una foto es cambiar el archivo y,
+`apps/frontend/src/utilidades/imagenes.ts`. Reemplazar una foto es cambiar el archivo y,
 si cambió el nombre, esa entrada del catálogo.
 
 ## Carpetas
