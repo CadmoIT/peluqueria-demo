@@ -7,7 +7,7 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start --port 3000",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
     "lint": "eslint src",
     "limpiar": "rm -rf .next dist *.tsbuildinfo"
   },

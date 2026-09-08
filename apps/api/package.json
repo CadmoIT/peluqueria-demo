@@ -7,7 +7,7 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
     "lint": "eslint src",
     "test": "vitest run --passWithNoTests",
     "test:observar": "vitest",

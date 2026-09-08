@@ -8,7 +8,7 @@
     "dev": "tsx watch src/principal.ts",
     "build": "tsc --build",
     "start": "node dist/principal.js",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
     "lint": "eslint src",
     "test": "vitest run --passWithNoTests",
     "limpiar": "rm -rf dist *.tsbuildinfo"

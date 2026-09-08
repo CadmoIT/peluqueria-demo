@@ -1,7 +1,6 @@
 // Arranque de la API: seguridad, CORS, prefijo de rutas y documentación OpenAPI.
 import 'reflect-metadata';
 
-import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -25,7 +24,8 @@ async function arrancar(): Promise<void> {
   });
   aplicacion.setGlobalPrefix(prefijo);
   aplicacion.useGlobalFilters(new ExcepcionHttpFiltro());
-  aplicacion.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  // La validacion de cuerpos y respuestas se hace con los contratos Zod de
+  // @manly/contratos, no con el ValidationPipe de Nest (que exige class-validator).
   aplicacion.enableShutdownHooks();
 
   const documento = new DocumentBuilder()

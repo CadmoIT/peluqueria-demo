@@ -1,3 +1,7 @@
+// Preset de la API NestJS.
+// incremental queda en false a propósito: nest build borra dist en cada corrida
+// (deleteOutDir) y un .tsbuildinfo sobreviviente hace que sólo se reemitan los
+// archivos modificados, dejando un dist incompleto que arranca y falla.
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../../tsconfig.base.json",
@@ -8,7 +12,8 @@
     "experimentalDecorators": true,
     "outDir": "dist",
     "rootDir": "src",
-    "isolatedModules": false
+    "isolatedModules": false,
+    "incremental": false
   },
   "include": ["src/**/*"]
 }
