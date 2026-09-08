@@ -1,25 +1,52 @@
-# peluqueria-demo
+# Manly
 
-Proyecto demo de peluquería. Monorepo con el backend y el frontend separados en
-carpetas independientes.
+Plataforma web y de reservas de Manly: sitio institucional, reserva de turnos
+multiservicio sin cuenta, seña por Mercado Pago, notificaciones por WhatsApp o
+email, y panel para gerencia y profesionales.
 
 ## Estructura
 
+```text
+manly/
+├─ apps/
+│  ├─ web/       Next.js — sitio, reserva y panel
+│  ├─ api/       NestJS — API REST y OpenAPI
+│  └─ worker/    Node + pg-boss — recordatorios y expiraciones
+├─ packages/
+│  ├─ contratos/      Esquemas Zod compartidos
+│  ├─ base-datos/     Drizzle: esquemas, migraciones y semillas
+│  ├─ interfaz/       Componentes y tokens de marca
+│  └─ configuracion/  Presets de TypeScript y ESLint
+├─ docs/
+└─ infraestructura/
 ```
-peluqueria-demo/
-├── backend/     # API / servidor
-├── frontend/    # Aplicación cliente
-└── README.md
+
+## Arranque rápido
+
+```bash
+pnpm install
+cp .env.example .env
+docker compose -f infraestructura/docker-compose.yml up -d
+pnpm dev
 ```
 
-Cada carpeta es autocontenida: tiene sus propias dependencias, configuración y
-scripts. Ver el README de cada una para los detalles.
+Web en http://localhost:3000, API en http://localhost:3001/api/v1.
 
-| Carpeta                    | Descripción       |
-| -------------------------- | ----------------- |
-| [`backend/`](backend)      | API / servidor    |
-| [`frontend/`](frontend)    | Aplicación cliente |
+Requiere Node 24 y pnpm 12. Los detalles están en
+[docs/operaciones.md](docs/operaciones.md).
 
-## Puesta en marcha
+## Documentación
 
-_Pendiente de definir el stack._
+| Documento                                   | Contenido                                |
+| ------------------------------------------- | ---------------------------------------- |
+| [arquitectura.md](docs/arquitectura.md)     | Estructura, dependencias y convenciones  |
+| [reglas-negocio.md](docs/reglas-negocio.md) | Reservas, pagos, cambios y permisos      |
+| [operaciones.md](docs/operaciones.md)       | Desarrollo local, tareas y base de datos |
+| [despliegue.md](docs/despliegue.md)         | Entornos, migraciones y rollback         |
+| [guia-imagenes.md](docs/guia-imagenes.md)   | Nombres, formatos y proporciones         |
+
+## Estado
+
+Fase 1 (fundación) completa. Las fases 2 a 10 —identidad, modelo de datos, motor de
+disponibilidad, sitio público, pagos, notificaciones, panel, seguridad y lanzamiento—
+están pendientes.
