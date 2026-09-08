@@ -1,0 +1,29 @@
+/* Hoja de estilos raíz de la web. Importa Tailwind y los tokens de la marca. */
+@import 'tailwindcss';
+@import '@manly/interfaz/tokens.css';
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-manly-blanco);
+    color: var(--color-manly-negro);
+    font-family: var(--font-texto);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-titulo);
+    letter-spacing: -0.01em;
+  }
+
+  /* El foco visible es requisito de accesibilidad WCAG 2.2 AA. */
+  :focus-visible {
+    outline: 2px solid var(--color-manly-negro);
+    outline-offset: 2px;
+  }
+}

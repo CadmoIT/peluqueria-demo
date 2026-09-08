@@ -1,0 +1,41 @@
+{
+  "name": "@manly/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "API REST de reservas de Manly",
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run --passWithNoTests",
+    "test:observar": "vitest",
+    "limpiar": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@manly/base-datos": "workspace:*",
+    "@manly/contratos": "workspace:*",
+    "@nestjs/common": "^10.4.15",
+    "@nestjs/config": "^3.3.0",
+    "@nestjs/core": "^10.4.15",
+    "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/swagger": "^8.1.0",
+    "@nestjs/throttler": "^6.3.0",
+    "helmet": "^8.0.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@manly/configuracion": "workspace:*",
+    "@nestjs/cli": "^10.4.9",
+    "@nestjs/schematics": "^10.2.3",
+    "@nestjs/testing": "^10.4.15",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

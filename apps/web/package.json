@@ -1,0 +1,36 @@
+{
+  "name": "@manly/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sitio institucional y flujo de reservas de Manly",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "limpiar": "rm -rf .next dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.1",
+    "@manly/contratos": "workspace:*",
+    "@manly/interfaz": "workspace:*",
+    "@tanstack/react-query": "^5.62.7",
+    "next": "^15.1.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@manly/configuracion": "workspace:*",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "^9.17.0",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2"
+  }
+}

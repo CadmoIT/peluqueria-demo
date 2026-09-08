@@ -1,0 +1,8 @@
+{
+  "extends": "@manly/configuracion/tsconfig/nest",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*", "test/**/*"]
+}
