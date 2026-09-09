@@ -133,6 +133,51 @@ El worker expira las retenciones vencidas cada minuto. Aun así, el motor ya
 ignora las retenciones vencidas al calcular, de modo que un retraso del worker
 nunca muestra como ocupado un horario que está libre.
 
+## Flujo de reserva
+
+Dos pasos a propósito: primero se **retiene** el horario elegido y recién después
+se piden los datos del cliente. Nadie completa un formulario para enterarse al
+final de que el turno ya no está.
+
+```text
+buscar → retener (10 min) → completar datos → confirmada
+```
+
+Sin seña la reserva queda confirmada de una. Con seña queda `pendiente_pago`
+hasta que el webhook la confirme (Fase 6).
+
+### El servidor no confía en el pedido
+
+El cliente manda de vuelta la opción que eligió, pero **de ese pedido sólo se
+usan los identificadores y los horarios**. Precios, duraciones, buffers y
+ventanas ocupadas se recalculan contra la base, y se verifica que el profesional
+preste ese servicio en esa sucursal, que los bloques vayan pegados y que todo
+entre en el horario de atención.
+
+Sin eso alcanzaría con editar la petición para reservarse un turno a precio cero,
+con alguien que no hace ese servicio o fuera del horario del local. Hay pruebas
+para cada uno de esos intentos.
+
+### El token del enlace es una credencial
+
+La gestión sin cuenta se hace con un enlace privado. Ese token **es** la
+credencial, así que se trata como tal: 32 bytes de entropía, en la base queda
+sólo el hash SHA-256, y el valor en claro se devuelve una única vez. La página se
+marca `noindex`, se excluye en `robots.txt` y usa `referrer: no-referrer` para
+que el token no se filtre por la cabecera Referer.
+
+### Política de cambios
+
+La anticipación mínima se resuelve con precedencia servicio → sucursal → global.
+Entre varios servicios manda el más exigente, porque la reserva se cancela entera
+o no se cancela.
+
+Con anticipación suficiente el cambio es automático. Dentro del plazo se crea una
+solicitud para gerencia y **el horario sigue ocupado**: liberarlo de inmediato y
+después no poder devolver la seña sería peor. La reprogramación automática
+reemplaza todos los bloques en una transacción, así que si el horario nuevo choca
+el turno original queda intacto.
+
 ## Base de datos
 
 PostgreSQL administrado en Neon, accedido con Drizzle ORM.

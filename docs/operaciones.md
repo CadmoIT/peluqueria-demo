@@ -61,6 +61,22 @@ lo tiene como peer opcional y, sin él, pnpm resuelve una variante del paquete q
 con `node-linker=hoisted` queda como un enlace roto: el binario no se instala y el
 script `test` falla con "vitest no se reconoce como un comando".
 
+## Trabajar sin Docker
+
+Si no tenés Docker instalado, la API puede levantar PostgreSQL dentro de su
+propio proceso con PGlite:
+
+```bash
+pnpm --filter @manly/backend dev:memoria
+```
+
+Aplica las migraciones, carga las semillas de demostración y queda escuchando en
+el puerto de siempre. **Los datos se pierden al cortar el proceso**, así que sirve
+para trabajar en el frontend, no para nada que haya que conservar.
+
+Se compila con `nest build` en vez de correr con `tsx`: esbuild no emite la
+metadata de decoradores que Nest necesita para inyectar dependencias.
+
 ## Migraciones y semillas
 
 `pnpm bd:generar` genera una migración a partir de los cambios en los esquemas.
