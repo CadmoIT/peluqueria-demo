@@ -288,14 +288,20 @@ importers:
     dependencies:
       drizzle-orm:
         specifier: ^0.38.2
-        version: 0.38.4(@types/pg@8.23.1)(@types/react@19.2.18)(pg@8.23.0)(react@19.2.8)
+        version: 0.38.4(@electric-sql/pglite@0.5.8)(@types/pg@8.23.1)(@types/react@19.2.18)(pg@8.23.0)(react@19.2.8)
       pg:
         specifier: ^8.13.1
         version: 8.23.0
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.5.8
+        version: 0.5.8
       '@manly/configuracion':
         specifier: workspace:*
         version: link:../configuracion
+      '@types/node':
+        specifier: ^22.20.1
+        version: 22.20.1
       '@types/pg':
         specifier: ^8.11.10
         version: 8.23.1
@@ -311,6 +317,9 @@ importers:
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.9
+        version: 2.1.9
 
   packages/configuracion:
     devDependencies:
@@ -421,6 +430,9 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+
+  '@electric-sql/pglite@0.5.8':
+    resolution: {integrity: sha512-n9tsbUOhwx2epK1V0ZG9Ar4SHWUju04dhmzZXiSBXwBoleOvIfals33NAaWgagQVAL4Rbvx/Ptsu3P+pA09f6Q==}
 
   '@emnapi/runtime@1.11.3':
     resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
@@ -3981,6 +3993,8 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
+  '@electric-sql/pglite@0.5.8': {}
+
   '@emnapi/runtime@1.11.3':
     dependencies:
       tslib: 2.8.1
@@ -5483,8 +5497,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.38.4(@types/pg@8.23.1)(@types/react@19.2.18)(pg@8.23.0)(react@19.2.8):
+  drizzle-orm@0.38.4(@electric-sql/pglite@0.5.8)(@types/pg@8.23.1)(@types/react@19.2.18)(pg@8.23.0)(react@19.2.8):
     optionalDependencies:
+      '@electric-sql/pglite': 0.5.8
       '@types/pg': 8.23.1
       '@types/react': 19.2.18
       pg: 8.23.0

@@ -63,6 +63,18 @@ jobs:
       - name: Tipos
         run: pnpm typecheck
 
+      # Las pruebas de esquema corren sobre PGlite (PostgreSQL en WebAssembly).
+      # Esto verifica ademas que las migraciones apliquen sobre un PostgreSQL
+      # real y que las semillas sean idempotentes.
+      - name: Migraciones
+        run: pnpm bd:migrar
+
+      - name: Migraciones son idempotentes
+        run: pnpm bd:migrar
+
+      - name: Semillas
+        run: pnpm bd:semillas
+
       - name: Pruebas
         run: pnpm test
 

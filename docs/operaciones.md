@@ -61,6 +61,23 @@ lo tiene como peer opcional y, sin él, pnpm resuelve una variante del paquete q
 con `node-linker=hoisted` queda como un enlace roto: el binario no se instala y el
 script `test` falla con "vitest no se reconoce como un comando".
 
+## Migraciones y semillas
+
+`pnpm bd:generar` genera una migración a partir de los cambios en los esquemas.
+Para SQL que Drizzle no sabe expresar (la restricción EXCLUDE, los triggers) se usa
+`drizzle-kit generate --custom --name=...` y se escribe el SQL a mano.
+
+`pnpm bd:semillas` hace dos cosas distintas:
+
+- Crea la fila de `configuracion_negocio`, que el sistema necesita para funcionar.
+  Corre en todos los entornos, producción incluida.
+- Carga sucursales, servicios y profesionales de demostración **sólo cuando
+  `NODE_ENV` no es `production`**. Los datos reales se cargan desde el panel; no se
+  importa nada de AgendaPro.
+
+Ambas son idempotentes: correrlas de nuevo no duplica nada, y hay pruebas que lo
+verifican.
+
 ## Base de datos
 
 `DATABASE_URL` (agrupada) es para la API. `DATABASE_URL_DIRECTA` es para el worker

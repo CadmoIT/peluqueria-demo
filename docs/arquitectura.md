@@ -96,10 +96,43 @@ migraciones también, porque el DDL toma locks propios.
 
 Las fechas se guardan en UTC y se presentan en `America/Argentina/Buenos_Aires`.
 
-La integridad de la agenda se apoya en una restricción `EXCLUDE` de PostgreSQL por
-profesional y rango temporal sobre los estados activos, que impide dobles reservas
-incluso con peticiones concurrentes. Requiere la extensión `btree_gist`, que se
-crea en `infraestructura/inicializacion/01-extensiones.sql`.
+### Cómo se impide la doble reserva
+
+La integridad de la agenda no depende de que la aplicación verifique antes de
+insertar: dos peticiones concurrentes pueden pasar ambas esa verificación. La
+garantía está en la base.
+
+`reservas_servicios` tiene una restricción `EXCLUDE USING gist` por profesional y
+rango temporal. Si dos bloques del mismo profesional se pisan, el segundo INSERT
+falla. Requiere la extensión `btree_gist`, que crea la propia migración.
+
+Tres detalles que hacen que funcione:
+
+- **Se compara la ventana ocupada, no la que ve el cliente.** Cada bloque guarda
+  `comienza_en`/`termina_en` (lo que el cliente ve) y `ocupa_desde`/`ocupa_hasta`
+  (con la preparación y la limpieza del servicio). Dos turnos pueden verse
+  contiguos y aun así pisarse por los buffers.
+- **El rango es `[)`.** Un bloque que termina 14:00 y otro que empieza 14:00 no se
+  solapan.
+- **El estado está desnormalizado en `reservas_servicios`.** Una restricción
+  EXCLUDE sólo puede filtrar por columnas de su propia tabla, y la exclusión debe
+  aplicar únicamente a los estados que ocupan la agenda (`pendiente_pago` y
+  `confirmada`). Lo mantienen dos triggers: uno hereda el estado al insertar el
+  bloque y otro lo propaga cuando cambia el de la reserva. **La aplicación nunca
+  escribe esa columna.**
+
+### Snapshots
+
+`reservas_servicios` copia nombre, duración, precio y seña del servicio al momento
+de reservar. Cambiar un precio después no altera las reservas ya tomadas.
+
+### Pruebas del esquema
+
+Corren sobre PGlite (PostgreSQL compilado a WebAssembly), así que no necesitan
+Docker ni una base externa: `pnpm --filter @manly/base-datos test` levanta una base
+efímera, le aplica las mismas migraciones que producción y verifica la exclusión,
+los CHECK y la idempotencia. CI además aplica las migraciones contra un PostgreSQL
+real, porque PGlite es una implementación distinta.
 
 ## Estado de implementación
 
