@@ -1,0 +1,2141 @@
+{
+  "id": "3ebeb2d6-f697-44e6-871e-bdc57b7ce190",
+  "prevId": "77074043-260b-41e3-92c7-5b29747b68d2",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.sucursales": {
+      "name": "sucursales",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "barrio": {
+          "name": "barrio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "direccion": {
+          "name": "direccion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "whatsapp": {
+          "name": "whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "url_mapa": {
+          "name": "url_mapa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "horas_minimas_cancelacion": {
+          "name": "horas_minimas_cancelacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activa": {
+          "name": "activa",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "orden": {
+          "name": "orden",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "sucursales_horas_cancelacion_no_negativas": {
+          "name": "sucursales_horas_cancelacion_no_negativas",
+          "value": "\"sucursales\".\"horas_minimas_cancelacion\" IS NULL OR \"sucursales\".\"horas_minimas_cancelacion\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.servicios": {
+      "name": "servicios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "categoria": {
+          "name": "categoria",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duracion_minutos": {
+          "name": "duracion_minutos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "minutos_preparacion": {
+          "name": "minutos_preparacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "minutos_limpieza": {
+          "name": "minutos_limpieza",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "precio_centavos": {
+          "name": "precio_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modalidad_senia": {
+          "name": "modalidad_senia",
+          "type": "modalidad_senia",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'deshabilitada'"
+        },
+        "senia_fija_centavos": {
+          "name": "senia_fija_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "senia_porcentaje": {
+          "name": "senia_porcentaje",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "horas_minimas_cancelacion": {
+          "name": "horas_minimas_cancelacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "orden": {
+          "name": "orden",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "servicios_duracion_positiva": {
+          "name": "servicios_duracion_positiva",
+          "value": "\"servicios\".\"duracion_minutos\" > 0"
+        },
+        "servicios_precio_no_negativo": {
+          "name": "servicios_precio_no_negativo",
+          "value": "\"servicios\".\"precio_centavos\" >= 0"
+        },
+        "servicios_buffers_no_negativos": {
+          "name": "servicios_buffers_no_negativos",
+          "value": "\"servicios\".\"minutos_preparacion\" >= 0 AND \"servicios\".\"minutos_limpieza\" >= 0"
+        },
+        "servicios_porcentaje_valido": {
+          "name": "servicios_porcentaje_valido",
+          "value": "\"servicios\".\"senia_porcentaje\" IS NULL OR (\"servicios\".\"senia_porcentaje\" > 0 AND \"servicios\".\"senia_porcentaje\" <= 100)"
+        },
+        "servicios_senia_coherente": {
+          "name": "servicios_senia_coherente",
+          "value": "\n        (\"servicios\".\"modalidad_senia\" = 'deshabilitada'\n          AND \"servicios\".\"senia_fija_centavos\" IS NULL\n          AND \"servicios\".\"senia_porcentaje\" IS NULL)\n        OR (\"servicios\".\"modalidad_senia\" = 'fija'\n          AND \"servicios\".\"senia_fija_centavos\" IS NOT NULL\n          AND \"servicios\".\"senia_fija_centavos\" > 0\n          AND \"servicios\".\"senia_porcentaje\" IS NULL)\n        OR (\"servicios\".\"modalidad_senia\" = 'porcentual'\n          AND \"servicios\".\"senia_porcentaje\" IS NOT NULL\n          AND \"servicios\".\"senia_fija_centavos\" IS NULL)\n      "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.servicios_sucursales": {
+      "name": "servicios_sucursales",
+      "schema": "",
+      "columns": {
+        "servicio_id": {
+          "name": "servicio_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sucursal_id": {
+          "name": "sucursal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "servicios_sucursales_servicio_id_servicios_id_fk": {
+          "name": "servicios_sucursales_servicio_id_servicios_id_fk",
+          "tableFrom": "servicios_sucursales",
+          "tableTo": "servicios",
+          "columnsFrom": ["servicio_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "servicios_sucursales_sucursal_id_sucursales_id_fk": {
+          "name": "servicios_sucursales_sucursal_id_sucursales_id_fk",
+          "tableFrom": "servicios_sucursales",
+          "tableTo": "sucursales",
+          "columnsFrom": ["sucursal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "servicios_sucursales_servicio_id_sucursal_id_pk": {
+          "name": "servicios_sucursales_servicio_id_sucursal_id_pk",
+          "columns": ["servicio_id", "sucursal_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.sesiones": {
+      "name": "sesiones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash_token": {
+          "name": "hash_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expira_en": {
+          "name": "expira_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ultimo_uso_en": {
+          "name": "ultimo_uso_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "agente_usuario": {
+          "name": "agente_usuario",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "sesiones_hash_token_unico": {
+          "name": "sesiones_hash_token_unico",
+          "columns": [
+            {
+              "expression": "hash_token",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "sesiones_usuario_id_usuarios_id_fk": {
+          "name": "sesiones_usuario_id_usuarios_id_fk",
+          "tableFrom": "sesiones",
+          "tableTo": "usuarios",
+          "columnsFrom": ["usuario_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.usuarios": {
+      "name": "usuarios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rol": {
+          "name": "rol",
+          "type": "rol",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash_contrasenia": {
+          "name": "hash_contrasenia",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash_token_acceso": {
+          "name": "hash_token_acceso",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_acceso_expira_en": {
+          "name": "token_acceso_expira_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "usuarios_email_unico": {
+          "name": "usuarios_email_unico",
+          "columns": [
+            {
+              "expression": "lower(\"email\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profesionales": {
+      "name": "profesionales",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre_visible": {
+          "name": "nombre_visible",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "orden": {
+          "name": "orden",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profesionales_usuario_id_usuarios_id_fk": {
+          "name": "profesionales_usuario_id_usuarios_id_fk",
+          "tableFrom": "profesionales",
+          "tableTo": "usuarios",
+          "columnsFrom": ["usuario_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profesionales_servicios": {
+      "name": "profesionales_servicios",
+      "schema": "",
+      "columns": {
+        "profesional_id": {
+          "name": "profesional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "servicio_id": {
+          "name": "servicio_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profesionales_servicios_profesional_id_profesionales_id_fk": {
+          "name": "profesionales_servicios_profesional_id_profesionales_id_fk",
+          "tableFrom": "profesionales_servicios",
+          "tableTo": "profesionales",
+          "columnsFrom": ["profesional_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "profesionales_servicios_servicio_id_servicios_id_fk": {
+          "name": "profesionales_servicios_servicio_id_servicios_id_fk",
+          "tableFrom": "profesionales_servicios",
+          "tableTo": "servicios",
+          "columnsFrom": ["servicio_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "profesionales_servicios_profesional_id_servicio_id_pk": {
+          "name": "profesionales_servicios_profesional_id_servicio_id_pk",
+          "columns": ["profesional_id", "servicio_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profesionales_sucursales": {
+      "name": "profesionales_sucursales",
+      "schema": "",
+      "columns": {
+        "profesional_id": {
+          "name": "profesional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sucursal_id": {
+          "name": "sucursal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profesionales_sucursales_profesional_id_profesionales_id_fk": {
+          "name": "profesionales_sucursales_profesional_id_profesionales_id_fk",
+          "tableFrom": "profesionales_sucursales",
+          "tableTo": "profesionales",
+          "columnsFrom": ["profesional_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "profesionales_sucursales_sucursal_id_sucursales_id_fk": {
+          "name": "profesionales_sucursales_sucursal_id_sucursales_id_fk",
+          "tableFrom": "profesionales_sucursales",
+          "tableTo": "sucursales",
+          "columnsFrom": ["sucursal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "profesionales_sucursales_profesional_id_sucursal_id_pk": {
+          "name": "profesionales_sucursales_profesional_id_sucursal_id_pk",
+          "columns": ["profesional_id", "sucursal_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.excepciones_horario": {
+      "name": "excepciones_horario",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "profesional_id": {
+          "name": "profesional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sucursal_id": {
+          "name": "sucursal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_excepcion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comienza_en": {
+          "name": "comienza_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "termina_en": {
+          "name": "termina_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivo": {
+          "name": "motivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "excepciones_rango": {
+          "name": "excepciones_rango",
+          "columns": [
+            {
+              "expression": "comienza_en",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "termina_en",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "excepciones_profesional": {
+          "name": "excepciones_profesional",
+          "columns": [
+            {
+              "expression": "profesional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "excepciones_horario_profesional_id_profesionales_id_fk": {
+          "name": "excepciones_horario_profesional_id_profesionales_id_fk",
+          "tableFrom": "excepciones_horario",
+          "tableTo": "profesionales",
+          "columnsFrom": ["profesional_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "excepciones_horario_sucursal_id_sucursales_id_fk": {
+          "name": "excepciones_horario_sucursal_id_sucursales_id_fk",
+          "tableFrom": "excepciones_horario",
+          "tableTo": "sucursales",
+          "columnsFrom": ["sucursal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "excepciones_rango_valido": {
+          "name": "excepciones_rango_valido",
+          "value": "\"excepciones_horario\".\"comienza_en\" < \"excepciones_horario\".\"termina_en\""
+        },
+        "excepciones_alcance_definido": {
+          "name": "excepciones_alcance_definido",
+          "value": "\"excepciones_horario\".\"profesional_id\" IS NOT NULL OR \"excepciones_horario\".\"sucursal_id\" IS NOT NULL"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.horarios_semanales": {
+      "name": "horarios_semanales",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "profesional_id": {
+          "name": "profesional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sucursal_id": {
+          "name": "sucursal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dia_semana": {
+          "name": "dia_semana",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comienza": {
+          "name": "comienza",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "termina": {
+          "name": "termina",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "horarios_profesional_dia": {
+          "name": "horarios_profesional_dia",
+          "columns": [
+            {
+              "expression": "profesional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "dia_semana",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "horarios_semanales_profesional_id_profesionales_id_fk": {
+          "name": "horarios_semanales_profesional_id_profesionales_id_fk",
+          "tableFrom": "horarios_semanales",
+          "tableTo": "profesionales",
+          "columnsFrom": ["profesional_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "horarios_semanales_sucursal_id_sucursales_id_fk": {
+          "name": "horarios_semanales_sucursal_id_sucursales_id_fk",
+          "tableFrom": "horarios_semanales",
+          "tableTo": "sucursales",
+          "columnsFrom": ["sucursal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "horarios_dia_semana_valido": {
+          "name": "horarios_dia_semana_valido",
+          "value": "\"horarios_semanales\".\"dia_semana\" BETWEEN 0 AND 6"
+        },
+        "horarios_rango_valido": {
+          "name": "horarios_rango_valido",
+          "value": "\"horarios_semanales\".\"comienza\" < \"horarios_semanales\".\"termina\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.reservas": {
+      "name": "reservas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "sucursal_id": {
+          "name": "sucursal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_reserva",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente_pago'"
+        },
+        "cliente_nombre": {
+          "name": "cliente_nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "canal_contacto": {
+          "name": "canal_contacto",
+          "type": "canal_contacto",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contacto_whatsapp": {
+          "name": "contacto_whatsapp",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contacto_email": {
+          "name": "contacto_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comienza_en": {
+          "name": "comienza_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "termina_en": {
+          "name": "termina_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "precio_total_centavos": {
+          "name": "precio_total_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "senia_total_centavos": {
+          "name": "senia_total_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "hash_token_gestion": {
+          "name": "hash_token_gestion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retencion_expira_en": {
+          "name": "retencion_expira_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acepto_condiciones_en": {
+          "name": "acepto_condiciones_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notas": {
+          "name": "notas",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creada_por_usuario_id": {
+          "name": "creada_por_usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancelada_en": {
+          "name": "cancelada_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "reservas_hash_token_unico": {
+          "name": "reservas_hash_token_unico",
+          "columns": [
+            {
+              "expression": "hash_token_gestion",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "reservas_sucursal_comienza": {
+          "name": "reservas_sucursal_comienza",
+          "columns": [
+            {
+              "expression": "sucursal_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "comienza_en",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "reservas_estado_retencion": {
+          "name": "reservas_estado_retencion",
+          "columns": [
+            {
+              "expression": "estado",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "retencion_expira_en",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "reservas_sucursal_id_sucursales_id_fk": {
+          "name": "reservas_sucursal_id_sucursales_id_fk",
+          "tableFrom": "reservas",
+          "tableTo": "sucursales",
+          "columnsFrom": ["sucursal_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "reservas_creada_por_usuario_id_usuarios_id_fk": {
+          "name": "reservas_creada_por_usuario_id_usuarios_id_fk",
+          "tableFrom": "reservas",
+          "tableTo": "usuarios",
+          "columnsFrom": ["creada_por_usuario_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "reservas_rango_valido": {
+          "name": "reservas_rango_valido",
+          "value": "\"reservas\".\"comienza_en\" < \"reservas\".\"termina_en\""
+        },
+        "reservas_montos_no_negativos": {
+          "name": "reservas_montos_no_negativos",
+          "value": "\"reservas\".\"precio_total_centavos\" >= 0"
+        },
+        "reservas_senia_no_supera_precio": {
+          "name": "reservas_senia_no_supera_precio",
+          "value": "\"reservas\".\"senia_total_centavos\" >= 0 AND \"reservas\".\"senia_total_centavos\" <= \"reservas\".\"precio_total_centavos\""
+        },
+        "reservas_contacto_coherente": {
+          "name": "reservas_contacto_coherente",
+          "value": "\n        \"reservas\".\"canal_contacto\" IS NULL\n        OR (\"reservas\".\"canal_contacto\" = 'whatsapp' AND \"reservas\".\"contacto_whatsapp\" IS NOT NULL)\n        OR (\"reservas\".\"canal_contacto\" = 'email' AND \"reservas\".\"contacto_email\" IS NOT NULL)\n      "
+        },
+        "reservas_datos_completos_si_esta_activa": {
+          "name": "reservas_datos_completos_si_esta_activa",
+          "value": "\n        \"reservas\".\"estado\" NOT IN ('confirmada', 'completada', 'ausente')\n        OR (\n          \"reservas\".\"cliente_nombre\" IS NOT NULL\n          AND \"reservas\".\"canal_contacto\" IS NOT NULL\n          AND \"reservas\".\"acepto_condiciones_en\" IS NOT NULL\n        )\n      "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.reservas_servicios": {
+      "name": "reservas_servicios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "reserva_id": {
+          "name": "reserva_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "servicio_id": {
+          "name": "servicio_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "profesional_id": {
+          "name": "profesional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "orden": {
+          "name": "orden",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "comienza_en": {
+          "name": "comienza_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "termina_en": {
+          "name": "termina_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ocupa_desde": {
+          "name": "ocupa_desde",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ocupa_hasta": {
+          "name": "ocupa_hasta",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_reserva",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente_pago'"
+        },
+        "servicio_nombre": {
+          "name": "servicio_nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duracion_minutos": {
+          "name": "duracion_minutos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "precio_centavos": {
+          "name": "precio_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "senia_centavos": {
+          "name": "senia_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "minutos_preparacion": {
+          "name": "minutos_preparacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "minutos_limpieza": {
+          "name": "minutos_limpieza",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "reservas_servicios_orden_unico": {
+          "name": "reservas_servicios_orden_unico",
+          "columns": [
+            {
+              "expression": "reserva_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "orden",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "reservas_servicios_profesional_ocupacion": {
+          "name": "reservas_servicios_profesional_ocupacion",
+          "columns": [
+            {
+              "expression": "profesional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "ocupa_desde",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "reservas_servicios_reserva": {
+          "name": "reservas_servicios_reserva",
+          "columns": [
+            {
+              "expression": "reserva_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "reservas_servicios_reserva_id_reservas_id_fk": {
+          "name": "reservas_servicios_reserva_id_reservas_id_fk",
+          "tableFrom": "reservas_servicios",
+          "tableTo": "reservas",
+          "columnsFrom": ["reserva_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "reservas_servicios_servicio_id_servicios_id_fk": {
+          "name": "reservas_servicios_servicio_id_servicios_id_fk",
+          "tableFrom": "reservas_servicios",
+          "tableTo": "servicios",
+          "columnsFrom": ["servicio_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "reservas_servicios_profesional_id_profesionales_id_fk": {
+          "name": "reservas_servicios_profesional_id_profesionales_id_fk",
+          "tableFrom": "reservas_servicios",
+          "tableTo": "profesionales",
+          "columnsFrom": ["profesional_id"],
+          "columnsTo": ["id"],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "reservas_servicios_rango_valido": {
+          "name": "reservas_servicios_rango_valido",
+          "value": "\"reservas_servicios\".\"comienza_en\" < \"reservas_servicios\".\"termina_en\""
+        },
+        "reservas_servicios_ocupacion_valida": {
+          "name": "reservas_servicios_ocupacion_valida",
+          "value": "\"reservas_servicios\".\"ocupa_desde\" < \"reservas_servicios\".\"ocupa_hasta\""
+        },
+        "reservas_servicios_ocupacion_contiene_servicio": {
+          "name": "reservas_servicios_ocupacion_contiene_servicio",
+          "value": "\"reservas_servicios\".\"ocupa_desde\" <= \"reservas_servicios\".\"comienza_en\" AND \"reservas_servicios\".\"ocupa_hasta\" >= \"reservas_servicios\".\"termina_en\""
+        },
+        "reservas_servicios_precio_no_negativo": {
+          "name": "reservas_servicios_precio_no_negativo",
+          "value": "\"reservas_servicios\".\"precio_centavos\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.pagos": {
+      "name": "pagos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "reserva_id": {
+          "name": "reserva_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_pago",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "medio": {
+          "name": "medio",
+          "type": "medio_pago",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_pago",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente'"
+        },
+        "monto_centavos": {
+          "name": "monto_centavos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "referencia_externa": {
+          "name": "referencia_externa",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_pago_externo": {
+          "name": "id_pago_externo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "datos_crudos": {
+          "name": "datos_crudos",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registrado_por_usuario_id": {
+          "name": "registrado_por_usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "acreditado_en": {
+          "name": "acreditado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "pagos_id_externo_unico": {
+          "name": "pagos_id_externo_unico",
+          "columns": [
+            {
+              "expression": "id_pago_externo",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"pagos\".\"id_pago_externo\" IS NOT NULL",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "pagos_reserva": {
+          "name": "pagos_reserva",
+          "columns": [
+            {
+              "expression": "reserva_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "pagos_referencia_externa": {
+          "name": "pagos_referencia_externa",
+          "columns": [
+            {
+              "expression": "referencia_externa",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "pagos_reserva_id_reservas_id_fk": {
+          "name": "pagos_reserva_id_reservas_id_fk",
+          "tableFrom": "pagos",
+          "tableTo": "reservas",
+          "columnsFrom": ["reserva_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "pagos_registrado_por_usuario_id_usuarios_id_fk": {
+          "name": "pagos_registrado_por_usuario_id_usuarios_id_fk",
+          "tableFrom": "pagos",
+          "tableTo": "usuarios",
+          "columnsFrom": ["registrado_por_usuario_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "pagos_monto_positivo": {
+          "name": "pagos_monto_positivo",
+          "value": "\"pagos\".\"monto_centavos\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.solicitudes_cambio": {
+      "name": "solicitudes_cambio",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "reserva_id": {
+          "name": "reserva_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_solicitud",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_solicitud",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente'"
+        },
+        "motivo": {
+          "name": "motivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "propuesta": {
+          "name": "propuesta",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "respuesta": {
+          "name": "respuesta",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resuelta_por_usuario_id": {
+          "name": "resuelta_por_usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resuelta_en": {
+          "name": "resuelta_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "solicitudes_estado": {
+          "name": "solicitudes_estado",
+          "columns": [
+            {
+              "expression": "estado",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "solicitudes_reserva": {
+          "name": "solicitudes_reserva",
+          "columns": [
+            {
+              "expression": "reserva_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "solicitudes_cambio_reserva_id_reservas_id_fk": {
+          "name": "solicitudes_cambio_reserva_id_reservas_id_fk",
+          "tableFrom": "solicitudes_cambio",
+          "tableTo": "reservas",
+          "columnsFrom": ["reserva_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "solicitudes_cambio_resuelta_por_usuario_id_usuarios_id_fk": {
+          "name": "solicitudes_cambio_resuelta_por_usuario_id_usuarios_id_fk",
+          "tableFrom": "solicitudes_cambio",
+          "tableTo": "usuarios",
+          "columnsFrom": ["resuelta_por_usuario_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.notificaciones": {
+      "name": "notificaciones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "reserva_id": {
+          "name": "reserva_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_notificacion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "canal": {
+          "name": "canal",
+          "type": "canal_contacto",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "destino": {
+          "name": "destino",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_notificacion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pendiente'"
+        },
+        "plantilla": {
+          "name": "plantilla",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datos": {
+          "name": "datos",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "programada_para": {
+          "name": "programada_para",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intentos": {
+          "name": "intentos",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "enviada_en": {
+          "name": "enviada_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ultimo_error": {
+          "name": "ultimo_error",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "notificaciones_pendientes": {
+          "name": "notificaciones_pendientes",
+          "columns": [
+            {
+              "expression": "estado",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "programada_para",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "notificaciones_reserva": {
+          "name": "notificaciones_reserva",
+          "columns": [
+            {
+              "expression": "reserva_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "notificaciones_reserva_id_reservas_id_fk": {
+          "name": "notificaciones_reserva_id_reservas_id_fk",
+          "tableFrom": "notificaciones",
+          "tableTo": "reservas",
+          "columnsFrom": ["reserva_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.configuracion_negocio": {
+      "name": "configuracion_negocio",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "fila_unica": {
+          "name": "fila_unica",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "horas_minimas_cancelacion": {
+          "name": "horas_minimas_cancelacion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 24
+        },
+        "minutos_retencion": {
+          "name": "minutos_retencion",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 10
+        },
+        "dias_horizonte": {
+          "name": "dias_horizonte",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 60
+        },
+        "maximo_servicios_por_reserva": {
+          "name": "maximo_servicios_por_reserva",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 4
+        },
+        "horas_recordatorio_primero": {
+          "name": "horas_recordatorio_primero",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 24
+        },
+        "horas_recordatorio_segundo": {
+          "name": "horas_recordatorio_segundo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 2
+        },
+        "zona_horaria": {
+          "name": "zona_horaria",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'America/Argentina/Buenos_Aires'"
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "configuracion_fila_unica": {
+          "name": "configuracion_fila_unica",
+          "columns": [
+            {
+              "expression": "fila_unica",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "configuracion_fila_unica_es_true": {
+          "name": "configuracion_fila_unica_es_true",
+          "value": "\"configuracion_negocio\".\"fila_unica\" = true"
+        },
+        "configuracion_retencion_positiva": {
+          "name": "configuracion_retencion_positiva",
+          "value": "\"configuracion_negocio\".\"minutos_retencion\" > 0"
+        },
+        "configuracion_horizonte_positivo": {
+          "name": "configuracion_horizonte_positivo",
+          "value": "\"configuracion_negocio\".\"dias_horizonte\" > 0"
+        },
+        "configuracion_maximo_servicios": {
+          "name": "configuracion_maximo_servicios",
+          "value": "\"configuracion_negocio\".\"maximo_servicios_por_reserva\" > 0"
+        },
+        "configuracion_horas_no_negativas": {
+          "name": "configuracion_horas_no_negativas",
+          "value": "\n        \"configuracion_negocio\".\"horas_minimas_cancelacion\" >= 0\n        AND \"configuracion_negocio\".\"horas_recordatorio_primero\" >= 0\n        AND (\"configuracion_negocio\".\"horas_recordatorio_segundo\" IS NULL OR \"configuracion_negocio\".\"horas_recordatorio_segundo\" >= 0)\n      "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.auditoria": {
+      "name": "auditoria",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accion": {
+          "name": "accion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entidad": {
+          "name": "entidad",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entidad_id": {
+          "name": "entidad_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "datos_antes": {
+          "name": "datos_antes",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "datos_despues": {
+          "name": "datos_despues",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "direccion_ip": {
+          "name": "direccion_ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "auditoria_entidad": {
+          "name": "auditoria_entidad",
+          "columns": [
+            {
+              "expression": "entidad",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "entidad_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "auditoria_usuario_fecha": {
+          "name": "auditoria_usuario_fecha",
+          "columns": [
+            {
+              "expression": "usuario_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "creado_en",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "auditoria_usuario_id_usuarios_id_fk": {
+          "name": "auditoria_usuario_id_usuarios_id_fk",
+          "tableFrom": "auditoria",
+          "tableTo": "usuarios",
+          "columnsFrom": ["usuario_id"],
+          "columnsTo": ["id"],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.canal_contacto": {
+      "name": "canal_contacto",
+      "schema": "public",
+      "values": ["whatsapp", "email"]
+    },
+    "public.estado_notificacion": {
+      "name": "estado_notificacion",
+      "schema": "public",
+      "values": ["pendiente", "enviada", "fallida", "descartada"]
+    },
+    "public.estado_pago": {
+      "name": "estado_pago",
+      "schema": "public",
+      "values": ["pendiente", "aprobado", "rechazado", "cancelado", "reintegrado"]
+    },
+    "public.estado_reserva": {
+      "name": "estado_reserva",
+      "schema": "public",
+      "values": ["pendiente_pago", "confirmada", "cancelada", "completada", "ausente", "expirada"]
+    },
+    "public.estado_solicitud": {
+      "name": "estado_solicitud",
+      "schema": "public",
+      "values": ["pendiente", "aprobada", "rechazada"]
+    },
+    "public.medio_pago": {
+      "name": "medio_pago",
+      "schema": "public",
+      "values": ["mercado_pago", "efectivo", "qr_mercado_pago", "otro"]
+    },
+    "public.modalidad_senia": {
+      "name": "modalidad_senia",
+      "schema": "public",
+      "values": ["deshabilitada", "fija", "porcentual"]
+    },
+    "public.rol": {
+      "name": "rol",
+      "schema": "public",
+      "values": ["gerencia", "profesional"]
+    },
+    "public.tipo_excepcion": {
+      "name": "tipo_excepcion",
+      "schema": "public",
+      "values": ["bloqueo", "feriado", "disponibilidad_extra"]
+    },
+    "public.tipo_notificacion": {
+      "name": "tipo_notificacion",
+      "schema": "public",
+      "values": [
+        "confirmacion",
+        "recordatorio_primero",
+        "recordatorio_segundo",
+        "cancelacion",
+        "reprogramacion",
+        "solicitud_aprobada",
+        "solicitud_rechazada"
+      ]
+    },
+    "public.tipo_pago": {
+      "name": "tipo_pago",
+      "schema": "public",
+      "values": ["senia", "saldo", "reintegro"]
+    },
+    "public.tipo_solicitud": {
+      "name": "tipo_solicitud",
+      "schema": "public",
+      "values": ["cancelacion", "reprogramacion"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

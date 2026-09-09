@@ -38,8 +38,11 @@ export const reservas = pgTable(
     // ── Cliente ────────────────────────────────────────────────────────────
     // No se crea cuenta ni se guarda historial comercial: sólo lo necesario
     // para avisarle del turno.
-    clienteNombre: text('cliente_nombre').notNull(),
-    canalContacto: canalContacto('canal_contacto').notNull(),
+    // Quedan vacíos mientras la reserva sólo retiene el horario: el flujo del
+    // plan reserva los bloques al elegir la opción y recién después pide los
+    // datos. Un CHECK exige que estén completos en cualquier otro estado.
+    clienteNombre: text('cliente_nombre'),
+    canalContacto: canalContacto('canal_contacto'),
     contactoWhatsapp: text('contacto_whatsapp'),
     contactoEmail: text('contacto_email'),
 
@@ -62,7 +65,7 @@ export const reservas = pgTable(
      */
     retencionExpiraEn: timestamp('retencion_expira_en', { withTimezone: true }),
 
-    aceptoCondicionesEn: timestamp('acepto_condiciones_en', { withTimezone: true }).notNull(),
+    aceptoCondicionesEn: timestamp('acepto_condiciones_en', { withTimezone: true }),
     notas: text('notas'),
     /** Queda cargado cuando la reserva la creó alguien del panel, no el cliente. */
     creadaPorUsuarioId: uuid('creada_por_usuario_id').references(() => usuarios.id, {
@@ -83,8 +86,23 @@ export const reservas = pgTable(
     check(
       'reservas_contacto_coherente',
       sql`
-        (${tabla.canalContacto} = 'whatsapp' AND ${tabla.contactoWhatsapp} IS NOT NULL)
+        ${tabla.canalContacto} IS NULL
+        OR (${tabla.canalContacto} = 'whatsapp' AND ${tabla.contactoWhatsapp} IS NOT NULL)
         OR (${tabla.canalContacto} = 'email' AND ${tabla.contactoEmail} IS NOT NULL)
+      `,
+    ),
+    // Los datos del cliente se exigen recién cuando la reserva llegó a existir
+    // de verdad. Una retención que nadie completó expira sin haberlos tenido
+    // nunca, y una cancelada durante la retención, tampoco.
+    check(
+      'reservas_datos_completos_si_esta_activa',
+      sql`
+        ${tabla.estado} NOT IN ('confirmada', 'completada', 'ausente')
+        OR (
+          ${tabla.clienteNombre} IS NOT NULL
+          AND ${tabla.canalContacto} IS NOT NULL
+          AND ${tabla.aceptoCondicionesEn} IS NOT NULL
+        )
       `,
     ),
     uniqueIndex('reservas_hash_token_unico').on(tabla.hashTokenGestion),
