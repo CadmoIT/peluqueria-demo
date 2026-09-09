@@ -57,13 +57,27 @@ export class HorarioNoDisponibleError extends Error {
 /** Código de PostgreSQL para la violación de una restricción de exclusión. */
 const VIOLACION_EXCLUSION = '23P01';
 
-function esViolacionDeExclusion(error: unknown): boolean {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    (error as { code?: unknown }).code === VIOLACION_EXCLUSION
-  );
+/**
+ * Reconoce la violación de la restricción de exclusión.
+ *
+ * Recorre la cadena de causas porque Drizzle envuelve el error del driver: el
+ * código de PostgreSQL no queda en el error de arriba sino en su `cause`. Mirar
+ * sólo el primer nivel hacía que el choque de horarios saliera como error 500 en
+ * vez de avisarle a la persona que el turno ya estaba tomado.
+ */
+export function esViolacionDeExclusion(error: unknown): boolean {
+  let actual: unknown = error;
+
+  // Tope de profundidad por si alguna vez llega una cadena circular.
+  for (let saltos = 0; saltos < 5 && typeof actual === 'object' && actual !== null; saltos += 1) {
+    if ((actual as { code?: unknown }).code === VIOLACION_EXCLUSION) {
+      return true;
+    }
+
+    actual = (actual as { cause?: unknown }).cause;
+  }
+
+  return false;
 }
 
 /**
