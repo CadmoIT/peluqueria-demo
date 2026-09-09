@@ -32,8 +32,8 @@ const fuenteTexto = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Manly — Peluquería para hombres en Buenos Aires',
-    template: '%s | Manly',
+    default: 'Manly Barber Studio — Peluquería para hombres en Buenos Aires',
+    template: '%s | Manly Barber Studio',
   },
   description:
     'Peluquería para hombres en Buenos Aires. Reservá tu turno online en Las Cañitas, Colegiales o Belgrano.',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_AR',
-    siteName: 'Manly',
+    siteName: 'Manly Barber Studio',
   },
 };
 

@@ -59,3 +59,8 @@ desktop.ini
 # ── Vercel / Sentry ───────────────────────────────────────────
 .vercel/
 .sentryclirc
+
+# ── Material de origen ────────────────────────────────────────
+# Carpeta donde se dejan las fotos originales antes de importarlas.
+# Las versiones optimizadas viven en apps/frontend/public/imagenes.
+/Imagenes/

@@ -14,8 +14,8 @@ export function DatosEstructurados({ sucursales }: Propiedades) {
   const datos = {
     '@context': 'https://schema.org',
     '@type': 'HairSalon',
-    name: 'Manly',
-    description: 'Peluquería para hombres en Buenos Aires.',
+    name: 'Manly Barber Studio',
+    description: 'Estudio de barbería para hombres en Buenos Aires, con línea propia de productos.',
     url: BASE,
     areaServed: { '@type': 'City', name: 'Buenos Aires' },
     potentialAction: {
@@ -25,7 +25,7 @@ export function DatosEstructurados({ sucursales }: Propiedades) {
     },
     location: sucursales.map((sucursal) => ({
       '@type': 'HairSalon',
-      name: `Manly ${sucursal.nombre}`,
+      name: `Manly Barber Studio ${sucursal.nombre}`,
       address: {
         '@type': 'PostalAddress',
         streetAddress: sucursal.direccion,

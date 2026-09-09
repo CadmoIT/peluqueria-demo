@@ -61,6 +61,20 @@ Mal:   "las-canitas-interior"
 Mal:   "Foto"
 ```
 
+## Qué hay cargado
+
+| Carpeta          | Qué hay                                                         |
+| ---------------- | --------------------------------------------------------------- |
+| `marca/`         | Los tres productos de la línea propia y el conjunto en diagonal |
+| `inicio/`        | Portada editorial y un detalle del trabajo con la máquina       |
+| `servicios/`     | Un perfil con el corte terminado                                |
+| `sucursales/`    | **Nada todavía**: las tres usan el respaldo                     |
+| `profesionales/` | **Nada todavía**                                                |
+
+Todo el material entregado es **vertical** (9:16, 3:4 y 4:5), entre 640 y 1320 px
+de ancho. Por eso la portada es una composición partida y no una foto a sangre:
+estirar un retrato a formato apaisado lo recorta justo donde está el sujeto.
+
 ## Entradas pendientes
 
 Las entradas del catálogo marcadas con `pendiente` apuntan a

@@ -36,15 +36,58 @@ export const IMAGENES = {
   marca: {
     logo: {
       ruta: '/imagenes/marca/logo.svg',
-      alt: 'Manly',
+      alt: 'Manly Barber Studio',
       ancho: 240,
       alto: 80,
+    },
+    pomadaMate: {
+      ruta: '/imagenes/marca/pomada-mate.webp',
+      alt: 'Pomada de acabado mate de Manly, en su lata negra con el monograma',
+      ancho: 640,
+      alto: 853,
+    },
+    pomadaTransparente: {
+      ruta: '/imagenes/marca/pomada-transparente.webp',
+      alt: 'Pomada transparente de Manly apoyada sobre un bloque de hormigón',
+      ancho: 640,
+      alto: 783,
+    },
+    polvoTexturizador: {
+      ruta: '/imagenes/marca/polvo-texturizador.webp',
+      alt: 'Frasco del polvo texturizador de Manly sobre una superficie de vidrio',
+      ancho: 640,
+      alto: 800,
+    },
+    lineaProductos: {
+      ruta: '/imagenes/marca/linea-productos.webp',
+      alt: 'Varios frascos de la línea de productos de Manly ordenados en diagonal',
+      ancho: 790,
+      alto: 1402,
     },
   },
 
   inicio: {
-    portada: pendiente('Interior de una sucursal de Manly', 2400, 1350),
-    experiencia: pendiente('Detalle del trabajo de un profesional de Manly', 1600, 1200),
+    portada: {
+      ruta: '/imagenes/inicio/portada-estudio.webp',
+      alt: 'Retrato en blanco y negro de un cliente peinado con producto Manly',
+      ancho: 1320,
+      alto: 1760,
+    },
+    experiencia: {
+      ruta: '/imagenes/inicio/detalle-corte.webp',
+      alt: 'Detalle de un profesional de Manly perfilando un corte con la máquina',
+      ancho: 814,
+      alto: 1446,
+    },
+  },
+
+  servicios: {
+    corte: {
+      ruta: '/imagenes/servicios/corte-perfil.webp',
+      alt: 'Perfil de un cliente con el corte terminado en Manly',
+      ancho: 986,
+      alto: 1751,
+    },
   },
 
   sucursales: {

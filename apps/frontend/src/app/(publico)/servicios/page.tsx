@@ -9,7 +9,9 @@ import Link from 'next/link';
 import { Contenedor, EncabezadoSeccion, Seccion } from '@manly/interfaz';
 import type { ServicioPublico, SucursalPublica } from '@manly/contratos';
 
+import { Imagen } from '@/componentes/comunes/imagen';
 import { consultarApi } from '@/servicios/api';
+import { IMAGENES } from '@/utilidades/imagenes';
 import { RUTAS } from '@/utilidades/rutas';
 import { formatearDuracion, formatearPrecio } from '@/utilidades/formato';
 
@@ -55,12 +57,22 @@ export default async function PaginaServicios() {
   return (
     <Seccion>
       <Contenedor>
-        <EncabezadoSeccion
-          etiqueta="Qué hacemos"
-          titulo="Servicios"
-          bajada="Precio único, sin diferencia por medio de pago."
-          nivel={1}
-        />
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-16">
+          <EncabezadoSeccion
+            etiqueta="Qué hacemos"
+            titulo="Servicios"
+            bajada="Precio único, sin diferencia por medio de pago."
+            nivel={1}
+          />
+
+          <div className="w-full max-w-xs justify-self-center lg:w-72">
+            <Imagen
+              imagen={IMAGENES.servicios.corte}
+              sizes="(min-width: 1024px) 18rem, 100vw"
+              className="rounded-tarjeta"
+            />
+          </div>
+        </div>
 
         {servicios.length === 0 ? (
           <p className="text-menor text-grafito mt-bloque">

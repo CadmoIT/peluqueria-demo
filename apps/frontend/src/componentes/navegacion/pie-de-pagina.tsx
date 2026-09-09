@@ -1,21 +1,27 @@
 // Pie del sitio público: navegación secundaria, sucursales y datos de contacto.
+//
+// Las sucursales salen de la API, no de una lista escrita a mano: si no, abrir
+// o cerrar un local obligaría a tocar el código, y el pie terminaría diciendo
+// algo distinto al resto del sitio.
 import Link from 'next/link';
 
 import { Contenedor } from '@manly/interfaz';
+import type { SucursalPublica } from '@manly/contratos';
 
 import { Logotipo } from '@/componentes/marca/logotipo';
+import { consultarApi } from '@/servicios/api';
 import { NAVEGACION_PRINCIPAL, RUTAS } from '@/utilidades/rutas';
-import { SUCURSALES } from '@/utilidades/sucursales';
 
-export function PieDePagina() {
+export async function PieDePagina() {
   const anio = new Date().getFullYear();
+  const sucursales = await consultarApi<SucursalPublica[]>('/sucursales').catch(() => []);
 
   return (
     <footer className="bg-tinta text-lino">
       <Contenedor className="py-bloque">
         <div className="grid gap-10 py-8 sm:grid-cols-2 lg:grid-cols-4">
           <div className="flex flex-col gap-4">
-            <Logotipo alto={26} />
+            <Logotipo alto={30} />
             <p className="text-menor text-humo max-w-64">
               Peluquería para hombres en Buenos Aires.
             </p>
@@ -40,7 +46,7 @@ export function PieDePagina() {
           <div>
             <h2 className="versales text-nota text-humo mb-4">Sucursales</h2>
             <ul className="flex flex-col gap-2">
-              {SUCURSALES.map((sucursal) => (
+              {sucursales.map((sucursal) => (
                 <li key={sucursal.id} className="text-menor">
                   <span className="block">{sucursal.nombre}</span>
                   <span className="text-humo">{sucursal.barrio}</span>
@@ -61,7 +67,7 @@ export function PieDePagina() {
         </div>
 
         <div className="border-carbon flex flex-col gap-2 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-nota text-humo">© {anio} Manly</p>
+          <p className="text-nota text-humo">© {anio} Manly Barber Studio</p>
           <Link
             href={RUTAS.panel}
             className="text-nota text-humo hover:text-lino transition-colors"
