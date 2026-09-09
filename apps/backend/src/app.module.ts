@@ -6,7 +6,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
 import { BaseDatosModulo } from './comun/base-datos/base-datos.modulo';
 import { validarEntorno } from './configuracion/entorno';
+import { CatalogoModulo } from './modulos/catalogo/catalogo.modulo';
 import { DisponibilidadModulo } from './modulos/disponibilidad/disponibilidad.modulo';
+import { ReservasModulo } from './modulos/reservas/reservas.modulo';
 import { SaludModulo } from './modulos/salud/salud.modulo';
 
 @Module({
@@ -24,6 +26,8 @@ import { SaludModulo } from './modulos/salud/salud.modulo';
     BaseDatosModulo,
     SaludModulo,
     DisponibilidadModulo,
+    CatalogoModulo,
+    ReservasModulo,
   ],
 })
 export class AppModule {}
