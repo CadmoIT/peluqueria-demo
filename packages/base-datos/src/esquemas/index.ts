@@ -1,4 +1,14 @@
 // Punto de entrada de los esquemas Drizzle.
-// El modelo completo (sucursales, servicios, reservas, pagos, etc.) se define
-// en la Fase 3 del plan; por ahora sólo se expone el barril.
-export {};
+// Reexporta todas las tablas y enumerados del modelo.
+export * from './comunes';
+export * from './sucursales';
+export * from './servicios';
+export * from './usuarios';
+export * from './profesionales';
+export * from './horarios';
+export * from './reservas';
+export * from './pagos';
+export * from './solicitudes';
+export * from './notificaciones';
+export * from './configuracion';
+export * from './auditoria';
