@@ -4,7 +4,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 
+import { BaseDatosModulo } from './comun/base-datos/base-datos.modulo';
 import { validarEntorno } from './configuracion/entorno';
+import { DisponibilidadModulo } from './modulos/disponibilidad/disponibilidad.modulo';
 import { SaludModulo } from './modulos/salud/salud.modulo';
 
 @Module({
@@ -19,7 +21,9 @@ import { SaludModulo } from './modulos/salud/salud.modulo';
         limit: 120,
       },
     ]),
+    BaseDatosModulo,
     SaludModulo,
+    DisponibilidadModulo,
   ],
 })
 export class AppModule {}

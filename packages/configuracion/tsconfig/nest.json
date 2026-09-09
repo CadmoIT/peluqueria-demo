@@ -2,12 +2,17 @@
 // incremental queda en false a propósito: nest build borra dist en cada corrida
 // (deleteOutDir) y un .tsbuildinfo sobreviviente hace que sólo se reemitan los
 // archivos modificados, dejando un dist incompleto que arranca y falla.
+//
+// Node16 y no Node a secas: la API no declara "type": "module", asi que sus
+// archivos siguen siendo CommonJS y los imports relativos van sin extension,
+// pero ademas se respetan los mapas "exports" de las dependencias, que la
+// resolucion clasica ignora.
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
+    "module": "Node16",
+    "moduleResolution": "Node16",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "outDir": "dist",
