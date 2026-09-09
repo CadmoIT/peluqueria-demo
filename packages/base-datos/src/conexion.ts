@@ -2,7 +2,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
-import * as esquemas from './esquemas/index.js';
+import * as esquemas from './esquemas/index';
 
 export interface OpcionesConexion {
   /** Cadena de conexión. La API usa la agrupada; el worker, la directa. */

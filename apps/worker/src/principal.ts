@@ -2,9 +2,9 @@
 // recurrentes, y se apaga de forma ordenada ante SIGINT/SIGTERM.
 import PgBoss from 'pg-boss';
 
-import { leerEntorno } from './configuracion/entorno.js';
-import { registrarTrabajosRecurrentes } from './planificador/index.js';
-import { registrarProcesadores } from './procesadores/index.js';
+import { leerEntorno } from './configuracion/entorno';
+import { registrarTrabajosRecurrentes } from './planificador/index';
+import { registrarProcesadores } from './procesadores/index';
 
 async function arrancar(): Promise<void> {
   const entorno = leerEntorno();

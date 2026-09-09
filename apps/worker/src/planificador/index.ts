@@ -2,7 +2,7 @@
 // Los horarios se expresan en cron con la zona horaria del negocio.
 import type PgBoss from 'pg-boss';
 
-import { COLAS } from '../trabajos/index.js';
+import { COLAS } from '../trabajos/index';
 
 export async function registrarTrabajosRecurrentes(
   cola: PgBoss,

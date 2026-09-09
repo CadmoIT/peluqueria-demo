@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "description": "Esquemas Drizzle, migraciones, repositorios y semillas de PostgreSQL",
-  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -13,28 +12,33 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "migraciones"
   ],
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build tsconfig.build.json",
     "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
     "lint": "eslint src",
     "generar": "drizzle-kit generate",
     "migrar": "tsx src/migrar.ts",
     "semillas": "tsx src/semillas/index.ts",
     "estudio": "drizzle-kit studio",
-    "limpiar": "rm -rf dist *.tsbuildinfo"
+    "limpiar": "rm -rf dist *.tsbuildinfo",
+    "test": "vitest run"
   },
   "dependencies": {
     "drizzle-orm": "^0.38.2",
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "@manly/configuracion": "workspace:*",
+    "@types/node": "^22.20.1",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.30.1",
     "eslint": "^9.17.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.9"
   }
 }

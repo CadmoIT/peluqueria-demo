@@ -2,7 +2,7 @@
 // La lógica concreta se implementa en las fases 4 y 7 del plan.
 import type PgBoss from 'pg-boss';
 
-import { COLAS } from '../trabajos/index.js';
+import { COLAS } from '../trabajos/index';
 
 export async function registrarProcesadores(cola: PgBoss): Promise<void> {
   await cola.work(COLAS.expirarRetenciones, async () => {

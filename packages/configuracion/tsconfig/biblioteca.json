@@ -1,10 +1,25 @@
+// Preset de los paquetes compartidos que corren en Node.
+//
+// Compilan a CommonJS a propósito. El backend es NestJS, que es CommonJS y no
+// puede require() un paquete ESM; pg-boss también es CommonJS y drizzle-orm es
+// dual. Unificar en CommonJS evita la interoperabilidad rota y el requisito de
+// escribir extensiones .js en los imports relativos, que además rompe la carga
+// del esquema que hace drizzle-kit.
+//
+// Node16 y no Node a secas: como el paquete no declara "type": "module", sus
+// archivos son CommonJS y los imports relativos siguen yendo sin extension,
+// pero ademas se respetan los mapas "exports" de las dependencias, que la
+// resolucion Node clasica ignora.
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
+    "module": "Node16",
+    "moduleResolution": "Node16",
     "composite": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "isolatedModules": false
   },
   "include": ["src/**/*"]
 }

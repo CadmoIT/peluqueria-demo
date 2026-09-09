@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "description": "Procesos en segundo plano: recordatorios, expiraciones y bandeja de salida",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/principal.ts",
     "build": "tsc --build",
