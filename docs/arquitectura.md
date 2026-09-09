@@ -79,6 +79,60 @@ extensión está en `packages/interfaz/src/utilidades.ts` y hay pruebas que la
 protegen. **Cada token nuevo de `--text-*` o `--color-*` tiene que sumarse a esas
 dos listas**, o el token se va a perder sin ningún error visible.
 
+## Motor de disponibilidad
+
+Vive en `apps/backend/src/modulos/disponibilidad`. La carpeta `dominio/` es
+lógica pura, sin base de datos ni Nest, y es donde están las reglas:
+
+| Archivo          | Qué resuelve                                     |
+| ---------------- | ------------------------------------------------ |
+| `intervalos.ts`  | Álgebra de intervalos: unir, restar, intersectar |
+| `calendario.ts`  | Horario local del negocio → instantes reales     |
+| `itinerarios.ts` | Secuencias consecutivas con profesional asignado |
+
+El servicio sólo trae los datos, llama al dominio y traduce al contrato.
+
+### Dos ventanas por bloque
+
+Cada bloque tiene la ventana que **ve el cliente** (la duración del servicio) y
+la que **ocupa la agenda** (con la preparación y la limpieza). Se comparan
+siempre las ocupadas: dos turnos pueden verse pegados para el cliente y ser
+imposibles para un mismo profesional. Es la misma regla que hace cumplir el
+`EXCLUDE` de la base, y las dos convenciones tienen que coincidir, incluido el
+rango semiabierto `[)`.
+
+### Orden de los servicios
+
+El motor prueba las permutaciones del orden pedido, como exige el plan: si corte
+y barba no entran en ese orden pero sí al revés, ofrece el horario. Devuelve una
+sola opción por instante de comienzo — al cliente le sirve elegir un horario, no
+ver todas las asignaciones internas posibles de ese mismo horario.
+
+### Horario local y husos
+
+La conversión de `"los jueves de 10 a 20"` a instantes se hace con Luxon, sobre
+la fecha local completa. **Sumarle minutos a la medianoche no sirve**: sumar
+duración cruza los saltos de horario de verano y el día del cambio el resultado
+queda corrido una hora. Hay una prueba con un huso que sí aplica horario de
+verano que fija ese comportamiento; Argentina hoy no lo usa, pero el motor no
+debe asumirlo.
+
+### Retención
+
+Elegir una opción escribe la reserva y todos sus bloques en una transacción, con
+`retencion_expira_en` a diez minutos. Si dos personas eligen el mismo horario a
+la vez, ambas pasan la verificación previa en memoria y las dos intentan
+escribir: la restricción de la base rechaza a la segunda, y el repositorio
+traduce ese error a `HorarioNoDisponibleError`.
+
+Los datos del cliente se piden **después** de retener, así que en `pendiente_pago`
+pueden estar vacíos. Un CHECK los exige en `confirmada`, `completada` y `ausente`;
+una retención abandonada expira sin haberlos tenido nunca.
+
+El worker expira las retenciones vencidas cada minuto. Aun así, el motor ya
+ignora las retenciones vencidas al calcular, de modo que un retraso del worker
+nunca muestra como ocupado un horario que está libre.
+
 ## Base de datos
 
 PostgreSQL administrado en Neon, accedido con Drizzle ORM.

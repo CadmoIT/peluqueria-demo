@@ -3,10 +3,11 @@
 import type PgBoss from 'pg-boss';
 
 import { COLAS } from '../trabajos/index';
+import { expirarRetenciones } from './expirar-retenciones';
 
 export async function registrarProcesadores(cola: PgBoss): Promise<void> {
   await cola.work(COLAS.expirarRetenciones, async () => {
-    // Pendiente: Fase 4 — liberar bloques de reservas con retención vencida.
+    await expirarRetenciones();
   });
 
   await cola.work(COLAS.despacharBandejaSalida, async () => {

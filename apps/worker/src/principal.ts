@@ -2,6 +2,7 @@
 // recurrentes, y se apaga de forma ordenada ante SIGINT/SIGTERM.
 import PgBoss from 'pg-boss';
 
+import { cerrarConexion } from './configuracion/base-datos';
 import { leerEntorno } from './configuracion/entorno';
 import { registrarTrabajosRecurrentes } from './planificador/index';
 import { registrarProcesadores } from './procesadores/index';
@@ -27,6 +28,7 @@ async function arrancar(): Promise<void> {
   const detener = async (senial: string): Promise<void> => {
     console.warn(`Recibida ${senial}, deteniendo el worker...`);
     await cola.stop({ graceful: true });
+    await cerrarConexion();
     process.exit(0);
   };
 
