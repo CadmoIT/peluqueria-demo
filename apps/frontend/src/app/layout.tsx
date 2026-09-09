@@ -2,6 +2,8 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 
+import { ProveedorConsultas } from '@/contextos/consultas';
+
 import '@/estilos/global.css';
 
 // Las fuentes se exponen como variables CSS y las consumen los tokens de
@@ -52,7 +54,9 @@ export const viewport: Viewport = {
 export default function LayoutRaiz({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-AR" className={`${fuenteTitulo.variable} ${fuenteTexto.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ProveedorConsultas>{children}</ProveedorConsultas>
+      </body>
     </html>
   );
 }
