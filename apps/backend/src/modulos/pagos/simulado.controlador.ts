@@ -12,6 +12,7 @@ import { ApiExcludeController } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 
+import { SinSesion } from '../../comun/decoradores/sesion.decorador';
 import type { Entorno } from '../../configuracion/entorno';
 import { firmarNotificacion } from './dominio/firma-webhook';
 import { PagosServicio } from './pagos.servicio';
@@ -27,6 +28,8 @@ function escapar(texto: string): string {
     .replace(/"/g, '&quot;');
 }
 
+// Pantalla de checkout: la usa el cliente, sin sesión.
+@SinSesion()
 @ApiExcludeController()
 @Controller('pagos/simulado')
 export class SimuladoControlador {

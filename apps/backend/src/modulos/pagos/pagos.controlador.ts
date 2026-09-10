@@ -24,6 +24,7 @@ import {
 
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import { PagosServicio } from './pagos.servicio';
+import { SinSesion } from '../../comun/decoradores/sesion.decorador';
 
 /** Forma del cuerpo que manda Mercado Pago. Los nombres los impone el proveedor. */
 interface CuerpoNotificacion {
@@ -32,6 +33,8 @@ interface CuerpoNotificacion {
   data?: { id?: string | number };
 }
 
+// Todo el controlador es público: lo usa el sitio, sin sesión.
+@SinSesion()
 @ApiTags('pagos')
 @Controller()
 export class PagosControlador {

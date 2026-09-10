@@ -12,7 +12,10 @@ import {
 
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import { DisponibilidadServicio } from './disponibilidad.servicio';
+import { SinSesion } from '../../comun/decoradores/sesion.decorador';
 
+// Todo el controlador es público: lo usa el sitio, sin sesión.
+@SinSesion()
 @ApiTags('disponibilidad')
 @Controller('disponibilidad')
 export class DisponibilidadControlador {

@@ -4,6 +4,7 @@ import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import type { ProfesionalPublico, ServicioPublico, SucursalPublica } from '@manly/contratos';
 
 import { CatalogoServicio } from './catalogo.servicio';
+import { SinSesion } from '../../comun/decoradores/sesion.decorador';
 
 /** Valida que el parámetro de ruta tenga forma de identificador. */
 const FORMA_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -16,6 +17,8 @@ function exigirId(valor: string, queCosa: string): string {
   return valor;
 }
 
+// Todo el controlador es público: lo usa el sitio, sin sesión.
+@SinSesion()
 @ApiTags('catalogo')
 @Controller()
 export class CatalogoControlador {

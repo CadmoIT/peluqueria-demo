@@ -6,6 +6,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 
 import { BaseDatosModulo } from './comun/base-datos/base-datos.modulo';
 import { validarEntorno } from './configuracion/entorno';
+import { AutenticacionModulo } from './modulos/autenticacion/autenticacion.modulo';
 import { CatalogoModulo } from './modulos/catalogo/catalogo.modulo';
 import { DisponibilidadModulo } from './modulos/disponibilidad/disponibilidad.modulo';
 import { PagosModulo } from './modulos/pagos/pagos.modulo';
@@ -25,6 +26,7 @@ import { SaludModulo } from './modulos/salud/salud.modulo';
       },
     ]),
     BaseDatosModulo,
+    AutenticacionModulo,
     SaludModulo,
     DisponibilidadModulo,
     CatalogoModulo,

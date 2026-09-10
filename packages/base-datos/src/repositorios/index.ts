@@ -6,3 +6,4 @@ export * from './notificaciones';
 export * from './pagos';
 export * from './retenciones';
 export * from './tokens';
+export * from './usuarios';

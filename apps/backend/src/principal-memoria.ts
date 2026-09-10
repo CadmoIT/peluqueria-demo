@@ -25,13 +25,18 @@ import {
   type BaseDatos,
 } from '@manly/base-datos';
 import { drizzle } from 'drizzle-orm/pglite';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { BASE_DATOS } from './comun/base-datos/base-datos.modulo';
 import { ExcepcionHttpFiltro } from './comun/filtros/excepcion-http.filtro';
+import { AutenticacionServicio } from './modulos/autenticacion/autenticacion.servicio';
 
 const PUERTO = Number(process.env.API_PUERTO ?? 3001);
 const PREFIJO = process.env.API_PREFIJO ?? 'api/v1';
+
+/** Cuenta de gerencia del modo memoria. Nunca sale de este archivo. */
+const CUENTA_DEMO = { email: 'gerencia@manly.local', contrasenia: 'panel-de-desarrollo' };
 
 async function crearBaseEnMemoria(): Promise<BaseDatos> {
   const { PGlite } = await import('@electric-sql/pglite');
@@ -72,6 +77,7 @@ async function arrancar(): Promise<void> {
   const aplicacion = modulo.createNestApplication();
 
   aplicacion.use(helmet());
+  aplicacion.use(cookieParser());
   aplicacion.enableCors({ origin: true, credentials: true });
   aplicacion.setGlobalPrefix(PREFIJO);
   aplicacion.useGlobalFilters(new ExcepcionHttpFiltro());
@@ -85,10 +91,26 @@ async function arrancar(): Promise<void> {
     SwaggerModule.createDocument(aplicacion, documento),
   );
 
+  // Una cuenta de gerencia lista para entrar al panel. Existe **sólo acá**: la
+  // base en memoria no llega a ningún entorno real. En producción el primer
+  // acceso se crea con el comando `invitar`.
+  const autenticacion = modulo.get(AutenticacionServicio);
+  const invitacion = await autenticacion.invitar({
+    email: CUENTA_DEMO.email,
+    nombre: 'Gerencia',
+    rol: 'gerencia',
+  });
+
+  await autenticacion.aceptarInvitacion(
+    invitacion.url.split('/').pop() ?? '',
+    CUENTA_DEMO.contrasenia,
+  );
+
   await aplicacion.listen(PUERTO, '0.0.0.0');
 
   console.warn(`API en memoria escuchando en http://localhost:${String(PUERTO)}/${PREFIJO}`);
   console.warn('Los datos se pierden al cortar el proceso.');
+  console.warn(`Panel: ${CUENTA_DEMO.email} / ${CUENTA_DEMO.contrasenia}`);
 }
 
 arrancar().catch((error: unknown) => {

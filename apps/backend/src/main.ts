@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
@@ -18,6 +19,8 @@ async function arrancar(): Promise<void> {
   const prefijo = configuracion.get('API_PREFIJO', { infer: true });
 
   aplicacion.use(helmet());
+  // La sesión del panel viaja en una cookie httpOnly.
+  aplicacion.use(cookieParser());
   aplicacion.enableCors({
     origin: origenesPermitidos(configuracion.get('ORIGENES_PERMITIDOS', { infer: true })),
     credentials: true,

@@ -20,7 +20,10 @@ import {
 
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import { ReservasServicio } from './reservas.servicio';
+import { SinSesion } from '../../comun/decoradores/sesion.decorador';
 
+// Todo el controlador es público: lo usa el sitio, sin sesión.
+@SinSesion()
 @ApiTags('reservas')
 @Controller()
 export class ReservasControlador {
