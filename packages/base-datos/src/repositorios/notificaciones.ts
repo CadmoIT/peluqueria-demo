@@ -11,7 +11,7 @@
 // Los datos del mensaje se copian al encolar. Si después cambia el precio de un
 // servicio o el nombre de un profesional, el recordatorio sigue diciendo lo que
 // se le prometió al cliente.
-import { and, asc, eq, inArray, lte, ne, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, lte, ne, sql } from 'drizzle-orm';
 
 import type { BaseDatos } from '../conexion';
 import { notificaciones, reservas } from '../esquemas/index';
@@ -334,4 +334,48 @@ export async function yaSeIntentoPorCanal(
     .limit(1);
 
   return existente !== undefined;
+}
+
+export interface FallaDeEntrega {
+  id: string;
+  reservaId: string | null;
+  clienteNombre: string | null;
+  tipo: string;
+  canal: string;
+  destino: string | null;
+  intentos: number;
+  ultimoError: string | null;
+  comienzaEn: Date | null;
+  actualizadoEn: Date;
+}
+
+/**
+ * Avisos que se dieron por perdidos, con el turno al que pertenecen.
+ *
+ * Es lo que mira el panel: sin el nombre del cliente y la fecha del turno, una
+ * lista de notificaciones fallidas no le dice a nadie a quién hay que llamar.
+ * Se acota por fecha porque lo que importa es lo reciente; una falla de hace
+ * dos meses ya no se arregla llamando.
+ */
+export async function fallasDeEntrega(bd: BaseDatos, desdeDias = 7): Promise<FallaDeEntrega[]> {
+  const desde = new Date(Date.now() - desdeDias * 86_400_000);
+
+  return bd
+    .select({
+      id: notificaciones.id,
+      reservaId: notificaciones.reservaId,
+      clienteNombre: reservas.clienteNombre,
+      tipo: notificaciones.tipo,
+      canal: notificaciones.canal,
+      destino: notificaciones.destino,
+      intentos: notificaciones.intentos,
+      ultimoError: notificaciones.ultimoError,
+      comienzaEn: reservas.comienzaEn,
+      actualizadoEn: notificaciones.actualizadoEn,
+    })
+    .from(notificaciones)
+    .leftJoin(reservas, eq(reservas.id, notificaciones.reservaId))
+    .where(and(eq(notificaciones.estado, 'fallida'), gte(notificaciones.actualizadoEn, desde)))
+    .orderBy(desc(notificaciones.actualizadoEn))
+    .limit(200);
 }

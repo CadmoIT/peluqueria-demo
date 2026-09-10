@@ -94,13 +94,17 @@ export const reservas = pgTable(
     // Los datos del cliente se exigen recién cuando la reserva llegó a existir
     // de verdad. Una retención que nadie completó expira sin haberlos tenido
     // nunca, y una cancelada durante la retención, tampoco.
+    //
+    // El canal de contacto **no** entra acá. La web siempre lo pide, pero un
+    // turno cargado en el mostrador puede dejar sólo un nombre, y obligar a
+    // inventar un número falso sería peor que aceptar que no hay por dónde
+    // avisar. Que la web lo exija lo garantiza su contrato.
     check(
       'reservas_datos_completos_si_esta_activa',
       sql`
         ${tabla.estado} NOT IN ('confirmada', 'completada', 'ausente')
         OR (
           ${tabla.clienteNombre} IS NOT NULL
-          AND ${tabla.canalContacto} IS NOT NULL
           AND ${tabla.aceptoCondicionesEn} IS NOT NULL
         )
       `,

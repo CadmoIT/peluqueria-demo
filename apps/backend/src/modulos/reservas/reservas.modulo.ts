@@ -9,5 +9,7 @@ import { ReservasServicio } from './reservas.servicio';
   imports: [NotificacionesModulo],
   controllers: [ReservasControlador],
   providers: [ReservasServicio],
+  // Lo usa el panel para cargar turnos a mano y para resolver solicitudes.
+  exports: [ReservasServicio],
 })
 export class ReservasModulo {}

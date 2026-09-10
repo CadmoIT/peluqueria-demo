@@ -11,12 +11,15 @@ import { ConfigService } from '@nestjs/config';
 import {
   descartarPendientesDeReserva,
   encolarNotificacion,
+  fallasDeEntrega,
   liberarRetenidasDeReserva,
   type BaseDatos,
   type CanalNotificacion,
   type ReservaConDetalle,
   type TipoNotificacion,
 } from '@manly/base-datos';
+
+import type { FallaOperativa } from '@manly/contratos';
 
 import { BASE_DATOS } from '../../comun/base-datos/base-datos.modulo';
 import type { Entorno } from '../../configuracion/entorno';
@@ -135,6 +138,30 @@ export class NotificacionesServicio {
 
       await this.encolar(reserva, tipo, destino, datos, new Date(cuando));
     }
+  }
+
+  /**
+   * Avisos que se dieron por perdidos.
+   *
+   * Los lee el panel. Que una notificación quede fallida no rompe nada del
+   * sistema, y ese es justamente el riesgo: sin una pantalla que las muestre,
+   * un cliente que no se enteró de un cambio pasa inadvertido.
+   */
+  async fallidas(desdeDias = 7): Promise<FallaOperativa[]> {
+    const fallas = await fallasDeEntrega(this.bd, desdeDias);
+
+    return fallas.map((falla) => ({
+      id: falla.id,
+      reservaId: falla.reservaId,
+      clienteNombre: falla.clienteNombre,
+      tipo: falla.tipo,
+      canal: falla.canal,
+      destino: falla.destino,
+      intentos: falla.intentos,
+      ultimoError: falla.ultimoError,
+      comienzaEn: falla.comienzaEn?.toISOString() ?? null,
+      actualizadoEn: falla.actualizadoEn.toISOString(),
+    }));
   }
 
   /** Libera los avisos que estaban esperando que se acreditara el pago. */

@@ -3,7 +3,7 @@
 // Todo se hace sin cuenta: el token del enlace es la única credencial, y se
 // busca por su hash. La política de anticipación decide si un cambio se aplica
 // solo o si tiene que pasar por gerencia.
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, type SQL } from 'drizzle-orm';
 
 import type { BaseDatos } from '../conexion';
 import {
@@ -20,7 +20,7 @@ import {
   HorarioNoDisponibleError,
   type BloqueARetener,
 } from './retenciones';
-import { hashearToken } from './tokens';
+import { generarTokenGestion, hashearToken } from './tokens';
 
 export interface BloqueDeReserva {
   orden: number;
@@ -60,10 +60,27 @@ const ESTADOS_GESTIONABLES = ['pendiente_pago', 'confirmada'] as const;
  * Resuelve la anticipación mínima con la precedencia del plan: la del servicio
  * gana sobre la de la sucursal, y ésta sobre la global.
  */
-export async function buscarReservaPorToken(
+export function buscarReservaPorToken(
   bd: BaseDatos,
   token: string,
 ): Promise<ReservaConDetalle | null> {
+  return armarDetalle(bd, eq(reservas.hashTokenGestion, hashearToken(token)));
+}
+
+/**
+ * La misma reserva, buscada por identificador.
+ *
+ * Es la vía del panel: ahí se llega desde la agenda, no desde el enlace del
+ * cliente, y el token en claro no existe en ningún lado.
+ */
+export function buscarReservaPorId(
+  bd: BaseDatos,
+  reservaId: string,
+): Promise<ReservaConDetalle | null> {
+  return armarDetalle(bd, eq(reservas.id, reservaId));
+}
+
+async function armarDetalle(bd: BaseDatos, condicion: SQL): Promise<ReservaConDetalle | null> {
   const [fila] = await bd
     .select({
       id: reservas.id,
@@ -85,7 +102,7 @@ export async function buscarReservaPorToken(
     })
     .from(reservas)
     .innerJoin(sucursales, eq(sucursales.id, reservas.sucursalId))
-    .where(eq(reservas.hashTokenGestion, hashearToken(token)))
+    .where(condicion)
     .limit(1);
 
   if (!fila) return null;
@@ -155,6 +172,29 @@ export async function buscarReservaPorToken(
   };
 }
 
+/**
+ * Emite un enlace de gestión nuevo y devuelve el token en claro.
+ *
+ * Hace falta cuando el aviso lo origina el panel y no el cliente: en la base
+ * sólo está el hash, así que el enlace original **no se puede reconstruir**.
+ * La alternativa —mandar el aviso sin enlace— no sirve: las plantillas de
+ * WhatsApp tienen una cantidad fija de parámetros aprobada por Meta.
+ *
+ * El costo es que el enlace anterior deja de funcionar. Es aceptable porque el
+ * nuevo viaja dentro del mismo mensaje que lo reemplaza.
+ */
+export async function rotarTokenGestion(bd: BaseDatos, reservaId: string): Promise<string | null> {
+  const { token, hash } = generarTokenGestion();
+
+  const actualizadas = await bd
+    .update(reservas)
+    .set({ hashTokenGestion: hash, actualizadoEn: new Date() })
+    .where(eq(reservas.id, reservaId))
+    .returning({ id: reservas.id });
+
+  return actualizadas.length > 0 ? token : null;
+}
+
 /** Momento a partir del cual el cambio ya requiere aprobación de gerencia. */
 export function limiteCambioAutomatico(reserva: ReservaConDetalle): Date {
   return new Date(reserva.comienzaEn.getTime() - reserva.horasMinimasCancelacion * 3_600_000);
@@ -181,7 +221,8 @@ export async function completarReserva(
   parametros: {
     reservaId: string;
     nombre: string;
-    canalContacto: 'whatsapp' | 'email';
+    /** En null cuando no hay por dónde avisar: pasa con los turnos de mostrador. */
+    canalContacto: 'whatsapp' | 'email' | null;
     whatsapp: string | null;
     email: string | null;
     notas: string | null;

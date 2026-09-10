@@ -29,6 +29,13 @@
       "when": 1789000768976,
       "tag": "0003_notificacion_retenida",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789100000000,
+      "tag": "0004_reserva_sin_canal_de_contacto",
+      "breakpoints": true
     }
   ]
 }

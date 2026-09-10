@@ -4,4 +4,5 @@ export * from './autenticacion';
 export * from './catalogo';
 export * from './disponibilidad';
 export * from './pagos';
+export * from './panel';
 export * from './reservas';

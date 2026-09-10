@@ -16,6 +16,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  buscarReservaPorId,
   buscarReservaPorToken,
   cancelarReserva,
   cargarContextoDisponibilidad,
@@ -38,6 +39,7 @@ import type {
   BloqueElegido,
   PedidoConfirmacion,
   PedidoRetencion,
+  ReservaManual,
   ReservaPublica,
   ResultadoGestion,
   Retencion,
@@ -270,6 +272,7 @@ export class ReservasServicio {
   private async validarBloques(
     sucursalId: string,
     elegidos: BloqueElegido[],
+    opciones: { exigirFuturo?: boolean; sinSenia?: boolean } = {},
   ): Promise<{ bloques: BloqueARetener[]; minutosRetencion: number }> {
     const ordenados = [...elegidos].sort((a, b) => a.orden - b.orden);
     const comienzos = ordenados.map((bloque) => new Date(bloque.comienzaEn).getTime());
@@ -278,7 +281,9 @@ export class ReservasServicio {
       throw new BadRequestException('Los horarios elegidos no son válidos.');
     }
 
-    if (comienzos[0]! <= Date.now()) {
+    // Desde el panel se puede cargar un turno que ya empezó: alguien entró sin
+    // aviso y se lo anota después. Desde la web no, que sería siempre un error.
+    if ((opciones.exigirFuturo ?? true) && comienzos[0]! <= Date.now()) {
       throw new BadRequestException('No se puede reservar un horario que ya pasó.');
     }
 
@@ -366,7 +371,7 @@ export class ReservasServicio {
         servicioNombre: servicio.nombre,
         duracionMinutos: servicio.duracionMinutos,
         precioCentavos: servicio.precioCentavos,
-        seniaCentavos: calcularSenia(servicio),
+        seniaCentavos: opciones.sinSenia ? 0 : calcularSenia(servicio),
         minutosPreparacion: servicio.minutosPreparacion,
         minutosLimpieza: servicio.minutosLimpieza,
       });
@@ -404,6 +409,161 @@ export class ReservasServicio {
       primero: configuracion.horasRecordatorioPrimero,
       segundo: configuracion.horasRecordatorioSegundo,
     };
+  }
+
+  // ── Vías del panel ─────────────────────────────────────────────────────────
+
+  /**
+   * Carga un turno desde el mostrador o por teléfono.
+   *
+   * Nace confirmada y sin seña: la persona ya está ahí o ya habló con el local,
+   * hacerla pasar por Mercado Pago no tendría sentido. Los bloques se validan
+   * exactamente igual que los de la web —mismos precios, mismos buffers, misma
+   * restricción de exclusión—, así que cargar a mano no puede sobrescribir un
+   * turno ajeno ni inventar un horario fuera de la agenda.
+   *
+   * El cobro se registra aparte, cuando efectivamente se cobra.
+   */
+  async crearManual(
+    pedido: ReservaManual,
+    usuarioId: string,
+  ): Promise<{ reservaId: string; token: string }> {
+    if (pedido.avisar && !pedido.contactoWhatsapp && !pedido.contactoEmail) {
+      throw new BadRequestException('Para avisarle hace falta un WhatsApp o un correo.');
+    }
+
+    const { bloques } = await this.validarBloques(pedido.sucursalId, pedido.bloques, {
+      exigirFuturo: false,
+      sinSenia: true,
+    });
+
+    const { token, hash } = generarTokenGestion();
+
+    let reservaId: string;
+
+    try {
+      const retencion = await retenerHorario(this.bd, {
+        sucursalId: pedido.sucursalId,
+        bloques,
+        hashTokenGestion: hash,
+        // La retención es un trámite acá: se completa en la línea siguiente.
+        minutosRetencion: 15,
+        creadaPorUsuarioId: usuarioId,
+      });
+
+      reservaId = retencion.reservaId;
+    } catch (error: unknown) {
+      if (error instanceof HorarioNoDisponibleError) {
+        throw new ConflictException(error.message);
+      }
+
+      throw error;
+    }
+
+    // El canal es por dónde avisarle. Queda en null cuando no hay ningún dato:
+    // un turno tomado por teléfono puede dejar sólo un nombre.
+    const canalContacto = pedido.contactoWhatsapp
+      ? ('whatsapp' as const)
+      : pedido.contactoEmail
+        ? ('email' as const)
+        : null;
+
+    try {
+      const completada = await completarReserva(this.bd, {
+        reservaId,
+        nombre: pedido.clienteNombre,
+        canalContacto,
+        whatsapp: pedido.contactoWhatsapp,
+        email: pedido.contactoEmail,
+        notas: pedido.notas,
+        confirmar: true,
+      });
+
+      if (!completada) {
+        throw new ConflictException('No se pudo confirmar la reserva.');
+      }
+    } catch (error: unknown) {
+      // La retención ya ocupó el horario. Si completarla falla y se la deja ahí,
+      // el turno queda bloqueado para todos hasta que expire, y con una reserva
+      // que nadie pidió. Se libera antes de propagar el error.
+      await cancelarReserva(this.bd, reservaId);
+
+      throw error;
+    }
+
+    if (pedido.avisar) {
+      const reserva = await buscarReservaPorId(this.bd, reservaId);
+
+      if (reserva) {
+        await this.avisarConfirmacion(reserva, token, false);
+      }
+    }
+
+    return { reservaId, token };
+  }
+
+  /**
+   * Cancela por decisión de gerencia, sin mirar la anticipación.
+   *
+   * La política de horas mínimas rige para el cliente, no para el local: si el
+   * profesional se enfermó, el turno se cancela aunque falten dos horas.
+   */
+  async cancelarPorGerencia(reservaId: string): Promise<ReservaConDetalle> {
+    const reserva = await buscarReservaPorId(this.bd, reservaId);
+
+    if (!reserva) {
+      throw new NotFoundException('No encontramos esa reserva.');
+    }
+
+    if (reserva.estado !== 'confirmada' && reserva.estado !== 'pendiente_pago') {
+      throw new ConflictException('Esta reserva ya no se puede cancelar.');
+    }
+
+    await cancelarReserva(this.bd, reserva.id);
+
+    return reserva;
+  }
+
+  /**
+   * Mueve el turno por decisión de gerencia, también sin mirar la anticipación.
+   *
+   * Los bloques se revalidan igual: que lo pida gerencia no vuelve válido un
+   * horario fuera de agenda ni uno que ya tomó otra persona.
+   */
+  async reprogramarPorGerencia(
+    reservaId: string,
+    bloquesElegidos: BloqueElegido[],
+  ): Promise<ReservaConDetalle> {
+    const reserva = await buscarReservaPorId(this.bd, reservaId);
+
+    if (!reserva) {
+      throw new NotFoundException('No encontramos esa reserva.');
+    }
+
+    if (reserva.estado !== 'confirmada' && reserva.estado !== 'pendiente_pago') {
+      throw new ConflictException('Esta reserva ya no se puede reprogramar.');
+    }
+
+    const { bloques } = await this.validarBloques(reserva.sucursal.id, bloquesElegidos);
+
+    try {
+      await reprogramarReserva(this.bd, { reservaId: reserva.id, bloques });
+    } catch (error: unknown) {
+      if (error instanceof HorarioNoDisponibleError) {
+        throw new ConflictException(error.message);
+      }
+
+      throw error;
+    }
+
+    const actualizada = await buscarReservaPorId(this.bd, reserva.id);
+
+    return actualizada ?? reserva;
+  }
+
+  /** Horas de recordatorio configuradas. Las necesita quien resuelve solicitudes. */
+  async horasDeRecordatorioConfiguradas(): Promise<{ primero: number; segundo: number | null }> {
+    return this.horasDeRecordatorio();
   }
 
   private aContratoPublico(reserva: ReservaConDetalle): ReservaPublica {
