@@ -352,9 +352,63 @@ efímera, le aplica las mismas migraciones que producción y verifica la exclusi
 los CHECK y la idempotencia. CI además aplica las migraciones contra un PostgreSQL
 real, porque PGlite es una implementación distinta.
 
+## El panel
+
+Vive en `apps/backend/src/modulos` —`agenda`, `solicitudes`, `administracion`,
+`usuarios`, `auditoria`— y en `apps/frontend/src/app/panel`.
+
+### Protegido por omisión
+
+`SesionGuardian` está registrado como `APP_GUARD`, es decir, guardián de toda la
+aplicación. **Una ruta nueva queda protegida sin que nadie haga nada**: para
+abrirla hay que marcarla con `@SinSesion()`. Al revés —proteger a mano cada
+ruta— alcanza con olvidarse una vez para filtrar la agenda entera.
+
+`@Roles('gerencia')` restringe lo que sólo administra el local. Las **lecturas**
+del catálogo quedan abiertas a cualquier sesión porque el panel las necesita para
+dibujar la agenda, y ahí no hay nada que esconder: los precios y los nombres
+están publicados en el sitio.
+
+### El recorte por rol lo hace el servidor
+
+Quien tiene rol `profesional` ve sólo su columna, sin los datos de contacto del
+cliente y sin los montos. El filtro sale de la sesión, **no del pedido**: si
+saliera del pedido, cambiar un identificador en la URL alcanzaría para leer la
+agenda de cualquiera. La guardia del navegador existe para no mostrar pantallas
+vacías, no para proteger nada.
+
+### Cargar un turno a mano usa el mismo camino que la web
+
+`ReservasServicio.crearManual` reutiliza la misma validación de bloques: mismos
+precios, mismos buffers, misma restricción de exclusión. Desde el panel tampoco
+se puede pisar un turno ajeno ni inventar un horario fuera de la agenda. Lo único
+que cambia es que se permite cargar un turno que ya empezó —alguien entró sin
+aviso y se lo anota después— y que nace confirmado y sin seña.
+
+### Un bloqueo no cancela turnos
+
+Tapa la disponibilidad futura. Los turnos que quedaron adentro se devuelven al
+crearlo para que gerencia los resuelva; borrárselos al cliente sin avisar sería
+peor que el problema. Lo mismo vale para editar un horario semanal.
+
+### El enlace de gestión se rota para avisar desde el panel
+
+Un aviso al cliente lleva el enlace de su reserva, y ese enlace **no se puede
+reconstruir**: en la base sólo vive su hash. Cuando el aviso lo origina el panel
+—una cancelación, la resolución de una solicitud— se emite uno nuevo. El anterior
+deja de funcionar, pero el nuevo viaja en el mismo mensaje.
+
+### Auditoría
+
+Toda modificación deja constancia con los valores de antes y de después. Escribir
+en auditoría **nunca puede voltear la operación auditada**: si el registro falla,
+la acción ya ocurrió y deshacerla sería peor que quedarse sin la constancia, así
+que el error se traga y queda en el log del proceso.
+
 ## Estado de implementación
 
-La Fase 1 (fundación) está completa: monorepo, configuraciones compartidas,
-esqueletos de las tres aplicaciones, PostgreSQL local, plantilla de entorno y CI.
-El modelo de datos, el motor de disponibilidad, los pagos, las notificaciones y el
-panel corresponden a las fases 3 a 8 del plan.
+Fases 1 a 8 completas: fundación, identidad, modelo de datos, motor de
+disponibilidad, sitio público y flujo de reserva, pagos, notificaciones y panel
+interno. Pagos y notificaciones corren contra adaptadores simulados hasta que
+haya credenciales reales. Quedan las fases 9 (calidad y seguridad) y 10 (staging
+y lanzamiento).

@@ -104,11 +104,35 @@ sesión que el pooler de Neon no soporta. En local ambas apuntan al mismo Postgr
 
 Las notificaciones no se envían en línea: se encolan y las despacha el worker con
 reintentos. Si un envío agota los reintentos queda marcado como fallido y se alerta
-a gerencia. La vista de fallos operativos del panel (Fase 8) es el lugar donde se
-revisan.
+a gerencia. `Panel → Avisos` es el lugar donde se revisan: muestra a quién no le
+llegó, por qué canal se intentó y cuál fue el último error.
+
+No hay botón de reintentar, y es a propósito: si tres intentos fallaron, el
+problema no se arregla apretando de nuevo. Lo que corresponde es llamar.
 
 ## Respaldos
 
 Neon mantiene restauración a un punto en el tiempo. Antes de cada migración de
 producción se toma un respaldo explícito y se verifica que la restauración funcione;
 un respaldo que nunca se probó no es un respaldo.
+
+## Primer acceso al panel
+
+Sólo gerencia puede invitar, y al principio no hay nadie de gerencia. El comando
+resuelve el arranque, y se corre una vez por entorno:
+
+```
+pnpm --filter @manly/backend invitar -- alguien@manly.ar "Nombre" gerencia
+```
+
+Imprime el enlace en la consola. **No se manda por correo**: en el arranque
+todavía puede no haber canal configurado, y un enlace de invitación en un log de
+correo es un riesgo innecesario. Vence a los 7 días.
+
+Desde ahí, el resto de los accesos se crean en `Panel → Accesos`. El enlace que
+devuelve una invitación es la única vez que existe —en la base queda sólo su
+hash—, así que hay que copiarlo en el momento.
+
+En desarrollo, `pnpm --filter @manly/backend dev:memoria` crea sola una cuenta de
+gerencia (`gerencia@manly.local`) y la imprime al arrancar. Existe únicamente en
+ese modo: la base en memoria no llega a ningún entorno real.
