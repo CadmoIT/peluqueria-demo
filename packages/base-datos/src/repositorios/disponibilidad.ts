@@ -280,6 +280,8 @@ export async function configuracionDelNegocio(bd: BaseDatos): Promise<{
   horasMinimasCancelacion: number;
   horasRecordatorioPrimero: number;
   horasRecordatorioSegundo: number | null;
+  reservasOnlineActivas: boolean;
+  mensajeReservasCerradas: string | null;
 }> {
   const [fila] = await bd.select().from(configuracionNegocio).limit(1);
 
@@ -292,5 +294,9 @@ export async function configuracionDelNegocio(bd: BaseDatos): Promise<{
     horasMinimasCancelacion: fila?.horasMinimasCancelacion ?? 24,
     horasRecordatorioPrimero: fila?.horasRecordatorioPrimero ?? 24,
     horasRecordatorioSegundo: fila?.horasRecordatorioSegundo ?? null,
+    // Por defecto abiertas: una base sin configurar no debe dejar el sitio
+    // mudo, y el interruptor se apaga a propósito, no por omisión.
+    reservasOnlineActivas: fila?.reservasOnlineActivas ?? true,
+    mensajeReservasCerradas: fila?.mensajeReservasCerradas ?? null,
   };
 }

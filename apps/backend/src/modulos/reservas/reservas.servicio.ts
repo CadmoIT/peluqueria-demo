@@ -14,6 +14,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import {
   buscarReservaPorId,
@@ -61,6 +62,18 @@ export class ReservasServicio {
 
   /** Retiene el horario elegido, antes de pedirle los datos al cliente. */
   async retener(pedido: PedidoRetencion): Promise<Retencion> {
+    // El interruptor se comprueba **acá y no en la web**: apagar las reservas
+    // tiene que cortar de verdad, no sólo esconder el botón. La web lo consulta
+    // aparte para mostrar el mensaje en vez del formulario.
+    const configuracion = await configuracionDelNegocio(this.bd);
+
+    if (!configuracion.reservasOnlineActivas) {
+      throw new ServiceUnavailableException(
+        configuracion.mensajeReservasCerradas ??
+          'Por ahora no estamos tomando turnos online. Escribinos y lo vemos.',
+      );
+    }
+
     const { bloques, minutosRetencion } = await this.validarBloques(
       pedido.sucursalId,
       pedido.bloques,

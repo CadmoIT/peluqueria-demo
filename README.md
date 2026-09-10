@@ -53,4 +53,7 @@ disponibilidad, sitio público y flujo de reserva, pagos, notificaciones, panel
 interno, y calidad y seguridad.
 
 Pagos y notificaciones corren contra adaptadores simulados hasta que haya
-credenciales reales. Queda la fase 10: staging, piloto interno y lanzamiento.
+credenciales reales. La fase 10 está preparada: el sistema tiene todo lo que
+hace falta para desplegarse, verificarse y monitorearse, y lo que queda no se
+resuelve escribiendo código —credenciales, aprobaciones de Meta, el piloto con
+el equipo y la fecha de corte—. Está todo en [lanzamiento.md](docs/lanzamiento.md).

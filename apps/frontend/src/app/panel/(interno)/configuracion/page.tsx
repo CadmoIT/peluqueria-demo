@@ -149,6 +149,44 @@ export default function PaginaConfiguracion() {
             />
           </Campo>
 
+          <div className="border-borde border-t pt-5 sm:col-span-2">
+            <label className="text-menor flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={borrador.reservasOnlineActivas}
+                onChange={(evento) => cambiar('reservasOnlineActivas', evento.target.checked)}
+              />
+              <span>
+                <strong>El sitio toma reservas online.</strong>
+                <span className="text-nota text-grafito block">
+                  Apagarlo no toca nada de lo ya reservado: los turnos siguen, el enlace de gestión
+                  sigue funcionando y desde acá se pueden seguir cargando a mano. Lo único que deja
+                  de andar es tomar turnos nuevos desde la web.
+                </span>
+              </span>
+            </label>
+          </div>
+
+          {!borrador.reservasOnlineActivas && (
+            <div className="sm:col-span-2">
+              <Campo
+                etiqueta="Qué se le muestra a quien entra a reservar"
+                ayuda="Si queda vacío se usa un texto genérico."
+              >
+                <Entrada
+                  value={borrador.mensajeReservasCerradas ?? ''}
+                  onChange={(evento) =>
+                    cambiar(
+                      'mensajeReservasCerradas',
+                      evento.target.value === '' ? null : evento.target.value,
+                    )
+                  }
+                />
+              </Campo>
+            </div>
+          )}
+
           <div className="sm:col-span-2">
             <Campo
               etiqueta="Zona horaria"

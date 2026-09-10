@@ -38,6 +38,14 @@ const TOKENS = {
   niebla: [242, 242, 242],
   lino: [250, 250, 249],
   papel: [255, 255, 255],
+
+  // Estados, y el fondo teñido al 10 % sobre el que se dibujan.
+  error: [187, 9, 22],
+  errorTenue: [247, 233, 232],
+  exito: [0, 110, 59],
+  exitoTenue: [232, 242, 237],
+  atencion: [141, 85, 0],
+  atencionTenue: [245, 240, 233],
 } as const satisfies Record<string, readonly [number, number, number]>;
 
 type Color = readonly [number, number, number];
@@ -123,4 +131,27 @@ describe('superficies invertidas', () => {
   it('los títulos grandes en blanco sobre tinta pasan de sobra', () => {
     expect(contraste(TOKENS.papel, TOKENS.tinta)).toBeGreaterThanOrEqual(TEXTO_GRANDE);
   });
+});
+
+describe('colores de estado', () => {
+  // Cada uno se usa de dos formas a la vez: como texto sobre su propio fondo
+  // teñido y como relleno con texto claro encima. Las dos tienen que llegar.
+  //
+  // La primera versión de estos tonos daba 4.41, 4.02 y 2.68 como texto. El
+  // aviso de error del panel quedaba por debajo del umbral y el de atención era
+  // directamente ilegible, y los dos aparecen justo cuando algo salió mal: son
+  // los que más importa poder leer.
+  for (const [nombre, texto, fondo] of [
+    ['error', TOKENS.error, TOKENS.errorTenue],
+    ['éxito', TOKENS.exito, TOKENS.exitoTenue],
+    ['atención', TOKENS.atencion, TOKENS.atencionTenue],
+  ] as const) {
+    it(`${nombre} se lee sobre su propio fondo`, () => {
+      expect(contraste(texto, fondo)).toBeGreaterThanOrEqual(TEXTO_NORMAL);
+    });
+
+    it(`${nombre} se lee como relleno con texto claro`, () => {
+      expect(contraste(TOKENS.lino, texto)).toBeGreaterThanOrEqual(TEXTO_NORMAL);
+    });
+  }
 });

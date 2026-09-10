@@ -34,6 +34,21 @@ export const configuracionNegocio = pgTable(
     horasRecordatorioSegundo: integer('horas_recordatorio_segundo').default(2),
 
     zonaHoraria: text('zona_horaria').notNull().default('America/Argentina/Buenos_Aires'),
+
+    /**
+     * Si el sitio acepta reservas nuevas.
+     *
+     * Existe para el día del corte y para el día que algo salga mal. Apagarlo
+     * no toca nada de lo ya reservado: los turnos siguen, el enlace de gestión
+     * sigue funcionando y el panel sigue pudiendo cargar a mano. Lo único que
+     * deja de andar es tomar turnos nuevos desde la web.
+     *
+     * La alternativa —bajar el sitio— cancela de hecho la atención al cliente
+     * de quien ya tenía turno y necesita moverlo.
+     */
+    reservasOnlineActivas: boolean('reservas_online_activas').notNull().default(true),
+    /** Qué se le muestra a quien entra a reservar mientras está apagado. */
+    mensajeReservasCerradas: text('mensaje_reservas_cerradas'),
     ...marcasDeTiempo,
   },
   (tabla) => [

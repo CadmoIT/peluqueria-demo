@@ -3,6 +3,7 @@ export * from './administracion';
 export * from './agenda';
 export * from './auditoria';
 export * from './catalogo';
+export * from './diagnostico';
 export * from './disponibilidad';
 export * from './gestion-reservas';
 export * from './notificaciones';

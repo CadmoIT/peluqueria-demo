@@ -341,8 +341,24 @@ export const esquemaConfiguracionNegocio = z.object({
   horasRecordatorioPrimero: z.number().int().min(0).max(168),
   horasRecordatorioSegundo: z.number().int().min(0).max(168).nullable(),
   zonaHoraria: z.string().min(3).max(60),
+  /**
+   * Interruptor de reservas online.
+   *
+   * Apagarlo no toca lo ya reservado: los turnos siguen, el enlace de gestión
+   * sigue funcionando y el panel sigue pudiendo cargar a mano. Sólo deja de
+   * tomarse turnos nuevos desde la web.
+   */
+  reservasOnlineActivas: z.boolean(),
+  mensajeReservasCerradas: z.string().trim().max(300).nullable(),
 });
 export type ConfiguracionNegocio = z.infer<typeof esquemaConfiguracionNegocio>;
+
+/** Lo que el sitio público necesita saber antes de mostrar el flujo de reserva. */
+export const esquemaConfiguracionPublica = z.object({
+  reservasOnlineActivas: z.boolean(),
+  mensajeReservasCerradas: z.string().nullable(),
+});
+export type ConfiguracionPublica = z.infer<typeof esquemaConfiguracionPublica>;
 
 export const esquemaCambioConfiguracion = esquemaConfiguracionNegocio.partial();
 export type CambioConfiguracion = z.infer<typeof esquemaCambioConfiguracion>;
@@ -412,3 +428,33 @@ export const esquemaFallaOperativa = z.object({
   actualizadoEn: z.string().datetime(),
 });
 export type FallaOperativa = z.infer<typeof esquemaFallaOperativa>;
+
+// ── Diagnóstico del sistema ──────────────────────────────────────────────────
+
+/**
+ * Una señal, con su lectura.
+ *
+ * El `detalle` no sobra: un tablero que muestra `3` sin decir si tres está bien
+ * obliga a saberse el sistema de memoria, y quien mira esto a las nueve de la
+ * mañana de un lunes no se lo sabe.
+ */
+export const esquemaSenalDiagnostico = z.object({
+  clave: z.string(),
+  titulo: z.string(),
+  estado: z.enum(['bien', 'atencion', 'mal']),
+  detalle: z.string(),
+});
+export type SenalDiagnostico = z.infer<typeof esquemaSenalDiagnostico>;
+
+export const esquemaDiagnostico = z.object({
+  entorno: z.enum(['produccion', 'no-produccion']),
+  version: z.string(),
+  senales: z.array(esquemaSenalDiagnostico),
+  resumen: z.object({
+    reservasProximas: z.number().int(),
+    pagosSinConciliar: z.number().int(),
+    notificacionesRetenidas: z.number().int(),
+  }),
+  marcaTiempo: z.string().datetime(),
+});
+export type Diagnostico = z.infer<typeof esquemaDiagnostico>;

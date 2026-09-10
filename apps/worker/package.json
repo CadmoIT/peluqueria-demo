@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
     "lint": "eslint src",
     "test": "vitest run --passWithNoTests",
-    "limpiar": "rm -rf dist *.tsbuildinfo"
+    "limpiar": "rm -rf dist *.tsbuildinfo",
+    "plantillas": "tsc --build && node dist/exportar-plantillas.js"
   },
   "dependencies": {
     "@manly/base-datos": "workspace:*",

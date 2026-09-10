@@ -6,6 +6,7 @@
 // a la API, no mirando el navegador.
 import type {
   Asistencia,
+  Diagnostico,
   BloqueAgenda,
   BloqueoCreado,
   CambioConfiguracion,
@@ -279,6 +280,12 @@ export function vincularProfesional(
   return enviar<{ ok: true }>(`/panel/usuarios/profesionales/${profesionalId}`, 'PATCH', {
     usuarioId,
   });
+}
+
+// ── Estado del sistema ───────────────────────────────────────────────────────
+
+export function obtenerDiagnostico(): Promise<Diagnostico> {
+  return consultarApi<Diagnostico>('/panel/diagnostico');
 }
 
 // ── Auditoría y fallas ───────────────────────────────────────────────────────

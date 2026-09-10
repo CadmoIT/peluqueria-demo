@@ -36,6 +36,20 @@
       "when": 1789100000000,
       "tag": "0004_reserva_sin_canal_de_contacto",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789200000000,
+      "tag": "0005_latido_del_worker",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789200100000,
+      "tag": "0006_interruptor_de_reservas",
+      "breakpoints": true
     }
   ]
 }

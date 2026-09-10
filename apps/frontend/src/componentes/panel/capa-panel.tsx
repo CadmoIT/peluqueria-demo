@@ -33,6 +33,7 @@ const ENLACES: Enlace[] = [
   { href: '/panel/usuarios', etiqueta: 'Accesos', soloGerencia: true },
   { href: '/panel/fallas', etiqueta: 'Avisos', soloGerencia: true },
   { href: '/panel/auditoria', etiqueta: 'Historial', soloGerencia: true },
+  { href: '/panel/estado', etiqueta: 'Estado', soloGerencia: true },
   { href: '/panel/configuracion', etiqueta: 'Ajustes', soloGerencia: true },
 ];
 

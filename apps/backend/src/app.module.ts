@@ -13,6 +13,7 @@ import { AgendaModulo } from './modulos/agenda/agenda.modulo';
 import { AuditoriaModulo } from './modulos/auditoria/auditoria.modulo';
 import { AutenticacionModulo } from './modulos/autenticacion/autenticacion.modulo';
 import { CatalogoModulo } from './modulos/catalogo/catalogo.modulo';
+import { DiagnosticoModulo } from './modulos/diagnostico/diagnostico.modulo';
 import { DisponibilidadModulo } from './modulos/disponibilidad/disponibilidad.modulo';
 import { PagosModulo } from './modulos/pagos/pagos.modulo';
 import { ReservasModulo } from './modulos/reservas/reservas.modulo';
@@ -50,6 +51,7 @@ import { UsuariosModulo } from './modulos/usuarios/usuarios.modulo';
     SolicitudesModulo,
     AdministracionModulo,
     UsuariosModulo,
+    DiagnosticoModulo,
   ],
   providers: [
     // Va antes que el guardián de sesión: una inundación de peticiones sin

@@ -12,3 +12,4 @@ export * from './solicitudes';
 export * from './notificaciones';
 export * from './configuracion';
 export * from './auditoria';
+export * from './estado-worker';

@@ -1,5 +1,10 @@
 // Consultas del catálogo público a la API.
-import type { ProfesionalPublico, ServicioPublico, SucursalPublica } from '@manly/contratos';
+import type {
+  ConfiguracionPublica,
+  ProfesionalPublico,
+  ServicioPublico,
+  SucursalPublica,
+} from '@manly/contratos';
 
 import { consultarApi } from './api';
 
@@ -18,4 +23,15 @@ export function obtenerProfesionales(
   return consultarApi<ProfesionalPublico[]>(
     `/servicios/${servicioId}/profesionales?sucursalId=${sucursalId}`,
   );
+}
+
+/**
+ * Si el sitio está tomando reservas.
+ *
+ * Se consulta antes de dibujar el flujo. Lo que de verdad corta es la API —el
+ * interruptor se comprueba al retener—, pero mostrarle a alguien cuatro pasos
+ * para que el último le diga que no, es una falta de respeto por su tiempo.
+ */
+export function obtenerConfiguracionPublica(): Promise<ConfiguracionPublica> {
+  return consultarApi<ConfiguracionPublica>('/configuracion-publica');
 }

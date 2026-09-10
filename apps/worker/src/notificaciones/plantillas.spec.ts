@@ -115,13 +115,19 @@ describe('contrato con Meta', () => {
   });
 
   it('los parámetros de la confirmación van en el orden registrado', () => {
+    // Sucursal y dirección van juntas en un solo parámetro. Antes iba sólo el
+    // nombre, y la dirección quedaba en el texto del correo pero fuera de la
+    // plantilla: el mismo aviso decía dónde era por correo y no por WhatsApp.
+    //
+    // Se cambió a tiempo. Ninguna plantilla está aprobada todavía; una vez que
+    // Meta las apruebe, tocar este orden son semanas de espera.
     const mensaje = armarMensaje('confirmacion', DATOS);
 
     expect(mensaje.parametros).toEqual([
       'Nicolás',
       'Corte y Barba',
       'jueves 1 de octubre a las 15:30',
-      'Las Cañitas',
+      'Las Cañitas — Báez 300',
       'https://manly.com.ar/mi-reserva/abc123',
     ]);
   });
@@ -138,4 +144,47 @@ describe('contrato con Meta', () => {
   it('rechaza un tipo que no existe en vez de mandar un mensaje vacío', () => {
     expect(() => armarMensaje('inventado' as never, DATOS)).toThrow(/No hay plantilla/);
   });
+});
+
+describe('el texto y los parámetros de WhatsApp dicen lo mismo', () => {
+  /**
+   * Valores marcados, para poder buscarlos dentro del texto.
+   *
+   * WhatsApp **sólo manda lo que está en `parametros`**: la plantilla aprobada
+   * en Meta es una cadena con `{{1}}`, `{{2}}`… y nada más. Un dato que aparece
+   * en el texto pero no entre los parámetros no llega a existir en el mensaje
+   * de WhatsApp, aunque sí salga por correo.
+   *
+   * Pasó de verdad: la dirección de la sucursal estaba en el texto y fuera de
+   * los parámetros, así que el mismo aviso decía dónde era por correo y no lo
+   * decía por WhatsApp. Se descubrió al exportar las plantillas para cargarlas
+   * en Meta, y por poco: una vez aprobadas, corregirlo son semanas.
+   */
+  const MARCADOS: DatosMensaje = {
+    clienteNombre: '@@NOMBRE@@',
+    sucursalNombre: '@@SUCURSAL@@',
+    sucursalDireccion: '@@DIRECCION@@',
+    comienzaEn: '2026-09-10T18:30:00.000Z',
+    servicios: ['@@SERVICIO@@'],
+    urlGestion: '@@ENLACE@@',
+    horasMinimasCancelacion: 24,
+  };
+
+  for (const tipo of TIPOS_MENSAJE) {
+    it(`${tipo} no deja ningún dato fuera de los parámetros`, () => {
+      const mensaje = armarMensaje(tipo, MARCADOS);
+
+      // Se reemplaza cada parámetro por su marcador de posición, como haría
+      // Meta al armar el mensaje. Lo que quede marcado, no llega.
+      let cuerpo = mensaje.texto;
+
+      for (const parametro of mensaje.parametros) {
+        cuerpo = cuerpo.split(parametro).join('{{n}}');
+      }
+
+      const huerfanos = cuerpo.match(/@@[A-Z]+@@/g) ?? [];
+
+      expect(huerfanos, `quedaron fuera de la plantilla: ${huerfanos.join(', ')}`).toEqual([]);
+    });
+  }
 });

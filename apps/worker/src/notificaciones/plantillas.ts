@@ -54,6 +54,18 @@ function cuando(iso: string): string {
   return `${fecha.toFormat("cccc d 'de' LLLL")} a las ${fecha.toFormat('HH:mm')}`;
 }
 
+/**
+ * Dónde es el turno, como un solo valor.
+ *
+ * Va junto y no en dos parámetros porque WhatsApp sólo manda lo que está en
+ * `parametros`: la dirección quedaba en el texto del correo pero fuera de la
+ * plantilla, así que el mismo aviso decía la dirección por correo y no la decía
+ * por WhatsApp. Un solo parámetro mantiene los dos canales diciendo lo mismo.
+ */
+function donde(datos: DatosMensaje): string {
+  return `${datos.sucursalNombre} — ${datos.sucursalDireccion}`;
+}
+
 function listaDeServicios(servicios: string[]): string {
   if (servicios.length <= 1) return servicios[0] ?? 'tu turno';
 
@@ -73,7 +85,7 @@ const CATALOGO: Record<TipoMensaje, (datos: DatosMensaje) => MensajeArmado> = {
       datos.clienteNombre,
       listaDeServicios(datos.servicios),
       cuando(datos.comienzaEn),
-      datos.sucursalNombre,
+      donde(datos),
       datos.urlGestion,
     ],
     asunto: `Tu turno en Manly quedó confirmado`,
@@ -81,34 +93,29 @@ const CATALOGO: Record<TipoMensaje, (datos: DatosMensaje) => MensajeArmado> = {
       `Hola ${datos.clienteNombre}, tu turno quedó confirmado.\n\n` +
       `${listaDeServicios(datos.servicios)}\n` +
       `${cuando(datos.comienzaEn)}\n` +
-      `${datos.sucursalNombre} — ${datos.sucursalDireccion}\n\n` +
+      `${donde(datos)}\n\n` +
       `Si necesitás cambiarlo o cancelarlo, entrá acá:\n${datos.urlGestion}\n\n` +
       `Podés hacerlo solo hasta ${String(datos.horasMinimasCancelacion)} horas antes.`,
   }),
 
   recordatorio_primero: (datos) => ({
     plantilla: 'manly_recordatorio_turno',
-    parametros: [
-      datos.clienteNombre,
-      cuando(datos.comienzaEn),
-      datos.sucursalNombre,
-      datos.urlGestion,
-    ],
+    parametros: [datos.clienteNombre, cuando(datos.comienzaEn), donde(datos), datos.urlGestion],
     asunto: `Te esperamos mañana en Manly`,
     texto:
       `Hola ${datos.clienteNombre}, te recordamos tu turno.\n\n` +
       `${cuando(datos.comienzaEn)}\n` +
-      `${datos.sucursalNombre} — ${datos.sucursalDireccion}\n\n` +
+      `${donde(datos)}\n\n` +
       `Si no vas a poder venir, avisanos acá:\n${datos.urlGestion}`,
   }),
 
   recordatorio_segundo: (datos) => ({
     plantilla: 'manly_recordatorio_proximo',
-    parametros: [datos.clienteNombre, cuando(datos.comienzaEn), datos.sucursalDireccion],
+    parametros: [datos.clienteNombre, cuando(datos.comienzaEn), donde(datos)],
     asunto: `Tu turno en Manly es en un rato`,
     texto:
       `Hola ${datos.clienteNombre}, tu turno es hoy ${cuando(datos.comienzaEn)}.\n\n` +
-      `Te esperamos en ${datos.sucursalNombre}, ${datos.sucursalDireccion}.`,
+      `Te esperamos en ${donde(datos)}.`,
   }),
 
   cancelacion: (datos) => ({
@@ -122,16 +129,11 @@ const CATALOGO: Record<TipoMensaje, (datos: DatosMensaje) => MensajeArmado> = {
 
   reprogramacion: (datos) => ({
     plantilla: 'manly_turno_reprogramado',
-    parametros: [
-      datos.clienteNombre,
-      cuando(datos.comienzaEn),
-      datos.sucursalNombre,
-      datos.urlGestion,
-    ],
+    parametros: [datos.clienteNombre, cuando(datos.comienzaEn), donde(datos), datos.urlGestion],
     asunto: `Movimos tu turno en Manly`,
     texto:
       `Hola ${datos.clienteNombre}, tu turno quedó para el ${cuando(datos.comienzaEn)}.\n\n` +
-      `${datos.sucursalNombre} — ${datos.sucursalDireccion}\n\n` +
+      `${donde(datos)}\n\n` +
       `Podés verlo acá:\n${datos.urlGestion}`,
   }),
 

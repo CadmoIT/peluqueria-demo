@@ -7,10 +7,16 @@ import {
   buscarSucursal,
   listarProfesionalesDeServicio,
   listarServiciosDeSucursal,
+  configuracionDelNegocio,
   listarSucursales,
   type BaseDatos,
 } from '@manly/base-datos';
-import type { ProfesionalPublico, ServicioPublico, SucursalPublica } from '@manly/contratos';
+import type {
+  ConfiguracionPublica,
+  ProfesionalPublico,
+  ServicioPublico,
+  SucursalPublica,
+} from '@manly/contratos';
 
 import { BASE_DATOS } from '../../comun/base-datos/base-datos.modulo';
 
@@ -20,6 +26,15 @@ export class CatalogoServicio {
 
   listarSucursales(): Promise<SucursalPublica[]> {
     return listarSucursales(this.bd);
+  }
+
+  /** Si el sitio está tomando reservas, y qué decir cuando no. */
+  async configuracionPublica(): Promise<ConfiguracionPublica> {
+    const { reservasOnlineActivas, mensajeReservasCerradas } = await configuracionDelNegocio(
+      this.bd,
+    );
+
+    return { reservasOnlineActivas, mensajeReservasCerradas };
   }
 
   async serviciosDeSucursal(sucursalId: string): Promise<ServicioPublico[]> {

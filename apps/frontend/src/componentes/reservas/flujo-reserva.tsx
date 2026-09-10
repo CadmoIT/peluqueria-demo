@@ -9,7 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
-import { cn, Contenedor } from '@manly/interfaz';
+import { cn, Contenedor, EnlaceBoton } from '@manly/interfaz';
 import type { OpcionDisponibilidad } from '@manly/contratos';
 
 import { Paso } from '@/componentes/reservas/paso';
@@ -17,7 +17,13 @@ import { ResumenReserva } from '@/componentes/reservas/resumen-reserva';
 import { TarjetaOpcion } from '@/componentes/reservas/tarjeta-opcion';
 import { FormularioDatos } from '@/componentes/reservas/formulario-datos';
 import { usarFlujoReserva } from '@/caracteristicas/reservas/usar-flujo-reserva';
-import { obtenerProfesionales, obtenerServicios, obtenerSucursales } from '@/servicios/catalogo';
+import { RUTAS } from '@/utilidades/rutas';
+import {
+  obtenerConfiguracionPublica,
+  obtenerProfesionales,
+  obtenerServicios,
+  obtenerSucursales,
+} from '@/servicios/catalogo';
 import { buscarDisponibilidad, retenerHorario } from '@/servicios/reservas';
 import {
   claveDelDia,
@@ -38,6 +44,15 @@ export function FlujoReserva({ sucursalInicial }: { sucursalInicial?: string }) 
   const { estado, totales } = flujo;
 
   const sucursales = useQuery({ queryKey: ['sucursales'], queryFn: obtenerSucursales });
+
+  // Si el local cerró las reservas online, se dice acá y no se dibuja el flujo.
+  // Lo que de verdad corta es la API —el interruptor se comprueba al retener—,
+  // pero hacer pasar a alguien por cuatro pasos para que el último le diga que
+  // no es una falta de respeto por su tiempo.
+  const configuracion = useQuery({
+    queryKey: ['configuracion-publica'],
+    queryFn: obtenerConfiguracionPublica,
+  });
 
   const servicios = useQuery({
     queryKey: ['servicios', estado.sucursalId],
@@ -104,6 +119,23 @@ export function FlujoReserva({ sucursalInicial }: { sucursalInicial?: string }) 
   const [diaAbierto, setDiaAbierto] = useState<string | null>(null);
   const diaElegido = diaAbierto ?? porDia[0]?.[0] ?? null;
   const opcionesDelDia = porDia.find(([dia]) => dia === diaElegido)?.[1] ?? [];
+
+  if (configuracion.data && !configuracion.data.reservasOnlineActivas) {
+    return (
+      <Contenedor className="py-seccion max-w-3xl">
+        <h1 className="text-titulo">Reservá tu turno</h1>
+
+        <p className="text-guia text-grafito mt-6">
+          {configuracion.data.mensajeReservasCerradas ??
+            'Por ahora no estamos tomando turnos online. Escribinos y lo vemos.'}
+        </p>
+
+        <EnlaceBoton href={RUTAS.contacto} variante="contorno" className="mt-8">
+          Cómo contactarnos
+        </EnlaceBoton>
+      </Contenedor>
+    );
+  }
 
   return (
     <Contenedor className="py-seccion max-w-3xl">

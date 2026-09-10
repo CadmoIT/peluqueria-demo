@@ -1,7 +1,12 @@
 // Rutas del catálogo público.
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import type { ProfesionalPublico, ServicioPublico, SucursalPublica } from '@manly/contratos';
+import type {
+  ConfiguracionPublica,
+  ProfesionalPublico,
+  ServicioPublico,
+  SucursalPublica,
+} from '@manly/contratos';
 
 import { CatalogoServicio } from './catalogo.servicio';
 import { SinSesion } from '../../comun/decoradores/sesion.decorador';
@@ -13,6 +18,19 @@ import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 @Controller()
 export class CatalogoControlador {
   constructor(private readonly catalogo: CatalogoServicio) {}
+
+  /**
+   * Si el sitio está tomando reservas.
+   *
+   * Es una consulta aparte y no un campo de `/sucursales` porque la respuesta
+   * cambia por una decisión del local, no por el catálogo: mezclarlas obligaría
+   * a invalidar el catálogo entero cada vez que se toca el interruptor.
+   */
+  @Get('configuracion-publica')
+  @ApiOperation({ summary: 'Si el sitio está tomando reservas' })
+  configuracionPublica(): Promise<ConfiguracionPublica> {
+    return this.catalogo.configuracionPublica();
+  }
 
   @Get('sucursales')
   @ApiOperation({ summary: 'Sucursales activas' })

@@ -7,6 +7,7 @@
     "dev": "nest start --watch",
     "dev:memoria": "nest build && node dist/principal-memoria.js",
     "invitar": "nest build && node dist/invitar-usuario.js",
+    "verificar": "nest build && node dist/verificar-entorno.js",
     "build": "nest build",
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",

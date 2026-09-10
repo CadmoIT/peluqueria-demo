@@ -459,6 +459,8 @@ export interface ConfiguracionEditable {
   horasRecordatorioPrimero: number;
   horasRecordatorioSegundo: number | null;
   zonaHoraria: string;
+  reservasOnlineActivas: boolean;
+  mensajeReservasCerradas: string | null;
 }
 
 export async function leerConfiguracion(bd: BaseDatos): Promise<ConfiguracionEditable | null> {
@@ -471,6 +473,8 @@ export async function leerConfiguracion(bd: BaseDatos): Promise<ConfiguracionEdi
       horasRecordatorioPrimero: configuracionNegocio.horasRecordatorioPrimero,
       horasRecordatorioSegundo: configuracionNegocio.horasRecordatorioSegundo,
       zonaHoraria: configuracionNegocio.zonaHoraria,
+      reservasOnlineActivas: configuracionNegocio.reservasOnlineActivas,
+      mensajeReservasCerradas: configuracionNegocio.mensajeReservasCerradas,
     })
     .from(configuracionNegocio)
     .limit(1);

@@ -40,10 +40,22 @@
      Si se cambia alguno de estos valores hay que volver a medir. La prueba de
      `contraste.spec.ts` deja los números fijados. */
 
-  /* Estados. Se usan sólo para retroalimentación, nunca como decoración. */
-  --color-exito: oklch(0.55 0.13 155);
-  --color-atencion: oklch(0.68 0.15 75);
-  --color-error: oklch(0.55 0.2 27);
+  /* Estados. Se usan sólo para retroalimentación, nunca como decoración.
+
+     Van más oscuros de lo que pediría el gusto porque cada uno se usa de dos
+     formas a la vez: como texto sobre su propio fondo teñido al 10 % y como
+     relleno con texto claro encima. Las dos tienen que llegar a 4.5:1, y la
+     primera es la exigente —el fondo teñido acerca el texto al fondo—.
+
+       error     #bb0916  5.47:1 como texto   6.36:1 como relleno
+       exito     #006e3b  5.25:1              6.10:1
+       atencion  #8d5500  5.08:1              5.86:1
+
+     Los valores anteriores daban 4.41, 4.02 y 2.68 como texto: el aviso de
+     error del panel quedaba por debajo y el de atención, ilegible. */
+  --color-exito: oklch(0.47 0.12 155);
+  --color-atencion: oklch(0.5 0.13 75);
+  --color-error: oklch(0.5 0.2 27);
 
   /* ── Tipografía ─────────────────────────────────────────────────────────
      Las variables --fuente-* las inyecta next/font desde el layout raíz. */
