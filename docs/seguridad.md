@@ -105,6 +105,47 @@ La web **todavía no manda una política de contenido propia**. Una CSP mal arma
 rompe el sitio de formas difíciles de detectar, así que merece encenderse contra
 staging y no a ciegas. Queda pendiente para la fase 10.
 
+## Reporte de errores
+
+Sentry, en las tres aplicaciones. **Sin `SENTRY_DSN` no hace nada**: desarrollo
+y las pruebas corren sin mandar un solo evento, igual que la pasarela simulada.
+
+Reportar errores es mandarle a un tercero fragmentos de lo que pasaba cuando
+algo falló, y acá eso incluye cosas que no pueden salir. La política vive en
+`@manly/observabilidad` y es la única barrera:
+
+| Qué                                     | Qué se manda          |
+| --------------------------------------- | --------------------- |
+| Token del enlace de gestión (en la URL) | `[oculto]`            |
+| Tokens de invitación y recuperación     | `[oculto]`            |
+| Cuerpo de la petición                   | Se descarta entero    |
+| Cookies y cadena de consulta            | Se descartan enteras  |
+| Nombre, teléfono y correo del cliente   | `[oculto]`            |
+| Usuario del panel                       | Sólo el identificador |
+| Ruta, método y excepción                | Completos             |
+
+El token del enlace de gestión es el caso importante: **no es un identificador,
+es la credencial**. Quien lo tenga puede ver y cancelar el turno de otra
+persona, y viaja en la URL. Una URL sin limpiar guardada en el panel de un
+proveedor es una llave dejada en la vereda.
+
+La limpieza va por lista de claves prohibidas y **tapa de más antes que de
+menos**: `servicioNombre` es "Corte" y no el nombre de nadie, pero contiene
+«nombre» y cae igual. El costo es un reporte menos informativo; el de
+equivocarse al revés es el nombre de un cliente en el servidor de un tercero.
+
+Quedan apagadas la medición de rendimiento y la grabación de sesión. La segunda
+graba lo que la persona ve y escribe: en el formulario de reserva, su nombre,
+su teléfono y su correo.
+
+Sólo se reportan los 5xx. Un 404, un 401 o un 409 son respuestas correctas a
+pedidos que no correspondían; reportarlos ahogaría la señal.
+
+**Cómo se verificó:** mandando un evento de prueba a un receptor local y
+leyendo el JSON que salía. Así apareció que `contexts` no se estaba limpiando
+—alcanzaba un `setContext('reserva', reserva)` para mandar los datos del
+cliente—, algo que revisando el código no se veía: la política parecía completa.
+
 ## Lo que el arranque no perdona
 
 En producción la API **no arranca** si:
@@ -147,3 +188,6 @@ Estado al cerrar la fase 9:
 - Política de contenido en la web.
 - Subir a NestJS 11, que cierra cinco advertencias de una.
 - Rotación de credenciales documentada como procedimiento.
+- Subir los mapas de fuentes a Sentry. Necesita un token de organización; sin
+  ellos, las trazas del navegador llegan minificadas y sirven la mitad. Cuando
+  se active hay que poner `@sentry/cli: true` en `pnpm-workspace.yaml`.

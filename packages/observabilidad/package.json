@@ -1,0 +1,30 @@
+{
+  "name": "@manly/observabilidad",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Politica de reporte de errores: que se manda y que nunca sale",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "typecheck": "tsc --noEmit --tsBuildInfoFile .typecheck.tsbuildinfo",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "limpiar": "rm -rf dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@manly/configuracion": "workspace:*",
+    "eslint": "^9.17.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "@manly/configuracion/tsconfig/biblioteca",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.spec.ts"]
+}

@@ -46,6 +46,10 @@ Antes de desplegar tienen que estar cargadas:
 | `URL_PUBLICA_API`         | Es la dirección a la que Mercado Pago manda las notificaciones |
 | `ORIGENES_PERMITIDOS`     | Sin el dominio real, el sitio no puede hablarle a la API       |
 
+`SENTRY_DSN` (API y worker) y `NEXT_PUBLIC_SENTRY_DSN` (web) no bloquean el
+arranque, pero sin ellos nadie se entera de los errores: el arranque lo deja
+dicho en el registro con un `Reporte de errores: APAGADO`.
+
 Las faltas se informan todas juntas en un solo error. Ver
 [seguridad.md](seguridad.md) para el detalle de qué deja abierto cada una.
 

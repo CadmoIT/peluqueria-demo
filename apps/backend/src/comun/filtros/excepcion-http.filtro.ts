@@ -1,5 +1,10 @@
 // Normaliza todas las respuestas de error de la API a una forma única,
 // para que la web pueda tratarlas sin conocer el origen de la excepción.
+//
+// Es además el punto por donde se reporta al servicio de errores. **Sólo los
+// 5xx**: un 404, un 401 o un 409 no son fallas del sistema sino respuestas
+// correctas a pedidos que no correspondían, y reportarlos ahoga la señal —el
+// panel se llenaría de "401" cada vez que a alguien se le vence la sesión—.
 import {
   type ArgumentsHost,
   Catch,
@@ -9,6 +14,10 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+
+import { limpiarUrl } from '@manly/observabilidad';
+
+import { reportarExcepcion } from '../../configuracion/observabilidad';
 
 export interface RespuestaError {
   estado: number;
@@ -31,8 +40,18 @@ export class ExcepcionHttpFiltro implements ExceptionFilter {
     const esHttp = excepcion instanceof HttpException;
     const estado = esHttp ? excepcion.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    if (!esHttp) {
-      this.registro.error('Excepción no controlada', excepcion);
+    if (estado >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      if (!esHttp) {
+        this.registro.error('Excepción no controlada', excepcion);
+      }
+
+      // La ruta va limpia: el token del enlace de gestión viaja en la URL y es
+      // la credencial de la reserva, no un identificador.
+      reportarExcepcion(excepcion, {
+        ruta: limpiarUrl(peticion.url),
+        metodo: peticion.method,
+        usuarioId: (peticion as Request & { usuario?: { id: string } }).usuario?.id,
+      });
     }
 
     // Una excepción HTTP puede llevar un objeto como cuerpo, que es donde la

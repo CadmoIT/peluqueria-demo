@@ -19,6 +19,7 @@
   "dependencies": {
     "@manly/base-datos": "workspace:*",
     "@manly/contratos": "workspace:*",
+    "@manly/observabilidad": "workspace:*",
     "@nestjs/common": "^10.4.15",
     "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.4.15",
@@ -26,6 +27,7 @@
     "@nestjs/swagger": "^8.1.0",
     "@nestjs/throttler": "^6.3.0",
     "@node-rs/argon2": "^2.2.0",
+    "@sentry/node": "10.74.0",
     "cookie-parser": "^1.4.7",
     "helmet": "^8.0.0",
     "luxon": "^3.7.2",

@@ -1,6 +1,14 @@
 // Arranque de la API: seguridad, CORS, prefijo de rutas y documentación OpenAPI.
 import 'reflect-metadata';
 
+// Antes que todo lo demás: el SDK de errores instrumenta módulos de Node y
+// tiene que cargarse antes de que alguien los use. Después funciona a medias y
+// no avisa de que quedó a medias.
+import { cerrarObservabilidad, iniciarObservabilidad } from './configuracion/observabilidad';
+
+const observabilidadActiva = iniciarObservabilidad();
+
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -62,7 +70,24 @@ async function arrancar(): Promise<void> {
     );
   }
 
+  // Queda dicho en el registro: descubrir que el reporte de errores no estaba
+  // andando el día que hace falta es tarde.
+  new Logger('Arranque').warn(
+    observabilidadActiva
+      ? 'Reporte de errores: activo.'
+      : 'Reporte de errores: APAGADO. Falta SENTRY_DSN.',
+  );
+
   await aplicacion.listen(puerto, '0.0.0.0');
+
+  // Deja salir lo que quedó en la cola de errores antes de apagar. Sin esto, el
+  // error que tiró el proceso justo antes de reiniciarse es el que no llega, y
+  // es el que más falta hace.
+  for (const senial of ['SIGTERM', 'SIGINT'] as const) {
+    process.once(senial, () => {
+      void cerrarObservabilidad();
+    });
+  }
 }
 
 arrancar().catch((error: unknown) => {

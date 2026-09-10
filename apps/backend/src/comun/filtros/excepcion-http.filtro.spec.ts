@@ -4,24 +4,36 @@
 // cliente recibe un "Bad Request" pelado y no sabe qué campo corregir.
 import { BadRequestException, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import type { ArgumentsHost } from '@nestjs/common';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ExcepcionHttpFiltro, type RespuestaError } from './excepcion-http.filtro';
 
+// El reporte al servicio de errores se intercepta: lo que se verifica es qué
+// se le manda, no que llegue a ningún lado.
+const reportar = vi.fn();
+
+vi.mock('../../configuracion/observabilidad', () => ({
+  reportarExcepcion: (excepcion: unknown, contexto: unknown) => reportar(excepcion, contexto),
+}));
+
 /** Simula lo mínimo de Express que el filtro usa. */
-function armarHost(ruta = '/api/v1/algo') {
+function armarHost(ruta = '/api/v1/algo', metodo = 'GET') {
   const json = vi.fn();
   const status = vi.fn(() => ({ json }));
 
   const host = {
     switchToHttp: () => ({
       getResponse: () => ({ status }),
-      getRequest: () => ({ url: ruta }),
+      getRequest: () => ({ url: ruta, method: metodo }),
     }),
   } as unknown as ArgumentsHost;
 
   return { host, status, json, cuerpo: () => json.mock.calls[0]?.[0] as RespuestaError };
 }
+
+beforeEach(() => {
+  reportar.mockClear();
+});
 
 describe('ExcepcionHttpFiltro', () => {
   it('conserva el detalle de una validación fallida', () => {
@@ -78,5 +90,64 @@ describe('ExcepcionHttpFiltro', () => {
 
     expect(cuerpo().ruta).toBe('/api/v1/reservas');
     expect(new Date(cuerpo().marcaTiempo).toISOString()).toBe(cuerpo().marcaTiempo);
+  });
+});
+
+describe('qué se reporta al servicio de errores', () => {
+  it('reporta una excepción no controlada', () => {
+    // Un 500 es una falla del sistema: alguien tiene que enterarse sin esperar
+    // a que un cliente reclame.
+    const { host } = armarHost();
+
+    new ExcepcionHttpFiltro().catch(new Error('la base se cayó'), host);
+
+    expect(reportar).toHaveBeenCalledTimes(1);
+  });
+
+  it('no reporta un 404', () => {
+    // Un identificador que no existe no es una falla, es una respuesta
+    // correcta. Reportarlos ahoga la señal.
+    const { host } = armarHost();
+
+    new ExcepcionHttpFiltro().catch(new NotFoundException('No existe.'), host);
+
+    expect(reportar).not.toHaveBeenCalled();
+  });
+
+  it('no reporta un 401 ni un 409', () => {
+    // El panel se llenaría de "401" cada vez que a alguien se le vence la
+    // sesión, y de "409" cada vez que dos personas quieren el mismo horario:
+    // las dos cosas son el sistema funcionando.
+    for (const excepcion of [
+      new HttpException('Sin sesión.', HttpStatus.UNAUTHORIZED),
+      new HttpException('Horario tomado.', HttpStatus.CONFLICT),
+    ]) {
+      new ExcepcionHttpFiltro().catch(excepcion, armarHost().host);
+    }
+
+    expect(reportar).not.toHaveBeenCalled();
+  });
+
+  it('el token del enlace de gestión no sale en la ruta reportada', () => {
+    // Es la credencial de la reserva, y viaja en la URL. Sin limpiarla, cada
+    // error en esa ruta la deja en el servidor de un tercero.
+    const { host } = armarHost('/api/v1/mi-reserva/hnCYIt9GpWhxtscGnwd/cancelar', 'POST');
+
+    new ExcepcionHttpFiltro().catch(new Error('falla'), host);
+
+    const contexto = reportar.mock.calls[0]?.[1] as { ruta: string; metodo: string };
+
+    expect(contexto.ruta).toBe('/api/v1/mi-reserva/[oculto]/cancelar');
+    expect(contexto.metodo).toBe('POST');
+  });
+
+  it('la respuesta al cliente sí conserva la ruta completa', () => {
+    // Quien recibe el error es el dueño de esa reserva: esconderle su propio
+    // token no protege a nadie y complica entender qué pasó.
+    const { host, cuerpo } = armarHost('/api/v1/mi-reserva/TOKEN');
+
+    new ExcepcionHttpFiltro().catch(new Error('falla'), host);
+
+    expect(cuerpo().ruta).toBe('/api/v1/mi-reserva/TOKEN');
   });
 });

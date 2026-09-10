@@ -16,6 +16,8 @@
   "dependencies": {
     "@manly/base-datos": "workspace:*",
     "@manly/contratos": "workspace:*",
+    "@manly/observabilidad": "workspace:*",
+    "@sentry/node": "10.74.0",
     "luxon": "^3.7.2",
     "pg-boss": "^10.1.6",
     "zod": "^3.24.1"

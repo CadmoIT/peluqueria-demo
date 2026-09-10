@@ -12,3 +12,23 @@ allowBuilds:
   unrs-resolver: true
   # Telemetría de instalación: se deniega explícitamente.
   '@scarf/scarf': false
+  # Descarga un binario en la instalación. Sólo hace falta para subir los mapas
+  # de fuentes a Sentry, que necesita un token de organización que todavía no
+  # existe. Cuando se active, esto pasa a true: sin mapas, las trazas del
+  # navegador llegan minificadas y sirven la mitad.
+  '@sentry/cli': false
+
+minimumReleaseAgeExclude:
+  - '@sentry/core@10.74.0'
+  - '@sentry/node-core@10.74.0'
+  - '@sentry/node@10.74.0'
+  - '@sentry/opentelemetry@10.74.0'
+  - '@sentry/server-utils@10.74.0'
+  - '@sentry/browser-utils@10.74.0'
+  - '@sentry/browser@10.74.0'
+  - '@sentry/feedback@10.74.0'
+  - '@sentry/nextjs@10.74.0'
+  - '@sentry/react@10.74.0'
+  - '@sentry/replay-canvas@10.74.0'
+  - '@sentry/replay@10.74.0'
+  - '@sentry/vercel-edge@10.74.0'

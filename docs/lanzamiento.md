@@ -20,6 +20,7 @@ se cobra ni sale un solo mensaje.
 | Aprobación de las 7 plantillas  | Que los avisos salgan          | Meta              | **Semanas**   |
 | Dominio verificado en Resend    | Mandar avisos por correo       | Manly             | Horas         |
 | Dominio del sitio               | Publicar                       | Manly             | —             |
+| Proyecto en Sentry              | Enterarse de los errores       | Manly             | Minutos       |
 | Fotos de fachada y equipo       | Sacar los respaldos del sitio  | Manly             | —             |
 | Direcciones, teléfonos, precios | Reemplazar los de demostración | Manly             | —             |
 
@@ -131,7 +132,8 @@ Lo que hay que mirar todos los días, y dónde:
 | Avisos que no llegaron        | `Panel → Avisos`      | Vacío                    |
 | Solicitudes sin resolver      | `Panel → Solicitudes` | Ninguna de más de un día |
 | Turnos con seña sin acreditar | `Panel → Estado`      | Bajando solo             |
-| Errores del servidor          | Railway               | Ninguno nuevo            |
+| Errores de la API y la web    | Sentry                | Ninguno nuevo            |
+| Errores del proceso de fondo  | Sentry, etiqueta cola | Ninguno nuevo            |
 
 La pantalla de estado se refresca sola cada 30 segundos: se puede dejar abierta.
 
