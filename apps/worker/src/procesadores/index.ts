@@ -4,6 +4,7 @@ import type PgBoss from 'pg-boss';
 
 import { COLAS } from '../trabajos/index';
 import { expirarRetenciones } from './expirar-retenciones';
+import { despacharNotificaciones } from './despachar-notificaciones';
 import { reconciliarPagos } from './reconciliar-pagos';
 
 export async function registrarProcesadores(cola: PgBoss): Promise<void> {
@@ -12,7 +13,7 @@ export async function registrarProcesadores(cola: PgBoss): Promise<void> {
   });
 
   await cola.work(COLAS.despacharBandejaSalida, async () => {
-    // Pendiente: Fase 7 — reintentar notificaciones de la bandeja de salida.
+    await despacharNotificaciones();
   });
 
   await cola.work(COLAS.reconciliarPagos, async () => {

@@ -7,7 +7,7 @@
 // El motor de disponibilidad ya ignora las retenciones vencidas al calcular,
 // así que un retraso de este trabajo no le muestra horarios ocupados a nadie:
 // esto es lo que deja la base ordenada.
-import { expirarRetencionesVencidas } from '@manly/base-datos';
+import { descartarRetenidasDeReserva, expirarRetencionesVencidas } from '@manly/base-datos';
 
 import { obtenerConexion } from '../configuracion/base-datos';
 
@@ -16,7 +16,15 @@ export async function expirarRetenciones(): Promise<number> {
   const expiradas = await expirarRetencionesVencidas(bd);
 
   if (expiradas.length > 0) {
-    console.warn(`Retenciones expiradas: ${String(expiradas.length)}`);
+    // Los avisos que estaban preparados esperando el pago ya no tienen sentido:
+    // el turno se liberó. Mandarlos diría que el turno está confirmado cuando
+    // ya no existe.
+    const descartadas = await descartarRetenidasDeReserva(bd, expiradas);
+
+    console.warn(
+      `Retenciones expiradas: ${String(expiradas.length)}. ` +
+        `Avisos descartados: ${String(descartadas)}.`,
+    );
   }
 
   return expiradas.length;
