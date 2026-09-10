@@ -13,4 +13,7 @@ export async function registrarTrabajosRecurrentes(
 
   // Cada cinco minutos: reintentar las notificaciones que quedaron pendientes.
   await cola.schedule(COLAS.despacharBandejaSalida, '*/5 * * * *', {}, { tz: zonaHoraria });
+
+  // Cada diez minutos: revisar los pagos que quedaron sin resolver.
+  await cola.schedule(COLAS.reconciliarPagos, '*/10 * * * *', {}, { tz: zonaHoraria });
 }

@@ -1,6 +1,8 @@
 // Llamadas del flujo de reserva y de la gestión sin cuenta.
 import type {
   BusquedaDisponibilidad,
+  EstadoDelPago,
+  PreferenciaCreada,
   PedidoConfirmacion,
   PedidoRetencion,
   RespuestaDisponibilidad,
@@ -43,4 +45,15 @@ export function cancelarReserva(token: string, motivo?: string): Promise<Resulta
     method: 'POST',
     body: JSON.stringify({ motivo }),
   });
+}
+
+export function crearPreferenciaPago(token: string): Promise<PreferenciaCreada> {
+  return consultarApi<PreferenciaCreada>('/pagos/mercado-pago/preferencia', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  });
+}
+
+export function consultarEstadoPago(token: string): Promise<EstadoDelPago> {
+  return consultarApi<EstadoDelPago>(`/pagos/estado/${encodeURIComponent(token)}`);
 }

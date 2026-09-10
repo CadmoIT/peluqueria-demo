@@ -17,7 +17,7 @@ import {
 } from '@manly/contratos';
 
 import { ErrorApi } from '@/servicios/api';
-import { confirmarReserva } from '@/servicios/reservas';
+import { confirmarReserva, crearPreferenciaPago } from '@/servicios/reservas';
 
 interface Propiedades {
   opcion: OpcionDisponibilidad;
@@ -45,6 +45,24 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
       const retencion = await retener();
 
       await confirmarReserva({ token: retencion.token, cliente: datos });
+
+      // Con seña, el turno todavía no está confirmado: hay que pagarla. Se sale
+      // del sitio hacia el checkout de la pasarela, que es quien maneja los
+      // datos de la tarjeta.
+      if (opcion.seniaTotalCentavos > 0) {
+        const preferencia = await crearPreferenciaPago(retencion.token);
+
+        // Se guarda el token antes de irse, para poder volver a la reserva
+        // aunque la pasarela pierda la URL de retorno.
+        try {
+          window.sessionStorage.setItem('manly.ultima-reserva', retencion.token);
+        } catch {
+          // Navegación privada o almacenamiento bloqueado: no es crítico.
+        }
+
+        window.location.assign(preferencia.urlPago);
+        return;
+      }
 
       onListo(retencion.token);
     } catch (error: unknown) {

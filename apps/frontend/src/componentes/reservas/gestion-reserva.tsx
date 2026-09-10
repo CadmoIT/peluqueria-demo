@@ -5,12 +5,17 @@
 // No hay cuenta ni contraseña: el token del enlace es la credencial. Por eso la
 // página se marca como no indexable y el token no se muestra en pantalla.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cn, Contenedor } from '@manly/interfaz';
 
 import { ErrorApi } from '@/servicios/api';
-import { cancelarReserva, consultarReserva } from '@/servicios/reservas';
+import {
+  cancelarReserva,
+  consultarEstadoPago,
+  consultarReserva,
+  crearPreferenciaPago,
+} from '@/servicios/reservas';
 import { formatearDiaYHora, formatearHora, formatearPrecio } from '@/utilidades/formato';
 
 const ETIQUETA_ESTADO: Record<string, string> = {
@@ -31,6 +36,37 @@ export function GestionReserva({ token, esNueva }: { token: string; esNueva: boo
     queryKey: ['reserva', token],
     queryFn: () => consultarReserva(token),
     retry: false,
+  });
+
+  // Mientras falta la seña se consulta el estado cada pocos segundos: la
+  // notificación de la pasarela puede demorar y la persona ya está mirando
+  // esta pantalla esperando la confirmación.
+  const pago = useQuery({
+    queryKey: ['pago', token],
+    queryFn: () => consultarEstadoPago(token),
+    enabled: reserva.data?.estado === 'pendiente_pago',
+    refetchInterval: (consulta) =>
+      consulta.state.data?.esperandoConfirmacion === true ? 4000 : false,
+    retry: false,
+  });
+
+  // Cuando el pago se acredita, se refresca la reserva para mostrarla confirmada.
+  useEffect(() => {
+    if (pago.data?.reservaConfirmada === true) {
+      void clienteConsultas.invalidateQueries({ queryKey: ['reserva', token] });
+    }
+  }, [pago.data?.reservaConfirmada, clienteConsultas, token]);
+
+  const reintentoPago = useMutation({
+    mutationFn: () => crearPreferenciaPago(token),
+    onSuccess: (preferencia) => {
+      window.location.assign(preferencia.urlPago);
+    },
+    onError: (error: unknown) => {
+      setAviso(
+        error instanceof ErrorApi ? error.message : 'No pudimos abrir el pago. Probá de nuevo.',
+      );
+    },
   });
 
   const cancelacion = useMutation({
@@ -122,6 +158,34 @@ export function GestionReserva({ token, esNueva }: { token: string; esNueva: boo
           {datos.sucursal.nombre} · {datos.sucursal.direccion}
         </p>
       </section>
+
+      {datos.estado === 'pendiente_pago' ? (
+        <section className="border-atencion rounded-tarjeta mt-8 border p-5">
+          <h2 className="text-subtitulo">Falta pagar la seña</h2>
+
+          <p className="text-menor text-grafito mt-2">
+            Tu turno queda reservado hasta que se acredite el pago de{' '}
+            {formatearPrecio(datos.seniaTotalCentavos)}.
+          </p>
+
+          {pago.data?.esperandoConfirmacion === true ? (
+            <p role="status" className="text-menor mt-4">
+              Estamos esperando la confirmación del pago…
+            </p>
+          ) : null}
+
+          <button
+            type="button"
+            disabled={reintentoPago.isPending}
+            onClick={() => {
+              reintentoPago.mutate();
+            }}
+            className="versales bg-tinta text-lino rounded-manly text-menor mt-5 inline-flex min-h-11 items-center px-6 disabled:opacity-45"
+          >
+            {reintentoPago.isPending ? 'Abriendo…' : 'Pagar la seña'}
+          </button>
+        </section>
+      ) : null}
 
       {aviso ? (
         <p role="status" className="border-borde rounded-manly text-menor mt-6 border p-4">

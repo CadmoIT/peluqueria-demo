@@ -9,6 +9,8 @@ export const COLAS = {
   recordatorioSegundo: 'notificaciones.recordatorio-segundo',
   /** Reintenta las notificaciones pendientes de la bandeja de salida. */
   despacharBandejaSalida: 'notificaciones.despachar-bandeja-salida',
+  /** Vuelve a consultar los pagos que quedaron sin resolver. */
+  reconciliarPagos: 'pagos.reconciliar',
 } as const;
 
 export type NombreCola = (typeof COLAS)[keyof typeof COLAS];
