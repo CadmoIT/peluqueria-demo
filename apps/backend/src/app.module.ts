@@ -8,6 +8,7 @@ import { BaseDatosModulo } from './comun/base-datos/base-datos.modulo';
 import { validarEntorno } from './configuracion/entorno';
 import { CatalogoModulo } from './modulos/catalogo/catalogo.modulo';
 import { DisponibilidadModulo } from './modulos/disponibilidad/disponibilidad.modulo';
+import { PagosModulo } from './modulos/pagos/pagos.modulo';
 import { ReservasModulo } from './modulos/reservas/reservas.modulo';
 import { SaludModulo } from './modulos/salud/salud.modulo';
 
@@ -28,6 +29,7 @@ import { SaludModulo } from './modulos/salud/salud.modulo';
     DisponibilidadModulo,
     CatalogoModulo,
     ReservasModulo,
+    PagosModulo,
   ],
 })
 export class AppModule {}

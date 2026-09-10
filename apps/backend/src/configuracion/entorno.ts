@@ -15,6 +15,15 @@ const esquemaEntorno = z.object({
   SECRETO_SESION: z.string().min(32).optional(),
   SECRETO_TOKEN_RESERVA: z.string().min(32).optional(),
 
+  // ── Web y pagos ──────────────────────────────────────────────────────────
+  NEXT_PUBLIC_URL_PUBLICA: z.string().default('http://localhost:3000'),
+  /** URL desde la que la pasarela alcanza esta API para notificar. */
+  URL_PUBLICA_API: z.string().default('http://localhost:3001/api/v1'),
+
+  /** Sin token se usa la pasarela simulada y no se cobra dinero real. */
+  MP_ACCESS_TOKEN: z.string().optional(),
+  MP_SECRETO_WEBHOOK: z.string().default('secreto-de-desarrollo'),
+
   SENTRY_DSN: z.string().optional(),
 });
 
