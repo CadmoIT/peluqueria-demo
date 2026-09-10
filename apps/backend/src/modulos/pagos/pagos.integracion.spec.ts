@@ -22,6 +22,7 @@ import type { BloqueElegido } from '@manly/contratos';
 
 import { DisponibilidadServicio } from '../disponibilidad/disponibilidad.servicio';
 import { firmarNotificacion } from './dominio/firma-webhook';
+import { NotificacionesServicio } from '../notificaciones/notificaciones.servicio';
 import { ReservasServicio } from '../reservas/reservas.servicio';
 import { PagosServicio } from './pagos.servicio';
 import { SimuladaPasarela } from './pasarela/simulada.pasarela';
@@ -126,14 +127,15 @@ async function montar(): Promise<Contexto> {
 
   const bd = drizzle(cliente as never) as unknown as BaseDatos;
   const pasarela = new SimuladaPasarela('http://localhost:3001/api/v1');
+  const notificaciones = new NotificacionesServicio(bd, configuracionFalsa() as never);
 
   return {
     cerrar: () => cliente.close(),
     ejecutar,
     bd,
     disponibilidad: new DisponibilidadServicio(bd),
-    reservas: new ReservasServicio(bd),
-    pagos: new PagosServicio(bd, pasarela, configuracionFalsa() as never),
+    reservas: new ReservasServicio(bd, notificaciones),
+    pagos: new PagosServicio(bd, pasarela, configuracionFalsa() as never, notificaciones),
     pasarela,
     ids: { sucursalId, conSeniaId, sinSeniaId, anaId },
   };

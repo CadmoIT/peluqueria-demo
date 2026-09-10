@@ -14,6 +14,7 @@ import { CARPETA_MIGRACIONES, SEPARADOR_SENTENCIAS, type BaseDatos } from '@manl
 import type { BloqueElegido } from '@manly/contratos';
 
 import { DisponibilidadServicio } from '../disponibilidad/disponibilidad.servicio';
+import { NotificacionesServicio } from '../notificaciones/notificaciones.servicio';
 import { ReservasServicio } from './reservas.servicio';
 
 interface Contexto {
@@ -36,6 +37,11 @@ function proximoJueves(): string {
 }
 
 const JUEVES = proximoJueves();
+
+/** Configuración mínima: sólo hace falta la URL pública para armar el enlace. */
+function configuracionFalsa() {
+  return { get: () => 'http://localhost:3000' };
+}
 
 async function montar(): Promise<Contexto> {
   const { PGlite } = await import('@electric-sql/pglite');
@@ -101,12 +107,13 @@ async function montar(): Promise<Contexto> {
   );
 
   const bd = drizzle(cliente as never) as unknown as BaseDatos;
+  const notificaciones = new NotificacionesServicio(bd, configuracionFalsa() as never);
 
   return {
     cerrar: () => cliente.close(),
     ejecutar,
     disponibilidad: new DisponibilidadServicio(bd),
-    reservas: new ReservasServicio(bd),
+    reservas: new ReservasServicio(bd, notificaciones),
     ids: { sucursalId, corteId, conSeniaId, anaId, betoId },
   };
 }

@@ -8,6 +8,7 @@ import { Logger, Module, type Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import type { Entorno } from '../../configuracion/entorno';
+import { NotificacionesModulo } from '../notificaciones/notificaciones.modulo';
 import { PagosControlador } from './pagos.controlador';
 import { PagosServicio } from './pagos.servicio';
 import { MercadoPagoPasarela } from './pasarela/mercado-pago.pasarela';
@@ -59,6 +60,7 @@ const proveedorSimulada: Provider = {
 };
 
 @Module({
+  imports: [NotificacionesModulo],
   controllers: [PagosControlador, SimuladoControlador],
   providers: [PagosServicio, proveedorPasarela, proveedorSimulada],
   exports: [PagosServicio, PASARELA],

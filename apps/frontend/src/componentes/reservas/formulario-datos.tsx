@@ -153,6 +153,41 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
         </Campo>
       )}
 
+      {/*
+        Respaldo opcional. Si el canal elegido falla de forma definitiva —un
+        número que no existe, un correo que rebota— el aviso se intenta por acá
+        antes de darlo por perdido. Sin este dato, esa reserva queda
+        incomunicada y hay que llamar por teléfono.
+      */}
+      {canal === 'whatsapp' ? (
+        <Campo
+          etiqueta="Email (opcional)"
+          ayuda="Por si no podemos avisarte por WhatsApp."
+          error={formulario.formState.errors.email?.message}
+        >
+          <input
+            type="email"
+            autoComplete="email"
+            {...formulario.register('email')}
+            className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+          />
+        </Campo>
+      ) : (
+        <Campo
+          etiqueta="WhatsApp (opcional)"
+          ayuda="Por si el correo no llega. Con código de país y sin espacios."
+          error={formulario.formState.errors.whatsapp?.message}
+        >
+          <input
+            type="tel"
+            inputMode="numeric"
+            autoComplete="tel"
+            {...formulario.register('whatsapp')}
+            className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+          />
+        </Campo>
+      )}
+
       <label className="text-menor flex items-start gap-3">
         <input
           type="checkbox"

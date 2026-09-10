@@ -25,6 +25,7 @@ import type { EstadoDelPago, PagoPresencial, PreferenciaCreada, Reintegro } from
 
 import { BASE_DATOS } from '../../comun/base-datos/base-datos.modulo';
 import type { Entorno } from '../../configuracion/entorno';
+import { NotificacionesServicio } from '../notificaciones/notificaciones.servicio';
 import { verificarFirmaWebhook } from './dominio/firma-webhook';
 import { PASARELA, type Pasarela } from './pasarela/pasarela';
 
@@ -45,6 +46,7 @@ export class PagosServicio {
     @Inject(BASE_DATOS) private readonly bd: BaseDatos,
     @Inject(PASARELA) private readonly pasarela: Pasarela,
     private readonly configuracion: ConfigService<Entorno, true>,
+    private readonly notificaciones: NotificacionesServicio,
   ) {}
 
   /** Crea el cobro de la seña y devuelve el enlace de pago. */
@@ -133,6 +135,16 @@ export class PagosServicio {
           ? `Reserva ${pago.reservaId} confirmada por pago acreditado.`
           : `Pago acreditado para ${pago.reservaId}, pero la reserva no estaba lista para confirmar.`,
       );
+
+      // Los avisos ya estaban preparados y retenidos desde que el cliente
+      // completó sus datos: acá sólo se liberan. Reconstruirlos no sería
+      // posible, porque el enlace de gestión lleva un token que en la base sólo
+      // existe hasheado.
+      if (confirmada) {
+        const liberadas = await this.notificaciones.alAcreditarsePago(pago.reservaId);
+
+        this.registro.warn(`Avisos liberados para ${pago.reservaId}: ${String(liberadas)}.`);
+      }
     }
 
     return { procesado: true };

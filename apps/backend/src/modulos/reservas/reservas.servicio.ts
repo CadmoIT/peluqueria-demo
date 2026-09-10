@@ -20,6 +20,7 @@ import {
   cancelarReserva,
   cargarContextoDisponibilidad,
   calcularSenia,
+  configuracionDelNegocio,
   completarReserva,
   crearSolicitudCambio,
   generarTokenGestion,
@@ -43,6 +44,7 @@ import type {
 } from '@manly/contratos';
 
 import { BASE_DATOS } from '../../comun/base-datos/base-datos.modulo';
+import { NotificacionesServicio } from '../notificaciones/notificaciones.servicio';
 import { calcularFranjasDeTrabajo } from '../disponibilidad/dominio/calendario';
 import { algunoContiene } from '../disponibilidad/dominio/intervalos';
 
@@ -50,7 +52,10 @@ const MINUTO = 60_000;
 
 @Injectable()
 export class ReservasServicio {
-  constructor(@Inject(BASE_DATOS) private readonly bd: BaseDatos) {}
+  constructor(
+    @Inject(BASE_DATOS) private readonly bd: BaseDatos,
+    private readonly notificaciones: NotificacionesServicio,
+  ) {}
 
   /** Retiene el horario elegido, antes de pedirle los datos al cliente. */
   async retener(pedido: PedidoRetencion): Promise<Retencion> {
@@ -121,6 +126,15 @@ export class ReservasServicio {
       throw new ConflictException('La reserva ya no se puede completar.');
     }
 
+    // Los avisos se preparan siempre acá, que es el único momento en el que se
+    // tiene el token en claro: en la base sólo queda su hash. Si falta pagar la
+    // seña quedan retenidos y los libera el pago.
+    const actualizada = await buscarReservaPorToken(this.bd, pedido.token);
+
+    if (actualizada) {
+      await this.avisarConfirmacion(actualizada, pedido.token, completada.estado !== 'confirmada');
+    }
+
     return this.consultar(pedido.token);
   }
 
@@ -158,6 +172,7 @@ export class ReservasServicio {
 
     if (puedeGestionarSolo(reserva)) {
       await cancelarReserva(this.bd, reserva.id);
+      await this.notificaciones.alCancelar(reserva, token);
 
       return {
         resultado: 'cancelada',
@@ -232,6 +247,12 @@ export class ReservasServicio {
       }
 
       throw error;
+    }
+
+    const actualizada = await buscarReservaPorToken(this.bd, token);
+
+    if (actualizada) {
+      await this.notificaciones.alReprogramar(actualizada, token, await this.horasDeRecordatorio());
     }
 
     return { resultado: 'reprogramada', mensaje: 'Listo, movimos tu turno.' };
@@ -354,6 +375,35 @@ export class ReservasServicio {
     }
 
     return { bloques, minutosRetencion: contexto.configuracion.minutosRetencion };
+  }
+
+  /** Encola el aviso de confirmación con los recordatorios configurados. */
+  private async avisarConfirmacion(
+    reserva: ReservaConDetalle,
+    token: string,
+    retenidas: boolean,
+  ): Promise<void> {
+    await this.notificaciones.alConfirmar(
+      reserva,
+      token,
+      await this.horasDeRecordatorio(),
+      retenidas,
+    );
+  }
+
+  /**
+   * Horas de anticipación de los recordatorios.
+   *
+   * Salen de la configuración del negocio para que gerencia pueda cambiarlas
+   * sin tocar código. El segundo puede estar apagado.
+   */
+  private async horasDeRecordatorio(): Promise<{ primero: number; segundo: number | null }> {
+    const configuracion = await configuracionDelNegocio(this.bd);
+
+    return {
+      primero: configuracion.horasRecordatorioPrimero,
+      segundo: configuracion.horasRecordatorioSegundo,
+    };
   }
 
   private aContratoPublico(reserva: ReservaConDetalle): ReservaPublica {
