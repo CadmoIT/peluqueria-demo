@@ -1,7 +1,8 @@
 // Rutas de pago.
 //
 // El endpoint del webhook es público y no autenticado: lo que lo protege es la
-// firma, no una credencial.
+// firma, no una credencial. Tampoco se le aplica límite de peticiones —ver el
+// comentario en la ruta—.
 import {
   Body,
   Controller,
@@ -25,6 +26,7 @@ import {
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import { PagosServicio } from './pagos.servicio';
 import { SinSesion } from '../../comun/decoradores/sesion.decorador';
+import { SkipThrottle } from '@nestjs/throttler';
 
 /** Forma del cuerpo que manda Mercado Pago. Los nombres los impone el proveedor. */
 interface CuerpoNotificacion {
@@ -63,6 +65,15 @@ export class PagosControlador {
    * preferible a eso: lo que no se procesó queda registrado y lo levanta la
    * reconciliación del worker.
    */
+  /**
+   * Notificación de Mercado Pago.
+   *
+   * **Sin límite de peticiones.** Mercado Pago reintenta con insistencia, y un
+   * 429 acá significa que una reserva pagada no se confirma nunca. Lo que la
+   * protege es la firma: un cuerpo sin firma válida se rechaza antes de tocar
+   * la base, así que inundar este endpoint no logra nada más que gastar CPU.
+   */
+  @SkipThrottle()
   @Post('webhooks/mercado-pago')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Recibe las notificaciones de pago de Mercado Pago' })

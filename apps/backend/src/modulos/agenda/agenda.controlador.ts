@@ -30,6 +30,7 @@ import type { Request } from 'express';
 
 import { Roles, Usuario } from '../../comun/decoradores/sesion.decorador';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
+import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
 import { AgendaServicio } from './agenda.servicio';
 
@@ -90,7 +91,7 @@ export class AgendaControlador {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Levanta un bloqueo' })
   async borrarBloqueo(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('ese bloqueo')) id: string,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
   ): Promise<{ ok: true }> {

@@ -34,6 +34,7 @@ import type { Request } from 'express';
 
 import { Roles, Usuario } from '../../comun/decoradores/sesion.decorador';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
+import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
 import { AdministracionServicio } from './administracion.servicio';
 
@@ -79,7 +80,7 @@ export class AdministracionControlador {
   @Patch('sucursales/:id')
   @ApiOperation({ summary: 'Modifica una sucursal' })
   async actualizarSucursal(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('esa sucursal')) id: string,
     @Body(new ValidacionZodTuberia(esquemaCambioSucursal)) datos: CambioSucursal,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
@@ -140,7 +141,7 @@ export class AdministracionControlador {
   @Patch('servicios/:id')
   @ApiOperation({ summary: 'Modifica un servicio' })
   async actualizarServicio(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('ese servicio')) id: string,
     @Body(new ValidacionZodTuberia(esquemaDatosServicio)) datos: DatosServicioPanel,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
@@ -198,7 +199,7 @@ export class AdministracionControlador {
   @Patch('profesionales/:id')
   @ApiOperation({ summary: 'Modifica un profesional' })
   async actualizarProfesional(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('ese profesional')) id: string,
     @Body(new ValidacionZodTuberia(esquemaDatosProfesional)) datos: DatosProfesionalPanel,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,

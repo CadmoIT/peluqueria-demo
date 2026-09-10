@@ -1,5 +1,9 @@
 // Rutas de acceso al panel.
 //
+// Las cuatro rutas que verifican credenciales llevan `@LimiteAcceso()`. Argon2id
+// hace lenta cada verificación, pero nada impide probar toda la noche: el límite
+// es lo que convierte "probar un diccionario" en algo que lleva años.
+//
 // La sesión viaja en una cookie `httpOnly`: el JavaScript de la página no puede
 // leerla, así que un XSS no alcanza para robársela. `sameSite: lax` impide que
 // otro sitio la use en peticiones de escritura, y `secure` la limita a HTTPS
@@ -21,6 +25,7 @@ import {
 import type { Request, Response } from 'express';
 
 import { SinSesion, Usuario } from '../../comun/decoradores/sesion.decorador';
+import { LimiteAcceso } from '../../comun/limite-peticiones';
 import { COOKIE_SESION } from '../../comun/guardianes/sesion.guardian';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import type { Entorno } from '../../configuracion/entorno';
@@ -36,6 +41,7 @@ export class AutenticacionControlador {
 
   @Post('ingresar')
   @SinSesion()
+  @LimiteAcceso()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Abre una sesión del panel' })
   async ingresar(
@@ -76,6 +82,7 @@ export class AutenticacionControlador {
 
   @Post('invitacion')
   @SinSesion()
+  @LimiteAcceso()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Acepta una invitación y define la contraseña' })
   async aceptarInvitacion(
@@ -102,6 +109,7 @@ export class AutenticacionControlador {
    */
   @Post('recuperar')
   @SinSesion()
+  @LimiteAcceso()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Pide un enlace para recuperar la contraseña' })
   async recuperar(
@@ -116,6 +124,7 @@ export class AutenticacionControlador {
 
   @Post('recuperar/confirmar')
   @SinSesion()
+  @LimiteAcceso()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cambia la contraseña con el enlace de recuperación' })
   async confirmarRecuperacion(

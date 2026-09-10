@@ -2,9 +2,11 @@
 // peticiones y los módulos de dominio.
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
 
 import { BaseDatosModulo } from './comun/base-datos/base-datos.modulo';
+import { rastrearOrigen } from './comun/limite-peticiones';
 import { validarEntorno } from './configuracion/entorno';
 import { AdministracionModulo } from './modulos/administracion/administracion.modulo';
 import { AgendaModulo } from './modulos/agenda/agenda.modulo';
@@ -24,12 +26,16 @@ import { UsuariosModulo } from './modulos/usuarios/usuarios.modulo';
       isGlobal: true,
       validate: validarEntorno,
     }),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60_000,
-        limit: 120,
-      },
-    ]),
+    // Límite general. Las rutas que necesitan uno más estricto lo piden con
+    // `@LimiteAcceso()` o `@LimiteReserva()`, que lo reemplazan para esa ruta.
+    //
+    // El número sale de lo que hace una persona de verdad: nadie consulta
+    // disponibilidad más de dos veces por segundo de forma sostenida. Lo que
+    // pasa de ahí no es uso, es abuso.
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: seconds(60), limit: 120 }],
+      getTracker: rastrearOrigen,
+    }),
     BaseDatosModulo,
     AutenticacionModulo,
     AuditoriaModulo,
@@ -44,6 +50,11 @@ import { UsuariosModulo } from './modulos/usuarios/usuarios.modulo';
     SolicitudesModulo,
     AdministracionModulo,
     UsuariosModulo,
+  ],
+  providers: [
+    // Va antes que el guardián de sesión: una inundación de peticiones sin
+    // credenciales tiene que rebotar acá, no después de consultar la base.
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

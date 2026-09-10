@@ -30,6 +30,7 @@ import type { Request } from 'express';
 
 import { Roles, Usuario } from '../../comun/decoradores/sesion.decorador';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
+import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
 import { UsuariosServicio } from './usuarios.servicio';
 
@@ -74,7 +75,7 @@ export class UsuariosControlador {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Da de alta o de baja un acceso' })
   async cambiarActivo(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('ese usuario')) id: string,
     @Body(new ValidacionZodTuberia(esquemaCambioActivo)) datos: CambioActivo,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
@@ -97,7 +98,7 @@ export class UsuariosControlador {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Asocia un profesional con su usuario del panel' })
   async vincular(
-    @Param('profesionalId') profesionalId: string,
+    @Param('profesionalId', new UuidTuberia('ese profesional')) profesionalId: string,
     @Body() cuerpo: { usuarioId: string | null },
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,

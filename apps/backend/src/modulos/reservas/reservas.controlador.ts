@@ -21,6 +21,7 @@ import {
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import { ReservasServicio } from './reservas.servicio';
 import { SinSesion } from '../../comun/decoradores/sesion.decorador';
+import { LimiteReserva } from '../../comun/limite-peticiones';
 
 // Todo el controlador es público: lo usa el sitio, sin sesión.
 @SinSesion()
@@ -29,6 +30,7 @@ import { SinSesion } from '../../comun/decoradores/sesion.decorador';
 export class ReservasControlador {
   constructor(private readonly reservas: ReservasServicio) {}
 
+  @LimiteReserva()
   @Post('reservas/retener')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Retiene el horario elegido por diez minutos' })

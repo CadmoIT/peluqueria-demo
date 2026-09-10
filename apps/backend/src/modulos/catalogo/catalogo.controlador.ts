@@ -1,21 +1,11 @@
 // Rutas del catálogo público.
-import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import type { ProfesionalPublico, ServicioPublico, SucursalPublica } from '@manly/contratos';
 
 import { CatalogoServicio } from './catalogo.servicio';
 import { SinSesion } from '../../comun/decoradores/sesion.decorador';
-
-/** Valida que el parámetro de ruta tenga forma de identificador. */
-const FORMA_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-function exigirId(valor: string, queCosa: string): string {
-  if (!FORMA_UUID.test(valor)) {
-    throw new NotFoundException(`No se encontró ${queCosa}.`);
-  }
-
-  return valor;
-}
+import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 
 // Todo el controlador es público: lo usa el sitio, sin sesión.
 @SinSesion()
@@ -32,20 +22,19 @@ export class CatalogoControlador {
 
   @Get('sucursales/:id/servicios')
   @ApiOperation({ summary: 'Servicios que se prestan en una sucursal' })
-  servicios(@Param('id') id: string): Promise<ServicioPublico[]> {
-    return this.catalogo.serviciosDeSucursal(exigirId(id, 'la sucursal'));
+  servicios(@Param('id', new UuidTuberia('esa sucursal')) id: string): Promise<ServicioPublico[]> {
+    return this.catalogo.serviciosDeSucursal(id);
   }
 
   @Get('servicios/:id/profesionales')
   @ApiOperation({ summary: 'Profesionales que prestan un servicio en una sucursal' })
   @ApiQuery({ name: 'sucursalId', required: true })
   profesionales(
-    @Param('id') id: string,
-    @Query('sucursalId') sucursalId: string,
+    @Param('id', new UuidTuberia('ese servicio')) id: string,
+    // La sucursal viaja en la consulta pero es obligatoria: un profesional
+    // presta el servicio en una sucursal, no en todas.
+    @Query('sucursalId', new UuidTuberia('esa sucursal')) sucursalId: string,
   ): Promise<ProfesionalPublico[]> {
-    return this.catalogo.profesionalesDeServicio(
-      exigirId(id, 'el servicio'),
-      exigirId(sucursalId ?? '', 'la sucursal'),
-    );
+    return this.catalogo.profesionalesDeServicio(id, sucursalId);
   }
 }

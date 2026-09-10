@@ -24,6 +24,7 @@ import type { Request } from 'express';
 
 import { Roles, Usuario } from '../../comun/decoradores/sesion.decorador';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
+import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
 import { SolicitudesServicio } from './solicitudes.servicio';
 
@@ -60,7 +61,7 @@ export class SolicitudesControlador {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Aprueba o rechaza una solicitud' })
   async resolver(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('esa solicitud')) id: string,
     @Body(new ValidacionZodTuberia(esquemaResolucionSolicitud)) decision: ResolucionSolicitud,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,

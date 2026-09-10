@@ -29,6 +29,7 @@ import type { Request } from 'express';
 
 import { Roles, Usuario } from '../../comun/decoradores/sesion.decorador';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
+import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
 import { AgendaServicio } from './agenda.servicio';
 import { ReservasPanelServicio } from './reservas-panel.servicio';
@@ -45,7 +46,7 @@ export class ReservasPanelControlador {
   @Get(':id')
   @ApiOperation({ summary: 'Detalle de una reserva, con sus movimientos de dinero' })
   detalle(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('esa reserva')) id: string,
     @Usuario() usuario: UsuarioSesion,
   ): Promise<ReservaDetallePanel> {
     return this.reservas.detalle(id, usuario);
@@ -79,7 +80,7 @@ export class ReservasPanelControlador {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Marca el turno como completado o como ausente' })
   async asistencia(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('esa reserva')) id: string,
     @Body(new ValidacionZodTuberia(esquemaAsistencia)) pedido: Asistencia,
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
@@ -105,7 +106,7 @@ export class ReservasPanelControlador {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cancela un turno por decisión del local' })
   async cancelar(
-    @Param('id') id: string,
+    @Param('id', new UuidTuberia('esa reserva')) id: string,
     @Body() cuerpo: { motivo?: string },
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
