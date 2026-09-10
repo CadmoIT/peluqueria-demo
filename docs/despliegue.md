@@ -33,6 +33,22 @@ Dos servicios separados desde el mismo repositorio.
 El worker con la conexión agrupada arranca pero falla de forma intermitente: pg-boss
 necesita locks de sesión que PgBouncer en modo transacción no mantiene.
 
+## Variables que bloquean el arranque
+
+En producción la API se niega a arrancar con la configuración de desarrollo.
+Antes de desplegar tienen que estar cargadas:
+
+| Variable                  | Por qué se exige                                               |
+| ------------------------- | -------------------------------------------------------------- |
+| `MP_ACCESS_TOKEN`         | Sin él se activa la pasarela simulada, que aprueba todo        |
+| `MP_SECRETO_WEBHOOK`      | Con el valor por defecto, cualquiera puede firmar un pago      |
+| `NEXT_PUBLIC_URL_PUBLICA` | Va en los enlaces que se le mandan a los clientes              |
+| `URL_PUBLICA_API`         | Es la dirección a la que Mercado Pago manda las notificaciones |
+| `ORIGENES_PERMITIDOS`     | Sin el dominio real, el sitio no puede hablarle a la API       |
+
+Las faltas se informan todas juntas en un solo error. Ver
+[seguridad.md](seguridad.md) para el detalle de qué deja abierto cada una.
+
 ## Migraciones
 
 Se aplican como paso explícito antes de activar la versión nueva, nunca al arrancar
@@ -57,6 +73,32 @@ Orden de un despliegue con cambio de esquema:
   cambio de esquema tiene que ser compatible hacia atrás: se puede volver el código
   sin tocar la base. Si hay que revertir el esquema, es restauración desde respaldo
   y se pierde lo escrito desde ese punto.
+
+## Recuperación
+
+El respaldo es la única defensa contra un error que ya se escribió en la base:
+una migración que borró de más, un `DELETE` sin `WHERE`, una corrupción.
+
+Neon mantiene **restauración a un punto en el tiempo**. El procedimiento:
+
+1. Cortar el tráfico de escritura: bajar el worker y poner la API en
+   mantenimiento. Restaurar con la aplicación escribiendo deja la base a mitad
+   de camino entre dos momentos.
+2. Crear una **rama nueva** desde el instante anterior al problema. Nunca se
+   restaura encima de la principal: si el instante elegido resulta ser el
+   equivocado, sobre la rama se prueba de nuevo y sobre la principal no.
+3. Verificar sobre la rama que los datos son los esperados: la última reserva,
+   el último pago, la última fila de auditoría.
+4. Recién entonces promover la rama y volver a levantar los servicios.
+
+Lo que se pierde es todo lo escrito entre el instante elegido y el corte. Antes
+de promover conviene anotar qué quedó afuera —reservas, pagos, notificaciones—
+para resolverlo a mano: `auditoria` y la bandeja de salida sirven justamente
+para reconstruir eso.
+
+**Un respaldo que nunca se restauró no es un respaldo.** La prueba de
+restauración se corre antes de cada migración de producción, no cuando hace
+falta de verdad.
 
 ## Verificación posterior
 

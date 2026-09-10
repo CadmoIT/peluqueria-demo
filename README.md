@@ -37,16 +37,20 @@ Requiere Node 24 y pnpm 12. Los detalles están en
 
 ## Documentación
 
-| Documento                                   | Contenido                                |
-| ------------------------------------------- | ---------------------------------------- |
-| [arquitectura.md](docs/arquitectura.md)     | Estructura, dependencias y convenciones  |
-| [reglas-negocio.md](docs/reglas-negocio.md) | Reservas, pagos, cambios y permisos      |
-| [operaciones.md](docs/operaciones.md)       | Desarrollo local, tareas y base de datos |
-| [despliegue.md](docs/despliegue.md)         | Entornos, migraciones y rollback         |
-| [guia-imagenes.md](docs/guia-imagenes.md)   | Nombres, formatos y proporciones         |
+| Documento                                   | Contenido                                      |
+| ------------------------------------------- | ---------------------------------------------- |
+| [arquitectura.md](docs/arquitectura.md)     | Estructura, dependencias y convenciones        |
+| [reglas-negocio.md](docs/reglas-negocio.md) | Reservas, pagos, cambios y permisos            |
+| [operaciones.md](docs/operaciones.md)       | Desarrollo local, tareas y base de datos       |
+| [despliegue.md](docs/despliegue.md)         | Entornos, migraciones, rollback y recuperación |
+| [seguridad.md](docs/seguridad.md)           | Qué defiende qué, y por qué                    |
+| [guia-imagenes.md](docs/guia-imagenes.md)   | Nombres, formatos y proporciones               |
 
 ## Estado
 
-Fase 1 (fundación) completa. Las fases 2 a 10 —identidad, modelo de datos, motor de
-disponibilidad, sitio público, pagos, notificaciones, panel, seguridad y lanzamiento—
-están pendientes.
+Fases 1 a 9 completas: fundación, identidad, modelo de datos, motor de
+disponibilidad, sitio público y flujo de reserva, pagos, notificaciones, panel
+interno, y calidad y seguridad.
+
+Pagos y notificaciones corren contra adaptadores simulados hasta que haya
+credenciales reales. Queda la fase 10: staging, piloto interno y lanzamiento.

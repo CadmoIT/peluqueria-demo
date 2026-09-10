@@ -80,3 +80,34 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  # Corre aparte y no bloquea: una vulnerabilidad nueva en una dependencia
+  # transitiva puede aparecer cualquier martes sin que nadie haya tocado nada, y
+  # frenar todos los despliegues por eso hace que se termine ignorando el paso.
+  # Lo que sí importa es que quede escrito en el registro de CI y que alguien lo
+  # mire. Ver docs/seguridad.md para qué está aceptado y por qué.
+  dependencias:
+    name: Revisar dependencias
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      # Sólo las que llegan a producción: las de desarrollo no las ejecuta nadie
+      # más que nosotros, en nuestras máquinas.
+      - name: Auditar dependencias de producción
+        run: pnpm audit --prod --audit-level high
