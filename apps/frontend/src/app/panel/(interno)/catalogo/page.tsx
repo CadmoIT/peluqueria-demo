@@ -56,7 +56,10 @@ export default function PaginaCatalogo() {
     <>
       <TituloPanel>Catálogo</TituloPanel>
 
-      <nav className="border-borde mb-6 flex gap-4 border-b" aria-label="Secciones del catálogo">
+      <nav
+        className="border-borde mb-6 flex flex-wrap gap-x-4 border-b"
+        aria-label="Secciones del catálogo"
+      >
         {(['servicios', 'sucursales', 'profesionales'] as const).map((una) => (
           <button
             key={una}

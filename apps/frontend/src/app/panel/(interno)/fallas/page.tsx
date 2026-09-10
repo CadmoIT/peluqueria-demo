@@ -37,6 +37,7 @@ export default function PaginaFallas() {
       <TituloPanel
         accion={
           <Seleccion
+            aria-label="Período que se muestra"
             value={String(dias)}
             onChange={(evento) => setDias(Number(evento.target.value))}
             className="w-44"

@@ -50,7 +50,7 @@ export default function PaginaAgenda() {
       <TituloPanel
         accion={
           esGerencia && (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Boton
                 type="button"
                 onClick={() => setFormulario(formulario === 'reserva' ? 'ninguno' : 'reserva')}

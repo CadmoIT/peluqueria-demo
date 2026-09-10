@@ -12,11 +12,33 @@
   --color-tinta: oklch(0.14 0 0); /* Texto principal, fondos invertidos */
   --color-carbon: oklch(0.27 0 0); /* Superficies oscuras secundarias */
   --color-grafito: oklch(0.44 0 0); /* Texto secundario sobre claro */
-  --color-humo: oklch(0.66 0 0); /* Texto deshabilitado, iconos suaves */
-  --color-borde: oklch(0.89 0 0); /* Divisores y bordes de campos */
+  --color-humo: oklch(0.53 0 0); /* Texto terciario SOBRE CLARO */
+  --color-ceniza: oklch(0.76 0 0); /* Texto secundario SOBRE OSCURO */
+  --color-borde-campo: oklch(0.64 0 0); /* Borde de campos y controles */
+  --color-borde: oklch(0.89 0 0); /* Divisores decorativos */
   --color-niebla: oklch(0.96 0 0); /* Fondos alternos de sección */
   --color-lino: oklch(0.985 0.002 90); /* Fondo base, blanco apenas cálido */
   --color-papel: oklch(1 0 0); /* Tarjetas y superficies elevadas */
+
+  /* ── Por qué hay dos grises tenues y dos bordes ──────────────────────────
+     Un solo gris no puede servir sobre claro y sobre oscuro: el que se lee
+     bien en el pie de página negro se vuelve ilegible sobre el fondo lino, y
+     al revés. Medido contra los fondos reales:
+
+       humo   #6c6c6c  5.03:1 sobre lino   5.25:1 sobre papel   → texto AA
+       ceniza #b1b1b1  9.29:1 sobre tinta                       → texto AA
+
+     `humo` estaba en 0.66 (#929292) y daba 2.98:1 sobre lino: no llegaba ni
+     al 3:1 que WCAG pide para bordes de control, mucho menos al 4.5:1 de
+     texto. Se usaba para texto secundario en todo el panel.
+
+     Lo mismo con los bordes. `borde` (1.38:1 sobre papel) sirve para separar
+     secciones, donde no hay requisito. El contorno de un campo es otra cosa:
+     es lo único que lo identifica como campo, así que WCAG 2.2 pide 3:1.
+     `borde-campo` (#8c8c8c) da 3.36:1 sobre papel.
+
+     Si se cambia alguno de estos valores hay que volver a medir. La prueba de
+     `contraste.spec.ts` deja los números fijados. */
 
   /* Estados. Se usan sólo para retroalimentación, nunca como decoración. */
   --color-exito: oklch(0.55 0.13 155);

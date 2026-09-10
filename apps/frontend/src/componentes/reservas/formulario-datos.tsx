@@ -88,7 +88,7 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
           type="text"
           autoComplete="name"
           {...formulario.register('nombre')}
-          className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+          className="border-borde-campo rounded-manly bg-papel min-h-11 w-full border px-3"
         />
       </Campo>
 
@@ -133,7 +133,7 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
             inputMode="numeric"
             autoComplete="tel"
             {...formulario.register('whatsapp')}
-            className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+            className="border-borde-campo rounded-manly bg-papel min-h-11 w-full border px-3"
           />
         </Campo>
       ) : (
@@ -148,7 +148,7 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
             type="email"
             autoComplete="email"
             {...formulario.register('email')}
-            className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+            className="border-borde-campo rounded-manly bg-papel min-h-11 w-full border px-3"
           />
         </Campo>
       )}
@@ -169,7 +169,7 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
             type="email"
             autoComplete="email"
             {...formulario.register('email')}
-            className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+            className="border-borde-campo rounded-manly bg-papel min-h-11 w-full border px-3"
           />
         </Campo>
       ) : (
@@ -183,7 +183,7 @@ export function FormularioDatos({ opcion, retener, onListo }: Propiedades) {
             inputMode="numeric"
             autoComplete="tel"
             {...formulario.register('whatsapp')}
-            className="border-borde rounded-manly bg-papel min-h-11 w-full border px-3"
+            className="border-borde-campo rounded-manly bg-papel min-h-11 w-full border px-3"
           />
         </Campo>
       )}

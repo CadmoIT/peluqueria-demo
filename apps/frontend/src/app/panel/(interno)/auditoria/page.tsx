@@ -63,6 +63,7 @@ export default function PaginaAuditoria() {
       <TituloPanel
         accion={
           <Seleccion
+            aria-label="Filtrar por tipo de entidad"
             value={entidad}
             onChange={(evento) => {
               setEntidad(evento.target.value);

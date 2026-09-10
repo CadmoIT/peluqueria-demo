@@ -175,11 +175,11 @@ export function Agenda({
             type="date"
             value={dia}
             onChange={(evento) => setDia(evento.target.value)}
-            className="rounded-manly border-borde bg-papel text-menor focus:border-tinta mt-1 border px-3 py-2 outline-none"
+            className="rounded-manly border-borde-campo bg-papel text-menor focus:border-tinta mt-1 border px-3 py-2"
           />
         </label>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Boton variante="contorno" type="button" onClick={() => setDia(sumarDias(dia, -1))}>
             Anterior
           </Boton>
@@ -228,7 +228,16 @@ function Grilla({
   const horas = Array.from({ length: HORA_FIN - HORA_INICIO }, (_, indice) => HORA_INICIO + indice);
 
   return (
-    <div className="rounded-tarjeta border-borde bg-papel overflow-x-auto border">
+    // La grilla se desplaza en horizontal cuando hay varios profesionales. Un
+    // contenedor con scroll que no recibe foco **es inalcanzable con teclado**:
+    // sin `tabIndex` no hay forma de correrlo sin mouse. El `role` y la
+    // etiqueta hacen que el lector de pantalla anuncie qué es lo que se mueve.
+    <div
+      className="rounded-tarjeta border-borde bg-papel overflow-x-auto border"
+      tabIndex={0}
+      role="region"
+      aria-label="Agenda del día"
+    >
       <div className="min-w-[40rem]">
         <div
           className="border-borde grid border-b"

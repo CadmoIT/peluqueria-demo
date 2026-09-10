@@ -49,6 +49,7 @@ export default function PaginaSolicitudes() {
       <TituloPanel
         accion={
           <Seleccion
+            aria-label="Filtrar por estado"
             value={estado}
             onChange={(evento) => setEstado(evento.target.value)}
             className="w-44"

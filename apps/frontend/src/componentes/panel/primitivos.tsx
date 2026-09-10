@@ -62,9 +62,13 @@ export function Campo({
   );
 }
 
+// Sin `outline-none`: el anillo de foco global de `tokens.css` tiene que llegar
+// también acá. Lo tenía, y dejaba a los campos del panel con el solo cambio de
+// color del borde como señal de foco —distinto de todo el resto del sitio y
+// mucho más difícil de ver—. El cambio de borde queda como refuerzo.
 const CLASES_CONTROL =
-  'mt-1 w-full rounded-manly border border-borde bg-papel px-3 py-2 text-menor ' +
-  'outline-none transition-colors duration-(--duracion-rapida) ' +
+  'mt-1 w-full rounded-manly border border-borde-campo bg-papel px-3 py-2 text-menor ' +
+  'transition-colors duration-(--duracion-rapida) ' +
   'focus:border-tinta disabled:opacity-50';
 
 export function Entrada({ className, ...resto }: InputHTMLAttributes<HTMLInputElement>) {
