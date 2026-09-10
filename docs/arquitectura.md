@@ -178,6 +178,72 @@ después no poder devolver la seña sería peor. La reprogramación automática
 reemplaza todos los bloques en una transacción, así que si el horario nuevo choca
 el turno original queda intacto.
 
+## Pagos
+
+La seña se cobra con Checkout Pro. Manly **no recibe ni guarda datos de
+tarjeta**: la persona los ingresa dentro del checkout de Mercado Pago.
+
+### Dos reglas que gobiernan el módulo
+
+**El webhook no se cree, se verifica.** La notificación sólo avisa que hay algo
+nuevo que mirar; el estado real se consulta contra la pasarela antes de tocar
+nada. Confiar en el cuerpo permitiría confirmar turnos sin pagar, porque el
+endpoint es público.
+
+**Procesar dos veces no confirma dos veces.** Las notificaciones llegan
+repetidas de forma habitual. El registro es idempotente por
+`pagos.id_pago_externo`, que tiene índice único, y sólo se confirma la reserva
+cuando el pago pasa a aprobado _en esa llamada_.
+
+### La firma es la única barrera
+
+Antes de procesar nada se verifica la firma HMAC que manda Mercado Pago. Además
+del hash, se comprueba que la marca de tiempo esté dentro de una ventana de
+cinco minutos: sin eso, una notificación legítima capturada hoy podría
+reenviarse dentro de un mes y seguiría validando.
+
+El motivo del rechazo se registra pero nunca se responde: decirle a un atacante
+qué parte falló le ahorra trabajo para el siguiente intento.
+
+### La pasarela es una interfaz, no una dependencia
+
+El módulo habla con `Pasarela`, no con Mercado Pago. Hay dos implementaciones:
+
+|                       | Cuándo se usa                                             |
+| --------------------- | --------------------------------------------------------- |
+| `MercadoPagoPasarela` | Hay `MP_ACCESS_TOKEN`. Los tokens `TEST-` activan sandbox |
+| `SimuladaPasarela`    | No hay token. Sirve una pantalla de checkout falsa        |
+
+El arranque deja dicho en el registro cuál quedó activa, para que nadie descubra
+por accidente que estuvo cobrando contra un simulador.
+
+La simulada firma sus notificaciones con el mismo secreto y las procesa por el
+mismo camino, así que lo que se ejercita es el flujo de producción y no un
+atajo que sólo funciona en desarrollo.
+
+### Cuando el webhook no llega
+
+Es el camino normal, pero no es garantía: puede perderse, llegar tarde o
+encontrar la API caída. Hay dos redes:
+
+- La pantalla de vuelta consulta el estado cada pocos segundos mientras el pago
+  siga sin resolverse, en vez de darlo por perdido.
+- El worker revisa cada diez minutos los pagos que quedaron pendientes hace más
+  de cinco minutos, dentro de una ventana de 48 horas.
+
+Sin esto, alguien que pagó de verdad se quedaría sin turno y con el dinero
+descontado.
+
+### Reintegros
+
+Nunca son automáticos. Los dispara gerencia y el contrato exige una confirmación
+explícita. Cada movimiento queda como una fila propia —no se pisa el estado
+anterior—, así que se puede reconstruir qué pasó con una reserva aunque haya
+habido varios intentos, un cobro presencial y una devolución.
+
+Si el reintegro por la pasarela falla, igual queda registrado para que alguien lo
+resuelva a mano y no se pierda el rastro.
+
 ## Base de datos
 
 PostgreSQL administrado en Neon, accedido con Drizzle ORM.
