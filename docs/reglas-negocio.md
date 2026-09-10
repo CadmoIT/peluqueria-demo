@@ -19,10 +19,13 @@ marcados como configurables se editan desde el panel, no en el código.
 - Un canal obligatorio: WhatsApp o email.
 - Aceptación explícita de condiciones y de las notificaciones del turno.
 
-> **Pendiente de definición.** El plan pide un canal de respaldo cuando el
-> primario falla, pero también dice "nunca ambos". Si sólo se guarda un canal, no
-> hay respaldo posible. Hay que decidir si el segundo dato es opcional antes de
-> implementar la Fase 7.
+**Resuelto:** el plan pedía un canal de respaldo pero también decía "nunca
+ambos", y con un solo dato ese respaldo no puede existir. Se implementó como
+**un canal obligatorio y el segundo opcional**, que es la única lectura que hace
+consistente al plan: "nunca ambos" entendido como "no se exigen ambos".
+
+Sin el segundo dato, una reserva cuyo canal falla queda incomunicada y hay que
+llamar por teléfono.
 
 ## Estados
 

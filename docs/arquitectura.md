@@ -244,6 +244,59 @@ habido varios intentos, un cobro presencial y una devolución.
 Si el reintegro por la pasarela falla, igual queda registrado para que alguien lo
 resuelva a mano y no se pierda el rastro.
 
+## Notificaciones
+
+**Nada se envía en línea.** La API sólo escribe en la bandeja de salida; el
+worker despacha. Dos razones: una caída de WhatsApp o de Resend no debe hacer
+fallar una reserva, y sin registro persistente "no me llegó el recordatorio" es
+imposible de investigar.
+
+Los datos del mensaje se copian al encolar. Si mañana cambia un precio o el
+nombre de un profesional, el recordatorio sigue diciendo lo que se le prometió.
+
+### El estado `retenida`
+
+Existe por un problema concreto: el enlace de gestión lleva un token que en la
+base **sólo existe hasheado**, así que desde el webhook de pago no hay forma de
+reconstruirlo.
+
+La solución es preparar los avisos cuando sí se tiene el token —al completar los
+datos del cliente— y dejarlos retenidos si falta pagar la seña. El pago los
+libera; la expiración los descarta.
+
+### Reintentos y respaldo
+
+| Situación                                                  | Qué hace                                             |
+| ---------------------------------------------------------- | ---------------------------------------------------- |
+| Fallo pasajero (proveedor caído, 429, 5xx)                 | Reintenta a 1, 5 y 15 minutos                        |
+| Fallo definitivo (número inexistente, plantilla rechazada) | No reintenta                                         |
+| Datos corruptos                                            | No reintenta: es error del sistema, no del proveedor |
+| Canal agotado y hay otro dato de contacto                  | Reencola por el otro canal                           |
+| Los dos canales agotados                                   | Queda fallida, para la vista de fallos operativos    |
+
+Insistir sobre un número que no existe sólo retrasa el aviso al local, por eso
+la distinción entre pasajero y definitivo importa. Y el respaldo comprueba si ya
+se intentó por el otro canal: sin eso, dos canales que fallan se reencolarían el
+uno al otro indefinidamente.
+
+### WhatsApp exige plantillas aprobadas
+
+Fuera de una ventana de conversación de 24 horas, la Cloud API **no permite
+texto libre**: hay que usar plantillas aprobadas por Meta con parámetros
+numerados. Los avisos de turno siempre caen fuera de esa ventana.
+
+Por eso `plantillas.ts` declara, por cada tipo, el nombre de la plantilla y el
+orden exacto de sus parámetros. **Eso es un contrato con Meta**: cambiarlo exige
+volver a pedir aprobación. Hay pruebas que fijan ese orden.
+
+El email no tiene esa restricción y se arma libremente.
+
+### Canales simulados
+
+Cada canal se decide por separado según haya credenciales. Se puede tener email
+real y WhatsApp simulado mientras se espera la aprobación de las plantillas, que
+puede demorar semanas. El arranque avisa cuáles quedaron simulados.
+
 ## Base de datos
 
 PostgreSQL administrado en Neon, accedido con Drizzle ORM.
