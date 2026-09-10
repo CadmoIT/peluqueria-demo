@@ -1,8 +1,14 @@
 // Rutas de administración del catálogo.
 //
-// Todo es de gerencia. Un profesional no cambia precios ni da de alta
-// sucursales, y ni siquiera edita su propio horario: lo suyo lo define el
-// local, si no cada uno se armaría la semana que le conviene.
+// **Modificar** es de gerencia. Un profesional no cambia precios ni da de alta
+// sucursales, y ni siquiera edita su propio horario: lo suyo lo define el local,
+// si no cada uno se armaría la semana que le conviene.
+//
+// **Leer** lo puede hacer cualquiera con sesión, porque el panel lo necesita
+// para funcionar: sin la lista de sucursales y profesionales no hay agenda que
+// dibujar. Tampoco hay nada que esconder ahí —los precios y los nombres están
+// publicados en el sitio—; lo que se cuida es la configuración del negocio, que
+// sí queda restringida.
 //
 // Cada cambio deja constancia en auditoría con los valores de antes y de
 // después: saber que alguien tocó un precio sirve poco si no queda de cuánto a
@@ -31,7 +37,6 @@ import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberi
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
 import { AdministracionServicio } from './administracion.servicio';
 
-@Roles('gerencia')
 @ApiTags('panel')
 @Controller('panel')
 export class AdministracionControlador {
@@ -48,6 +53,7 @@ export class AdministracionControlador {
     return this.administracion.listarSucursales();
   }
 
+  @Roles('gerencia')
   @Post('sucursales')
   @ApiOperation({ summary: 'Crea una sucursal' })
   async crearSucursal(
@@ -69,6 +75,7 @@ export class AdministracionControlador {
     return { id };
   }
 
+  @Roles('gerencia')
   @Patch('sucursales/:id')
   @ApiOperation({ summary: 'Modifica una sucursal' })
   async actualizarSucursal(
@@ -101,6 +108,7 @@ export class AdministracionControlador {
     return this.administracion.listarServicios();
   }
 
+  @Roles('gerencia')
   @Post('servicios')
   @ApiOperation({ summary: 'Crea un servicio' })
   async crearServicio(
@@ -128,6 +136,7 @@ export class AdministracionControlador {
    * El cambio **no alcanza a las reservas ya tomadas**: precio, duración y
    * buffers viajaron como copia a la reserva en el momento de reservarla.
    */
+  @Roles('gerencia')
   @Patch('servicios/:id')
   @ApiOperation({ summary: 'Modifica un servicio' })
   async actualizarServicio(
@@ -163,6 +172,7 @@ export class AdministracionControlador {
     return this.administracion.listarProfesionales();
   }
 
+  @Roles('gerencia')
   @Post('profesionales')
   @ApiOperation({ summary: 'Da de alta un profesional' })
   async crearProfesional(
@@ -184,6 +194,7 @@ export class AdministracionControlador {
     return { id };
   }
 
+  @Roles('gerencia')
   @Patch('profesionales/:id')
   @ApiOperation({ summary: 'Modifica un profesional' })
   async actualizarProfesional(
@@ -229,6 +240,7 @@ export class AdministracionControlador {
    * existir. Aplicarlo franja por franja abriría la puerta a dejar media semana
    * cargada si algo falla en el medio.
    */
+  @Roles('gerencia')
   @Put('horarios')
   @ApiOperation({ summary: 'Reemplaza el horario semanal' })
   async guardarHorario(
@@ -258,12 +270,14 @@ export class AdministracionControlador {
 
   // ── Configuración del negocio ──────────────────────────────────────────────
 
+  @Roles('gerencia')
   @Get('configuracion')
   @ApiOperation({ summary: 'Configuración global del negocio' })
   configuracion() {
     return this.administracion.leerConfiguracion();
   }
 
+  @Roles('gerencia')
   @Patch('configuracion')
   @ApiOperation({ summary: 'Modifica la configuración global' })
   async actualizarConfiguracion(
