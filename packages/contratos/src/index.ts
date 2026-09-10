@@ -2,4 +2,5 @@
 export * from './comunes';
 export * from './catalogo';
 export * from './disponibilidad';
+export * from './pagos';
 export * from './reservas';
