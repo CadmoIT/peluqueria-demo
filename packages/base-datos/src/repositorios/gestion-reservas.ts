@@ -37,6 +37,10 @@ export interface ReservaConDetalle {
   estado: 'pendiente_pago' | 'confirmada' | 'cancelada' | 'completada' | 'ausente' | 'expirada';
   sucursal: { id: string; nombre: string; barrio: string; direccion: string };
   clienteNombre: string | null;
+  /** Canal elegido y datos de contacto, para saber por dónde avisar. */
+  canalContacto: 'whatsapp' | 'email' | null;
+  contactoWhatsapp: string | null;
+  contactoEmail: string | null;
   comienzaEn: Date;
   terminaEn: Date;
   precioTotalCentavos: number;
@@ -65,6 +69,9 @@ export async function buscarReservaPorToken(
       id: reservas.id,
       estado: reservas.estado,
       clienteNombre: reservas.clienteNombre,
+      canalContacto: reservas.canalContacto,
+      contactoWhatsapp: reservas.contactoWhatsapp,
+      contactoEmail: reservas.contactoEmail,
       comienzaEn: reservas.comienzaEn,
       terminaEn: reservas.terminaEn,
       precioTotalCentavos: reservas.precioTotalCentavos,
@@ -127,6 +134,9 @@ export async function buscarReservaPorToken(
       direccion: fila.sucursalDireccion,
     },
     clienteNombre: fila.clienteNombre,
+    canalContacto: fila.canalContacto,
+    contactoWhatsapp: fila.contactoWhatsapp,
+    contactoEmail: fila.contactoEmail,
     comienzaEn: fila.comienzaEn,
     terminaEn: fila.terminaEn,
     precioTotalCentavos: fila.precioTotalCentavos,

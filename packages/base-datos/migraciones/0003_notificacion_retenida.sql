@@ -1,0 +1,1 @@
+ALTER TYPE "public"."estado_notificacion" ADD VALUE 'retenida' BEFORE 'pendiente';

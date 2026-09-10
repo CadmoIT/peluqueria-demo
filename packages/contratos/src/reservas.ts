@@ -44,20 +44,39 @@ export type Retencion = z.infer<typeof esquemaRetencion>;
 // ── Confirmar ────────────────────────────────────────────────────────────────
 
 /**
- * Datos del cliente. Se pide un solo canal de contacto, el que la persona
- * elija, y el dato correspondiente tiene que venir cargado.
+ * Trata un campo vacío como ausente.
+ *
+ * Un formulario manda `''` en los campos que la persona no completó, y sin esto
+ * el respaldo opcional fallaría la validación de formato por estar en blanco.
+ */
+function vacioComoAusente<T extends z.ZodTypeAny>(esquema: T) {
+  return z.preprocess(
+    (valor) => (typeof valor === 'string' && valor.trim() === '' ? undefined : valor),
+    esquema.optional(),
+  );
+}
+
+/**
+ * Datos del cliente.
+ *
+ * Se elige **un** canal, que es por donde se avisa. El otro dato es opcional y
+ * sirve de respaldo: si el canal elegido falla de forma definitiva —un número
+ * que no existe, un correo que rebota— se intenta por el otro antes de alertar
+ * al local. Sin ese segundo dato no hay respaldo posible y la reserva queda
+ * incomunicada.
  */
 export const esquemaDatosCliente = z
   .object({
     nombre: z.string().trim().min(2, 'Decinos cómo te llamás.').max(80),
     canalContacto: esquemaCanalContacto,
     /** Número de WhatsApp en formato internacional, sin espacios ni signos. */
-    whatsapp: z
-      .string()
-      .trim()
-      .regex(/^\d{8,15}$/, 'El número tiene que ser sólo dígitos, con código de país.')
-      .optional(),
-    email: z.string().trim().email('Revisá la dirección de correo.').optional(),
+    whatsapp: vacioComoAusente(
+      z
+        .string()
+        .trim()
+        .regex(/^\d{8,15}$/, 'El número tiene que ser sólo dígitos, con código de país.'),
+    ),
+    email: vacioComoAusente(z.string().trim().email('Revisá la dirección de correo.')),
     notas: z.string().trim().max(500).optional(),
     aceptaCondiciones: z.literal(true, {
       errorMap: () => ({ message: 'Hay que aceptar las condiciones para reservar.' }),

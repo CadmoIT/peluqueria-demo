@@ -62,6 +62,8 @@ export const tipoNotificacion = pgEnum('tipo_notificacion', [
 ]);
 
 export const estadoNotificacion = pgEnum('estado_notificacion', [
+  /** Preparada pero esperando un evento: se usa para el aviso que depende del pago. */
+  'retenida',
   'pendiente',
   'enviada',
   'fallida',

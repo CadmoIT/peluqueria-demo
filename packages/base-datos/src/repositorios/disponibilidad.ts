@@ -270,3 +270,27 @@ export function calcularSenia(servicio: ServicioDisponible): number {
       return 0;
   }
 }
+
+/** Configuración del negocio, con los valores por defecto si no hay fila. */
+export async function configuracionDelNegocio(bd: BaseDatos): Promise<{
+  minutosRetencion: number;
+  diasHorizonte: number;
+  maximoServiciosPorReserva: number;
+  zonaHoraria: string;
+  horasMinimasCancelacion: number;
+  horasRecordatorioPrimero: number;
+  horasRecordatorioSegundo: number | null;
+}> {
+  const [fila] = await bd.select().from(configuracionNegocio).limit(1);
+
+  return {
+    minutosRetencion: fila?.minutosRetencion ?? CONFIGURACION_POR_DEFECTO.minutosRetencion,
+    diasHorizonte: fila?.diasHorizonte ?? CONFIGURACION_POR_DEFECTO.diasHorizonte,
+    maximoServiciosPorReserva:
+      fila?.maximoServiciosPorReserva ?? CONFIGURACION_POR_DEFECTO.maximoServiciosPorReserva,
+    zonaHoraria: fila?.zonaHoraria ?? CONFIGURACION_POR_DEFECTO.zonaHoraria,
+    horasMinimasCancelacion: fila?.horasMinimasCancelacion ?? 24,
+    horasRecordatorioPrimero: fila?.horasRecordatorioPrimero ?? 24,
+    horasRecordatorioSegundo: fila?.horasRecordatorioSegundo ?? null,
+  };
+}
