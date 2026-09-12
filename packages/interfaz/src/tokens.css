@@ -117,14 +117,45 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* La familia de titulares la decide el TAMAÑO, no la etiqueta.
+     ────────────────────────────────────────────────────────────────────────
+     Bodoni Moda es una Didone: su carácter son los trazos de grosor extremo,
+     gruesos plenos y finos de pelo. A tamaño grande eso es la marca; a 20 px
+     los finos caen por debajo del píxel y la letra se corta. A 12 px
+     directamente desaparecen.
+
+     La fuente trae eje óptico y el navegador lo aplica solo —`font-optical-sizing`
+     está en `auto`—, pero engrosar los finos no alcanza: medido a 20,7 px
+     seguía sin leerse bien.
+
+     Antes esta regla ataba la familia a `h1..h4`, así que el título de una
+     tarjeta la heredaba por ser un `h3`, y las etiquetas de 12 px del pie de
+     página, por ser `h2`. Ninguno de los dos es un elemento de despliegue.
+
+     Ahora los encabezados sólo heredan métrica; la familia de titulares la
+     ponen los dos escalones grandes de la escala, más abajo. Un encabezado
+     chico usa la de texto, que es la que está dibujada para ese tamaño. */
   h1,
   h2,
   h3,
   h4 {
-    font-family: var(--font-titulo);
-    letter-spacing: var(--tracking-titulo);
     line-height: 1.1;
     text-wrap: balance;
+  }
+
+  /* Los dos escalones donde la Didone se luce: de 28 px para arriba. */
+  .text-titulo,
+  .text-portada {
+    font-family: var(--font-titulo);
+    letter-spacing: var(--tracking-titulo);
+  }
+
+  /* El escalón de los títulos de tarjeta. Con la fuente de texto necesita algo
+     de peso: sin él queda igual que el párrafo que tiene debajo y deja de
+     leerse como título. La Didone conseguía esa jerarquía por su forma. */
+  :is(h1, h2, h3, h4).text-subtitulo {
+    font-weight: 500;
+    letter-spacing: -0.01em;
   }
 
   p {
@@ -157,7 +188,13 @@
 
 @utility versales {
   /* Versales espaciadas: el recurso tipográfico de la marca para etiquetas,
-     navegación y llamadas a la acción. */
+     navegación y llamadas a la acción.
+
+     Siempre con la fuente de texto. Una etiqueta en versales es chica por
+     definición, y va en mayúsculas con mucho interletrado: es el peor sitio
+     posible para una Didone. Se declara acá y no se confía en la herencia
+     porque varias de estas etiquetas son `h2` o `h3`. */
+  font-family: var(--font-texto);
   text-transform: uppercase;
   letter-spacing: var(--tracking-versales);
   font-weight: 500;
