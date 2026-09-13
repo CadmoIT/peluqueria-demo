@@ -68,22 +68,24 @@ Mal:   "Foto"
 | `marca/`         | Los tres productos de la línea propia y el conjunto en diagonal |
 | `inicio/`        | Portada editorial y un detalle del trabajo con la máquina       |
 | `servicios/`     | Un perfil con el corte terminado                                |
-| `sucursales/`    | **Nada todavía**: las tres usan el respaldo                     |
+| `sucursales/`    | **Nada**: la sección muestra sólo los nombres                    |
 | `profesionales/` | **Nada todavía**                                                |
 
-Todo el material entregado es **vertical** (9:16, 3:4 y 4:5), entre 640 y 1320 px
-de ancho. Por eso la portada es una composición partida y no una foto a sangre:
-estirar un retrato a formato apaisado lo recorta justo donde está el sujeto.
+Casi todo el material entregado es **vertical** (9:16, 3:4 y 4:5), entre 640 y
+1320 px de ancho, y por eso se usa en columnas y no a lo ancho. La única
+apaisada es la portada, que por eso puede ir a sangre.
 
-## Entradas pendientes
+## Si falta una imagen
 
-Las entradas del catálogo marcadas con `pendiente` apuntan a
-`marca/respaldo.svg` en vez de a una fotografía. El sitio se ve completo y sin
-huecos rotos, pero esas imágenes todavía no son las definitivas.
+`obtenerImagen` devuelve `marca/respaldo.svg` cuando la entrada viene vacía: el
+sitio se ve completo y sin huecos rotos.
 
-Para cargar una: dejar el archivo en la carpeta que corresponda y reemplazar la
-llamada a `pendiente(...)` por la entrada real con su `ruta`, `alt`, `ancho` y
-`alto`. Al quitar el `pendiente` la imagen deja de usar el respaldo.
+Para cargar una fotografía nueva: dejar el archivo en la carpeta que
+corresponda y agregar su entrada al catálogo con `ruta`, `alt`, `ancho` y
+`alto`. Nada más; ningún componente escribe rutas a mano.
+
+La sección de sucursales muestra sólo los nombres, sin fotografía. Si algún día
+se quieren las fachadas, van en `sucursales/` con su entrada nueva.
 
 El logotipo no es un archivo: se dibuja en `componentes/marca/logotipo.tsx`.
 Él y el respaldo son provisorios, marcadores hasta que llegue el material

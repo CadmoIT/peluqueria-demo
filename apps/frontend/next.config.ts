@@ -39,6 +39,28 @@ const configuracion: NextConfig = {
   },
 
   /**
+   * Las direcciones de cuando cada sección era una página.
+   *
+   * El sitio público pasó a ser una sola página, pero esas URLs estuvieron
+   * publicadas: un enlace guardado, uno compartido por mensaje o uno que quedó
+   * indexado tiene que seguir llevando a alguna parte. Cada una va al ancla de
+   * su sección.
+   *
+   * `permanent: false` a propósito. Una redirección permanente la cachea el
+   * navegador de forma agresiva y cuesta mucho revertirla; mientras el sitio no
+   * esté publicado conviene poder cambiar de idea. Al lanzar hay que pasarlas a
+   * permanentes, que es lo que consolida el posicionamiento en el inicio.
+   */
+  async redirects() {
+    return [
+      { source: '/nosotros', destination: '/#nosotros', permanent: false },
+      { source: '/servicios', destination: '/#servicios', permanent: false },
+      { source: '/sucursales', destination: '/#sucursales', permanent: false },
+      { source: '/contacto', destination: '/#contacto', permanent: false },
+    ];
+  },
+
+  /**
    * Cabeceras de seguridad de la web.
    *
    * La API ya manda las suyas con helmet; esto es para lo que sirve Next. No

@@ -4,8 +4,8 @@
 // una fotografía es reemplazar el archivo en public/imagenes y, si cambió el
 // nombre, esta entrada. Ver docs/guia-imagenes.md para formatos y proporciones.
 //
-// Las entradas marcadas como pendientes apuntan al respaldo hasta que llegue la
-// fotografía real, así el sitio nunca muestra un hueco roto.
+// Si una entrada llegara vacía, `obtenerImagen` devuelve el respaldo: el sitio
+// no muestra un hueco roto.
 
 /** Una imagen del catálogo, con su texto alternativo obligatorio. */
 export interface ImagenCatalogo {
@@ -26,11 +26,6 @@ export const IMAGEN_RESPALDO: ImagenCatalogo = {
   alto: 800,
   pendiente: true,
 };
-
-/** Crea una entrada pendiente que apunta al respaldo con la proporción pedida. */
-function pendiente(alt: string, ancho: number, alto: number): ImagenCatalogo {
-  return { ...IMAGEN_RESPALDO, alt, ancho, alto, pendiente: true };
-}
 
 export const IMAGENES = {
   marca: {
@@ -82,12 +77,6 @@ export const IMAGENES = {
       ancho: 986,
       alto: 1751,
     },
-  },
-
-  sucursales: {
-    lasCanitas: pendiente('Fachada de la sucursal de Las Cañitas', 1600, 1200),
-    colegiales: pendiente('Fachada de la sucursal de Virrey Avilés, Colegiales', 1600, 1200),
-    belgrano: pendiente('Fachada de la sucursal de Aguilar, Belgrano', 1600, 1200),
   },
 } as const satisfies Record<string, Record<string, ImagenCatalogo>>;
 

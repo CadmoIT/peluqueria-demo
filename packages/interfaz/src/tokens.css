@@ -293,3 +293,46 @@
   transform-box: view-box;
   animation: tijeras-mechon 1800ms var(--ease-entrada) infinite;
 }
+
+/* ── Aparición de las secciones al bajar ───────────────────────────────────
+   Cada sección entra con un desvanecido corto cuando asoma por abajo.
+
+   Va con línea de tiempo de desplazamiento y sin JavaScript. Eso importa más
+   de lo que parece: la alternativa habitual —esconder todo con CSS y
+   destaparlo desde un observador— deja la página en blanco si el script no
+   llega a correr, y ahí no se pierde una animación, se pierde el contenido.
+
+   Con `@supports`, el navegador que no la soporta simplemente muestra las
+   secciones. Y bajo `no-preference` queda fuera de quien pidió movimiento
+   reducido, sin depender de la regla general: esa apaga por duración, y acá la
+   duración la marca el desplazamiento, no el reloj. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .revelar {
+      animation: revelar-entrada linear both;
+      animation-timeline: view();
+      /* Termina bastante antes de que la sección llegue al medio: si no, se
+         lee el texto todavía moviéndose. */
+      animation-range: entry 5% cover 22%;
+    }
+  }
+}
+
+/* Sólo se mueve: no hay desvanecido.
+   La primera versión entraba desde opacidad 0 y axe marcaba tres textos por
+   contraste. No era un falso positivo: a opacidad 0,7 el gris de los párrafos
+   cae a 3,56 sobre el papel, por debajo del 4,5 que exige la norma.
+
+   Se midió hasta dónde se podía bajar: a plena opacidad ese gris da 7,48, y
+   para no perforar el 4,5 sobre el fondo alterno hay que quedarse arriba de
+   0,85. Un desvanecido de 0,85 a 1 no lo ve nadie, así que no vale la pena
+   tenerlo. El movimiento solo hace el mismo trabajo y no toca el contraste en
+   ningún fotograma. */
+@keyframes revelar-entrada {
+  from {
+    transform: translateY(20px);
+  }
+  to {
+    transform: none;
+  }
+}
