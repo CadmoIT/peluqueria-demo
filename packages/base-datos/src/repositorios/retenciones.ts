@@ -5,7 +5,7 @@
 // previa en memoria y las dos intentan escribir: la restricción EXCLUDE de la
 // base rechaza a la segunda. Esa es la única garantía real; el resto es
 // optimismo.
-import { and, eq, inArray, isNotNull, lte, sql } from 'drizzle-orm';
+import { and, eq, isNotNull, lte, sql } from 'drizzle-orm';
 
 import type { BaseDatos } from '../conexion';
 import { reservas, reservasServicios } from '../esquemas/index';
@@ -192,20 +192,4 @@ export async function extenderRetencion(
     .update(reservas)
     .set({ retencionExpiraEn: new Date(Date.now() + minutos * 60_000) })
     .where(and(eq(reservas.id, reservaId), eq(reservas.estado, 'pendiente_pago')));
-}
-
-/** Bloques de una reserva, en orden. */
-export async function bloquesDeReserva(bd: BaseDatos, reservaId: string) {
-  return bd
-    .select()
-    .from(reservasServicios)
-    .where(eq(reservasServicios.reservaId, reservaId))
-    .orderBy(reservasServicios.orden);
-}
-
-/** Reservas por identificador, para el panel y las pruebas. */
-export async function reservasPorId(bd: BaseDatos, ids: string[]) {
-  if (ids.length === 0) return [];
-
-  return bd.select().from(reservas).where(inArray(reservas.id, ids));
 }

@@ -163,8 +163,3 @@ export function calcularFranjasDeTrabajo(
 
   return franjas;
 }
-
-/** Formatea un instante en la zona del negocio, para mensajes y registros. */
-export function enHoraLocal(instante: number, zonaHoraria: string): string {
-  return DateTime.fromMillis(instante, { zone: zonaHoraria }).toFormat('dd/MM/yyyy HH:mm');
-}

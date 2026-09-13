@@ -34,12 +34,6 @@ function pendiente(alt: string, ancho: number, alto: number): ImagenCatalogo {
 
 export const IMAGENES = {
   marca: {
-    logo: {
-      ruta: '/imagenes/marca/logo.svg',
-      alt: 'Manly Barber Studio',
-      ancho: 240,
-      alto: 80,
-    },
     pomadaMate: {
       ruta: '/imagenes/marca/pomada-mate.webp',
       alt: 'Pomada de acabado mate de Manly, en su lata negra con el monograma',

@@ -52,28 +52,6 @@ export async function buscarUsuarioPorEmail(
   return fila ?? null;
 }
 
-export async function buscarUsuarioPorId(
-  bd: BaseDatos,
-  id: string,
-): Promise<UsuarioDelPanel | null> {
-  const [fila] = await bd
-    .select({
-      id: usuarios.id,
-      email: usuarios.email,
-      nombre: usuarios.nombre,
-      rol: usuarios.rol,
-      activo: usuarios.activo,
-      hashContrasenia: usuarios.hashContrasenia,
-      profesionalId: profesionales.id,
-    })
-    .from(usuarios)
-    .leftJoin(profesionales, eq(profesionales.usuarioId, usuarios.id))
-    .where(eq(usuarios.id, id))
-    .limit(1);
-
-  return fila ?? null;
-}
-
 /**
  * Crea el usuario invitado, sin contraseña.
  *

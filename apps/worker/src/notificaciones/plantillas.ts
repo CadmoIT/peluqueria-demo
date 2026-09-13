@@ -168,18 +168,5 @@ export function armarMensaje(tipo: TipoMensaje, datos: DatosMensaje): MensajeArm
   return constructor(datos);
 }
 
-/** Nombre de la plantilla de Meta para un tipo, sin armar el mensaje. */
-export function nombrePlantilla(tipo: TipoMensaje): string {
-  return armarMensaje(tipo, {
-    clienteNombre: '',
-    sucursalNombre: '',
-    sucursalDireccion: '',
-    comienzaEn: new Date().toISOString(),
-    servicios: [],
-    urlGestion: '',
-    horasMinimasCancelacion: 24,
-  }).plantilla;
-}
-
 /** Todos los tipos, para poder listar las plantillas que hay que dar de alta. */
 export const TIPOS_MENSAJE = Object.keys(CATALOGO) as TipoMensaje[];

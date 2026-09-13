@@ -103,7 +103,7 @@ viaja en la URL** y sin ella se filtraría en el `Referer` al salir del sitio.
 
 La web **todavía no manda una política de contenido propia**. Una CSP mal armada
 rompe el sitio de formas difíciles de detectar, así que merece encenderse contra
-staging y no a ciegas. Queda pendiente para la fase 10.
+staging y no a ciegas.
 
 ## Reporte de errores
 

@@ -144,7 +144,7 @@ buscar → retener (10 min) → completar datos → confirmada
 ```
 
 Sin seña la reserva queda confirmada de una. Con seña queda `pendiente_pago`
-hasta que el webhook la confirme (Fase 6).
+hasta que el webhook la confirme.
 
 ### El servidor no confía en el pedido
 

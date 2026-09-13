@@ -14,9 +14,6 @@ export const estadoReserva = pgEnum('estado_reserva', [
   'expirada',
 ]);
 
-/** Estados en los que una reserva ocupa la agenda del profesional. */
-export const ESTADOS_OCUPAN_AGENDA = ['pendiente_pago', 'confirmada'] as const;
-
 /** Canales por los que se le puede notificar a un cliente. */
 export const canalContacto = pgEnum('canal_contacto', ['whatsapp', 'email']);
 

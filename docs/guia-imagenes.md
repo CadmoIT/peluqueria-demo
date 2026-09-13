@@ -11,7 +11,7 @@ si cambió el nombre, esa entrada del catálogo.
 
 | Carpeta          | Contenido                         |
 | ---------------- | --------------------------------- |
-| `marca/`         | Logo, isotipo, imagen de respaldo |
+| `marca/`         | Productos propios e imagen de respaldo |
 | `inicio/`        | Portada y secciones de la home    |
 | `servicios/`     | Una por servicio o categoría      |
 | `sucursales/`    | Fachada e interior de cada local  |
@@ -85,8 +85,9 @@ Para cargar una: dejar el archivo en la carpeta que corresponda y reemplazar la
 llamada a `pendiente(...)` por la entrada real con su `ruta`, `alt`, `ancho` y
 `alto`. Al quitar el `pendiente` la imagen deja de usar el respaldo.
 
-El logotipo y el respaldo actuales también son provisorios: son marcadores hasta
-que llegue el material oficial de Manly.
+El logotipo no es un archivo: se dibuja en `componentes/marca/logotipo.tsx`.
+Él y el respaldo son provisorios, marcadores hasta que llegue el material
+oficial de Manly.
 
 ## Derechos
 

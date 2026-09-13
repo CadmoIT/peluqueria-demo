@@ -9,7 +9,7 @@
 //   2. **Los cambios no alcanzan a las reservas ya tomadas.** Precio, duración
 //      y buffers viajan como copia a `reservas_servicios` en el momento de
 //      reservar, así que subir un precio hoy no encarece un turno de ayer.
-import { and, asc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 
 import type { BaseDatos } from '../conexion';
 import {
@@ -493,43 +493,4 @@ export async function actualizarConfiguracion(
     .returning({ id: configuracionNegocio.id });
 
   return actualizadas.length > 0;
-}
-
-/** Nombres por identificador, para mostrar listados sin recorrer tabla por tabla. */
-export async function nombresDeProfesionales(
-  bd: BaseDatos,
-  ids: string[],
-): Promise<Map<string, string>> {
-  if (ids.length === 0) return new Map();
-
-  const filas = await bd
-    .select({
-      id: profesionales.id,
-      nombre: profesionales.nombre,
-      nombreVisible: profesionales.nombreVisible,
-    })
-    .from(profesionales)
-    .where(inArray(profesionales.id, ids));
-
-  return new Map(filas.map((fila) => [fila.id, fila.nombreVisible ?? fila.nombre]));
-}
-
-/** Si el profesional atiende en esa sucursal. Lo usa la reserva manual. */
-export async function atiendeEnSucursal(
-  bd: BaseDatos,
-  profesionalId: string,
-  sucursalId: string,
-): Promise<boolean> {
-  const [fila] = await bd
-    .select({ existe: sql<number>`1` })
-    .from(profesionalesSucursales)
-    .where(
-      and(
-        eq(profesionalesSucursales.profesionalId, profesionalId),
-        eq(profesionalesSucursales.sucursalId, sucursalId),
-      ),
-    )
-    .limit(1);
-
-  return fila !== undefined;
 }
