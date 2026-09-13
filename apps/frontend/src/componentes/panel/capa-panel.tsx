@@ -68,7 +68,7 @@ export function CapaPanel({ children }: { children: ReactNode }) {
     <div className="bg-lino min-h-screen">
       <header className="border-borde bg-papel border-b">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-3 px-4 py-3">
-          <Link href="/panel" className="versales text-menor tracking-versales">
+          <Link href="/panel" className="versales text-menor tracking-versales py-1">
             Manly · Panel
           </Link>
 
@@ -116,7 +116,10 @@ function EnlaceNav({
       href={enlace.href}
       aria-current={activo ? 'page' : undefined}
       className={cn(
-        'text-menor duration-(--duracion-rapida) transition-colors',
+        // `py-1` no es decoracion: sin el, el enlace mide 22 px de alto y queda
+        // por debajo del minimo de 24 px de WCAG 2.2. Es el menu que el equipo
+        // usa desde el telefono, en el mostrador y apurado.
+        'text-menor py-1 duration-(--duracion-rapida) transition-colors',
         activo ? 'text-tinta underline underline-offset-4' : 'text-grafito hover:text-tinta',
       )}
     >
@@ -156,7 +159,9 @@ function BotonSalir() {
   return (
     <button
       type="button"
-      className="hover:text-tinta underline underline-offset-4"
+      // Igual que los enlaces del menu: sin relleno el boton mide 25x19 y no
+      // llega al minimo de 24x24. Es el unico modo de cerrar sesion.
+      className="hover:text-tinta -mx-1.5 px-1.5 py-1 underline underline-offset-4"
       onClick={() => {
         salida.mutate(undefined, { onSuccess: () => router.replace('/panel/ingresar') });
       }}

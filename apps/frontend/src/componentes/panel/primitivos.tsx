@@ -66,8 +66,11 @@ export function Campo({
 // también acá. Lo tenía, y dejaba a los campos del panel con el solo cambio de
 // color del borde como señal de foco —distinto de todo el resto del sitio y
 // mucho más difícil de ver—. El cambio de borde queda como refuerzo.
+// `text-base` en telefono y `text-menor` de ahi para arriba: Safari en iOS hace
+// zoom al enfocar cualquier campo de menos de 16 px, y la pantalla salta sola.
+// La densidad de 14 px se conserva donde hay sitio, que es donde importa.
 const CLASES_CONTROL =
-  'mt-1 w-full rounded-manly border border-borde-campo bg-papel px-3 py-2 text-menor ' +
+  'mt-1 w-full rounded-manly border border-borde-campo bg-papel px-3 py-2 text-base sm:text-menor ' +
   'transition-colors duration-(--duracion-rapida) ' +
   'focus:border-tinta disabled:opacity-50';
 
