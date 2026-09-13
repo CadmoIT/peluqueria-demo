@@ -62,10 +62,10 @@ export const IMAGENES = {
 
   inicio: {
     portada: {
-      ruta: '/imagenes/inicio/portada-estudio.webp',
-      alt: 'Retrato en blanco y negro de un cliente peinado con producto Manly',
-      ancho: 1320,
-      alto: 1760,
+      ruta: '/imagenes/inicio/portada-salon.webp',
+      alt: 'Tres sillones de barbería en fila dentro del salón en penumbra',
+      ancho: 1770,
+      alto: 934,
     },
     experiencia: {
       ruta: '/imagenes/inicio/detalle-corte.webp',

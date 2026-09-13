@@ -1,8 +1,12 @@
 // Página de inicio.
 //
-// La portada es una composición partida y no una foto a sangre completa: el
-// material de la marca es vertical, y estirarlo a formato apaisado lo recorta
-// justo donde está el sujeto.
+// La portada es una foto a sangre con el texto encima. Antes era una
+// composición partida, y no por gusto: el único material que había era
+// vertical, y estirarlo a formato apaisado lo recortaba justo donde estaba el
+// sujeto. La fotografía del salón es apaisada y levanta esa restricción.
+//
+// Lo que hace legible al titular es el velo, no la fotografía. Sin él el texto
+// cae sobre los cromados de los sillones y se pierde.
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
@@ -29,10 +33,27 @@ export default async function PaginaInicio() {
       <DatosEstructurados sucursales={sucursales} />
 
       {/* ── Portada ──────────────────────────────────────────────────────── */}
-      <section className="bg-tinta text-lino">
-        <Contenedor className="py-seccion grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-16">
-          <div>
-            <p className="versales text-nota mb-5 opacity-70">Buenos Aires</p>
+      <section className="bg-tinta text-lino relative isolate overflow-hidden">
+        <Imagen
+          imagen={IMAGENES.inicio.portada}
+          prioritaria
+          sizes="100vw"
+          className="absolute inset-0 -z-20"
+        />
+
+        {/*
+          El velo corre en vertical en el teléfono, donde el texto queda sobre
+          la foto, y en horizontal de tablet para arriba, que es cuando hay
+          sitio para dejar el texto de un lado y los sillones del otro.
+        */}
+        <div
+          aria-hidden
+          className="from-tinta via-tinta/85 to-tinta/35 sm:via-tinta/65 sm:via-45% sm:to-transparent absolute inset-0 -z-10 bg-gradient-to-t sm:bg-gradient-to-r"
+        />
+
+        <Contenedor className="py-seccion relative flex min-h-[clamp(26rem,58vh,36rem)] items-center">
+          <div className="max-w-[34rem]">
+            <p className="versales text-nota mb-5 opacity-80">Buenos Aires</p>
 
             <h1 className="text-portada max-w-[13ch]">Peluquería para hombres</h1>
 
@@ -54,15 +75,6 @@ export default async function PaginaInicio() {
                 Ver servicios
               </Link>
             </div>
-          </div>
-
-          <div className="w-full max-w-md justify-self-center lg:w-[26rem]">
-            <Imagen
-              imagen={IMAGENES.inicio.portada}
-              prioritaria
-              sizes="(min-width: 1024px) 26rem, 100vw"
-              className="rounded-tarjeta"
-            />
           </div>
         </Contenedor>
       </section>
