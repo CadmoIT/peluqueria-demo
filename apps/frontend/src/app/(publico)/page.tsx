@@ -33,7 +33,10 @@ export default async function PaginaInicio() {
       <DatosEstructurados sucursales={sucursales} />
 
       {/* ── Portada ──────────────────────────────────────────────────────── */}
-      <section className="bg-tinta text-lino relative isolate overflow-hidden">
+      <section
+        data-portada-oscura
+        className="bg-tinta text-lino relative isolate overflow-hidden"
+      >
         <Imagen
           imagen={IMAGENES.inicio.portada}
           prioritaria

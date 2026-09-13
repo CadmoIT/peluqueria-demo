@@ -143,16 +143,22 @@
     text-wrap: balance;
   }
 
-  /* Los dos escalones donde la Didone se luce: de 28 px para arriba. */
-  .text-titulo,
+  /* El único escalón donde la Didone se luce: la portada de cada página, de
+     40 px para arriba. Ahí los trazos finos tienen píxeles de sobra y el
+     contraste extremo es la marca.
+
+     Abajo de eso no. A 28 px los finos ya caen por debajo del píxel y la letra
+     se corta, que es lo que pasaba en los títulos de sección. */
   .text-portada {
     font-family: var(--font-titulo);
     letter-spacing: var(--tracking-titulo);
   }
 
-  /* El escalón de los títulos de tarjeta. Con la fuente de texto necesita algo
-     de peso: sin él queda igual que el párrafo que tiene debajo y deja de
+  /* Los escalones intermedios —títulos de sección y de tarjeta— van con la
+     fuente de texto, que está dibujada para esos tamaños. Necesitan algo de
+     peso: sin él quedan igual que el párrafo que tienen debajo y dejan de
      leerse como título. La Didone conseguía esa jerarquía por su forma. */
+  :is(h1, h2, h3, h4).text-titulo,
   :is(h1, h2, h3, h4).text-subtitulo {
     font-weight: 500;
     letter-spacing: -0.01em;

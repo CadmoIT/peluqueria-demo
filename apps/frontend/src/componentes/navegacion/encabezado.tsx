@@ -14,8 +14,56 @@ import { NAVEGACION_PRINCIPAL, RUTAS } from '@/utilidades/rutas';
 export function Encabezado() {
   const [abierto, setAbierto] = useState(false);
   const rutaActual = usePathname();
+  // Arranca oscuro en el inicio, que hoy es la única página con portada
+  // oscura. No es un atajo por comodidad: el servidor no puede consultar el
+  // DOM, así que sin esta suposición la barra se pinta clara y salta a oscura
+  // al hidratar, y ese salto se ve en cada carga.
+  //
+  // Es una suposición, no la verdad: el observador de más abajo la confirma o
+  // la corrige apenas monta, y él es el que manda. Si otra página estrena
+  // portada oscura, se verá el salto hasta que se la agregue acá.
+  const [sobrePortada, setSobrePortada] = useState(rutaActual === RUTAS.inicio);
   const idPanel = useId();
   const botonRef = useRef<HTMLButtonElement>(null);
+  const encabezadoRef = useRef<HTMLElement>(null);
+
+  // El encabezado se oscurece mientras la barra está sobre una portada oscura,
+  // y vuelve al fondo claro apenas la portada termina. Las páginas que no
+  // tienen portada oscura no marcan nada y el encabezado se queda claro.
+  //
+  // Se resuelve con un observador y no escuchando el desplazamiento: el
+  // observador sólo avisa cuando el estado cambia, en vez de correr código en
+  // cada píxel que se baja.
+  useEffect(() => {
+    const portada = document.querySelector('[data-portada-oscura]');
+
+    if (!portada) {
+      setSobrePortada(false);
+      return;
+    }
+
+    // El margen negativo sube el borde de referencia hasta donde termina la
+    // barra: así deja de considerarse "sobre la portada" cuando la portada
+    // pasó por debajo del encabezado, y no cuando salió de la pantalla.
+    const alto = encabezadoRef.current?.offsetHeight ?? 80;
+
+    // Primera respuesta sin esperar al observador: su primer aviso llega en el
+    // cuadro siguiente, y hasta entonces la barra se vería clara sobre una
+    // portada oscura.
+    setSobrePortada(portada.getBoundingClientRect().bottom > alto);
+
+    const observador = new IntersectionObserver(
+      ([entrada]) => setSobrePortada(entrada?.isIntersecting ?? false),
+      { rootMargin: `-${String(alto)}px 0px 0px 0px` },
+    );
+
+    observador.observe(portada);
+    return () => observador.disconnect();
+  }, [rutaActual]);
+
+  // Con el panel desplegado el encabezado vuelve al fondo claro: el panel es
+  // claro, y una barra oscura encima de él se lee como otro elemento.
+  const oscuro = sobrePortada && !abierto;
 
   // El panel se cierra al navegar: si no, queda abierto sobre la página nueva.
   useEffect(() => {
@@ -46,7 +94,13 @@ export function Encabezado() {
   }, [abierto]);
 
   return (
-    <header className="bg-lino/90 border-borde sticky top-0 z-50 border-b backdrop-blur-sm">
+    <header
+      ref={encabezadoRef}
+      className={cn(
+        'duration-(--duracion-rapida) sticky top-0 z-50 border-b backdrop-blur-sm transition-colors',
+        oscuro ? 'bg-tinta/80 text-lino border-transparent' : 'bg-lino/90 border-borde',
+      )}
+    >
       <Contenedor className="flex h-16 items-center justify-between gap-4 sm:h-20">
         <Link href={RUTAS.inicio} aria-label="Manly, ir al inicio" className="shrink-0">
           <Logotipo alto={24} />
@@ -56,7 +110,7 @@ export function Encabezado() {
           <ul className="flex items-center gap-8">
             {NAVEGACION_PRINCIPAL.map((enlace) => (
               <li key={enlace.href}>
-                <EnlaceNav enlace={enlace} rutaActual={rutaActual} />
+                <EnlaceNav enlace={enlace} rutaActual={rutaActual} oscuro={oscuro} />
               </li>
             ))}
           </ul>
@@ -65,7 +119,10 @@ export function Encabezado() {
         <div className="flex items-center gap-2">
           <Link
             href={RUTAS.reservar}
-            className="versales bg-tinta text-lino rounded-manly hover:bg-carbon text-menor duration-(--duracion-rapida) hidden min-h-11 items-center px-5 transition-colors sm:inline-flex"
+            className={cn(
+              'versales rounded-manly text-menor duration-(--duracion-rapida) hidden min-h-11 items-center px-5 transition-colors sm:inline-flex',
+              oscuro ? 'bg-lino text-tinta hover:bg-white' : 'bg-tinta text-lino hover:bg-carbon',
+            )}
           >
             Reservar
           </Link>
@@ -120,20 +177,29 @@ export function Encabezado() {
 function EnlaceNav({
   enlace,
   rutaActual,
+  oscuro,
 }: {
   enlace: { etiqueta: string; href: string };
   rutaActual: string;
+  oscuro: boolean;
 }) {
   const activo = rutaActual === enlace.href;
+  // Sobre el fondo oscuro no sirve `grafito`: es un gris pensado para papel y
+  // ahí abajo no llega al contraste que hace falta. La jerarquía la da
+  // `ceniza`, que es el gris de los fondos oscuros.
+  const tono = oscuro
+    ? activo
+      ? 'text-lino'
+      : 'text-ceniza hover:text-lino'
+    : activo
+      ? 'text-tinta'
+      : 'text-grafito hover:text-tinta';
 
   return (
     <Link
       href={enlace.href}
       aria-current={activo ? 'page' : undefined}
-      className={cn(
-        'versales text-nota duration-(--duracion-rapida) transition-colors',
-        activo ? 'text-tinta' : 'text-grafito hover:text-tinta',
-      )}
+      className={cn('versales text-nota duration-(--duracion-rapida) transition-colors', tono)}
     >
       {enlace.etiqueta}
     </Link>
