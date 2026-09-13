@@ -9,6 +9,7 @@ export type {
   VarianteBoton,
 } from './componentes/boton';
 
+export { Cargando } from './componentes/cargando';
 export { Contenedor } from './componentes/contenedor';
 export { Seccion } from './componentes/seccion';
 export { EncabezadoSeccion } from './componentes/encabezado-seccion';

@@ -155,6 +155,6 @@ export function Vacio({ children }: { children: ReactNode }) {
   );
 }
 
-export function Cargando() {
-  return <p className="text-menor text-humo py-10 text-center">Cargando…</p>;
-}
+// La espera la dibuja el mismo indicador que el sitio público: es de marca,
+// no de esta aplicación, y no hay motivo para que el equipo vea otra cosa.
+export { Cargando } from '@manly/interfaz';

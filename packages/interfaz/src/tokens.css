@@ -221,3 +221,75 @@
     top: 0.5rem;
   }
 }
+
+/* ── Tijeras del indicador de carga ────────────────────────────────────────
+   Las hojas giran sobre el remache, que está en 62,50 del `viewBox`. Hace
+   falta `transform-box: view-box` para que ese origen se lea en las mismas
+   unidades que el dibujo y no en la caja del elemento.
+
+   El ciclo es: abre, cierra de golpe —ahí está el corte— y espera. El tiempo
+   muerto del final es lo que lo hace parecer un gesto y no un aspa girando.
+
+   Los tres fotogramas del 100 % son el estado en reposo, y eso importa: con
+   movimiento reducido el navegador salta al final, y ahí tiene que quedar un
+   dibujo que se sostenga quieto. */
+@keyframes tijeras-hoja-arriba {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(11deg);
+  }
+  55% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes tijeras-hoja-abajo {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  35% {
+    transform: rotate(-11deg);
+  }
+  55% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes tijeras-mechon {
+  0%,
+  48% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  58% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+.tijeras-hoja-arriba,
+.tijeras-hoja-abajo {
+  transform-box: view-box;
+  transform-origin: 62px 50px;
+  animation: 1800ms var(--ease-manly) infinite;
+}
+
+.tijeras-hoja-arriba {
+  animation-name: tijeras-hoja-arriba;
+}
+
+.tijeras-hoja-abajo {
+  animation-name: tijeras-hoja-abajo;
+}
+
+.tijeras-mechon {
+  transform-box: view-box;
+  animation: tijeras-mechon 1800ms var(--ease-entrada) infinite;
+}

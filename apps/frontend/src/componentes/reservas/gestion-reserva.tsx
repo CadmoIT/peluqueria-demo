@@ -7,7 +7,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { cn, Contenedor } from '@manly/interfaz';
+import { Cargando, cn, Contenedor } from '@manly/interfaz';
 
 import { ErrorApi } from '@/servicios/api';
 import {
@@ -88,7 +88,7 @@ export function GestionReserva({ token, esNueva }: { token: string; esNueva: boo
   if (reserva.isPending) {
     return (
       <Contenedor className="py-seccion max-w-2xl">
-        <p className="text-menor text-grafito">Buscando tu reserva…</p>
+        <Cargando mensaje="Buscando tu reserva…" />
       </Contenedor>
     );
   }

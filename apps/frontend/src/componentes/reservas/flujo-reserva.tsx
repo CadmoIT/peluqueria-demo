@@ -9,7 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
-import { cn, Contenedor, EnlaceBoton } from '@manly/interfaz';
+import { Cargando, cn, Contenedor, EnlaceBoton } from '@manly/interfaz';
 import type { OpcionDisponibilidad } from '@manly/contratos';
 
 import { Paso } from '@/componentes/reservas/paso';
@@ -143,7 +143,7 @@ export function FlujoReserva({ sucursalInicial }: { sucursalInicial?: string }) 
 
       <Paso numero={1} titulo="Sucursal">
         {sucursales.isPending ? (
-          <p className="text-menor text-grafito">Cargando sucursales…</p>
+          <Cargando mensaje="Cargando sucursales…" className="py-6" />
         ) : sucursales.isError ? (
           <p className="text-menor text-error">
             No pudimos cargar las sucursales. Probá de nuevo en un momento.
@@ -184,7 +184,7 @@ export function FlujoReserva({ sucursalInicial }: { sucursalInicial?: string }) 
         {!estado.sucursalId ? (
           <p className="text-menor text-grafito">Elegí primero una sucursal.</p>
         ) : servicios.isPending ? (
-          <p className="text-menor text-grafito">Cargando servicios…</p>
+          <Cargando mensaje="Cargando servicios…" className="py-6" />
         ) : (
           <>
             <ul className="flex flex-col gap-2">
@@ -260,7 +260,7 @@ export function FlujoReserva({ sucursalInicial }: { sucursalInicial?: string }) 
         {estado.serviciosElegidos.length === 0 ? (
           <p className="text-menor text-grafito">Elegí al menos un servicio.</p>
         ) : disponibilidad.isPending ? (
-          <p className="text-menor text-grafito">Buscando horarios…</p>
+          <Cargando mensaje="Buscando horarios…" className="py-6" />
         ) : disponibilidad.isError ? (
           <p className="text-menor text-error">
             No pudimos buscar horarios. Probá de nuevo en un momento.
