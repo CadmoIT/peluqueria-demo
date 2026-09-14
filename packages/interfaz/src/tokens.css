@@ -294,48 +294,6 @@
   animation: tijeras-mechon 1800ms var(--ease-entrada) infinite;
 }
 
-/* ── Aparición de las secciones al bajar ───────────────────────────────────
-   Cada sección entra con un desvanecido corto cuando asoma por abajo.
-
-   Va con línea de tiempo de desplazamiento y sin JavaScript. Eso importa más
-   de lo que parece: la alternativa habitual —esconder todo con CSS y
-   destaparlo desde un observador— deja la página en blanco si el script no
-   llega a correr, y ahí no se pierde una animación, se pierde el contenido.
-
-   Con `@supports`, el navegador que no la soporta simplemente muestra las
-   secciones. Y bajo `no-preference` queda fuera de quien pidió movimiento
-   reducido, sin depender de la regla general: esa apaga por duración, y acá la
-   duración la marca el desplazamiento, no el reloj. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .revelar {
-      animation: revelar-entrada linear both;
-      animation-timeline: view();
-      /* Termina bastante antes de que la sección llegue al medio: si no, se
-         lee el texto todavía moviéndose. */
-      animation-range: entry 0% cover 42%;
-    }
-  }
-}
-
-/* Sólo se mueve: no hay desvanecido.
-   La primera versión entraba desde opacidad 0 y axe marcaba tres textos por
-   contraste. No era un falso positivo: a opacidad 0,7 el gris de los párrafos
-   cae a 3,56 sobre el papel, por debajo del 4,5 que exige la norma.
-
-   Se midió hasta dónde se podía bajar: a plena opacidad ese gris da 7,48, y
-   para no perforar el 4,5 sobre el fondo alterno hay que quedarse arriba de
-   0,85. Un desvanecido de 0,85 a 1 no lo ve nadie, así que no vale la pena
-   tenerlo. El movimiento solo hace el mismo trabajo y no toca el contraste en
-   ningún fotograma. */
-@keyframes revelar-entrada {
-  from {
-    transform: translateY(72px);
-  }
-  to {
-    transform: none;
-  }
-}
 
 /* ── Parallax de la portada ────────────────────────────────────────────────
    La fotografía baja mientras la página sube, así que se mueve más lento que
@@ -378,63 +336,74 @@
   }
 }
 
-/* ── Entrada escalonada de las tarjetas ────────────────────────────────────
-   Cada tarjeta tiene su propia línea de tiempo, así que entra cuando le toca
-   a ella y no cuando entra la sección. El escalonado sale solo de que están
-   una al lado de la otra: no hay retardos que mantener sincronizados.
 
-   El recorrido es corto —10 px— porque la sección que las contiene ya se está
-   moviendo: los dos desplazamientos se suman mientras duran. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .revelar-tarjeta {
-      animation: revelar-tarjeta linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 36%;
-    }
-  }
-}
+/* ── Aparición al entrar en pantalla ───────────────────────────────────────
+   El elemento arranca corrido y transparente, y se acomoda cuando entra en la
+   pantalla. La diferencia con lo que había antes es de fondo: aquello estaba
+   atado al desplazamiento —la sección se movía *en proporción* a cuánto
+   habías bajado— y eso produce profundidad, no aparición. Peor todavía: el
+   recorrido terminaba con la sección ya visible, así que cuando la mirabas ya
+   estaba quieta.
 
-@keyframes revelar-tarjeta {
-  from {
-    transform: translateY(56px) scale(0.94);
-  }
-  to {
-    transform: none;
-  }
-}
+   Esto se dispara por entrada y corre por tiempo. Es lo que se lee como que
+   algo "aparece".
 
-/* ── Respaldo para navegadores sin línea de tiempo de desplazamiento ────────
-   Firefox todavía no implementa `animation-timeline`, así que sin esto el
-   sitio se queda quieto. El movimiento lo maneja un componente del frontend
-   con un observador, y estas reglas son las que aplica.
-
-   Todo cuelga de `data-movimiento-js`, que ese componente pone recién cuando
-   arranca. Si el script no corre, ninguna de estas reglas existe y las
-   secciones se ven en su sitio: el respaldo agrega movimiento, nunca esconde.
-
-   No hace falta protegerlas de `prefers-reduced-motion` acá: el componente ni
-   siquiera pone el atributo cuando esa preferencia está activa. */
+   Todo cuelga de `data-movimiento-js`, que pone el componente que observa las
+   entradas. Es deliberado: **si el script no corre, nada de esto existe y la
+   página se ve entera**. Esconder desde el CSS y destapar desde el script
+   dejaría la página en blanco ante cualquier falla. */
 [data-movimiento-js] .revelar,
-[data-movimiento-js] .revelar-tarjeta {
-  transition: transform var(--duracion-lenta) var(--ease-manly);
+[data-movimiento-js] .revelar-lista > * {
+  opacity: 0;
+  transition:
+    opacity var(--duracion-lenta) var(--ease-manly),
+    transform var(--duracion-lenta) var(--ease-manly);
 }
 
 [data-movimiento-js] .revelar {
-  transform: translateY(72px);
+  transform: translateY(48px);
 }
 
-[data-movimiento-js] .revelar-tarjeta {
-  transform: translateY(56px) scale(0.94);
+[data-movimiento-js] .revelar-lista > * {
+  transform: translateY(36px) scale(0.96);
 }
 
+/* Las tarjetas las dispara su sección, no un observador propio.
+   Observarlas por separado no era fiable: su alto depende de imágenes que
+   pueden no estar medidas todavía, y un elemento sin área nunca "entra" en
+   pantalla, así que su observador no dispara nunca. La sección, en cambio,
+   siempre tiene alto. Un disparo, dos efectos. */
 [data-movimiento-js] .revelar[data-a-la-vista],
-[data-movimiento-js] .revelar-tarjeta[data-a-la-vista] {
+[data-movimiento-js] .revelar[data-a-la-vista] .revelar-lista > * {
+  opacity: 1;
   transform: none;
 }
 
+/* Se observa la lista y no cada tarjeta. No es un atajo: una tarjeta cuyo alto
+   depende de una imagen todavía sin medir llega a valer 0 x 0, y un elemento
+   sin área nunca "entra" en pantalla, así que su observador no dispara nunca.
+   Pasó exactamente eso: aparecían las secciones y ninguna tarjeta.
+
+   La lista siempre tiene alto propio, así que el disparo es fiable, y el
+   escalonado sale del orden de los hijos sin retardos que mantener a mano. */
+[data-movimiento-js] .revelar-lista > *:nth-child(1) {
+  transition-delay: 160ms;
+}
+
+[data-movimiento-js] .revelar-lista > *:nth-child(2) {
+  transition-delay: 260ms;
+}
+
+[data-movimiento-js] .revelar-lista > *:nth-child(3) {
+  transition-delay: 360ms;
+}
+
+[data-movimiento-js] .revelar-lista > *:nth-child(n + 4) {
+  transition-delay: 460ms;
+}
+
 /* La portada no espera a entrar: sigue al desplazamiento desde el primer
-   píxel, y el componente le va escribiendo cuánto bajar. */
+   píxel. Sólo la maneja el script donde el CSS no puede. */
 [data-movimiento-js] .portada-parallax {
   transform: translateY(var(--desplazamiento-portada, 0px)) scale(var(--escala-portada, 1.35));
 }

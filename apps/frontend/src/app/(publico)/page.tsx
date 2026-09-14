@@ -172,13 +172,13 @@ export default async function PaginaInicio() {
             </div>
           </div>
 
-          <ul className="mt-bloque grid gap-6 sm:grid-cols-3">
+          <ul className="revelar-lista mt-bloque grid gap-6 sm:grid-cols-3">
             {[
               IMAGENES.marca.pomadaMate,
               IMAGENES.marca.pomadaTransparente,
               IMAGENES.marca.polvoTexturizador,
             ].map((producto) => (
-              <li key={producto.ruta} className="revelar-tarjeta bg-papel rounded-tarjeta overflow-hidden">
+              <li key={producto.ruta} className="bg-papel rounded-tarjeta overflow-hidden">
                 <Imagen
                   imagen={producto}
                   sizes="(min-width: 640px) 33vw, 100vw"
@@ -214,11 +214,11 @@ export default async function PaginaInicio() {
               No pudimos cargar el listado en este momento. Escribinos y te lo pasamos.
             </p>
           ) : (
-            <ul className="mt-bloque border-borde border-t">
+            <ul className="revelar-lista mt-bloque border-borde border-t">
               {servicios.map((servicio) => (
                 <li
                   key={servicio.id}
-                  className="revelar-tarjeta border-borde flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b py-5"
+                  className="border-borde flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b py-5"
                 >
                   <div>
                     <h3 className="text-subtitulo">{servicio.nombre}</h3>
@@ -264,11 +264,11 @@ export default async function PaginaInicio() {
               No pudimos cargar las sucursales en este momento.
             </p>
           ) : (
-            <ul className="mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="revelar-lista mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {sucursales.map((sucursal) => (
                 <li
                   key={sucursal.id}
-                  className="revelar-tarjeta bg-papel border-borde rounded-tarjeta flex flex-col border p-5"
+                  className="bg-papel border-borde rounded-tarjeta flex flex-col border p-5"
                 >
                   <h3 className="text-subtitulo">{sucursal.nombre}</h3>
                   <p className="text-menor text-grafito mt-1">{sucursal.barrio}</p>
@@ -301,9 +301,9 @@ export default async function PaginaInicio() {
               No pudimos cargar los datos de contacto en este momento.
             </p>
           ) : (
-            <ul className="mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="revelar-lista mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {sucursales.map((sucursal) => (
-                <li key={sucursal.id} className="revelar-tarjeta border-borde rounded-tarjeta border p-5">
+                <li key={sucursal.id} className="border-borde rounded-tarjeta border p-5">
                   <h3 className="text-subtitulo">{sucursal.nombre}</h3>
                   <p className="text-menor text-grafito mt-1">{sucursal.barrio}</p>
 
