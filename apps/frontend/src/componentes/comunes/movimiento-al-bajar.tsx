@@ -18,7 +18,11 @@
 import { useEffect } from 'react';
 
 /** Cuánto baja la fotografía de portada, en proporción a su alto. */
-const RECORRIDO_PORTADA = 0.12;
+const RECORRIDO_PORTADA = 0.04;
+
+/** La escala se abre de cerrada a suelta mientras se baja la primera pantalla. */
+const ESCALA_INICIAL = 1.35;
+const ESCALA_FINAL = 1.12;
 
 export function MovimientoAlBajar() {
   useEffect(() => {
@@ -63,11 +67,16 @@ export function MovimientoAlBajar() {
 
         if (!portada) return;
 
-        const avance = Math.min(window.scrollY / (window.innerHeight * 0.9), 1);
+        const avance = Math.min(window.scrollY / window.innerHeight, 1);
 
         portada.style.setProperty(
           '--desplazamiento-portada',
           `${String(avance * RECORRIDO_PORTADA * portada.offsetHeight)}px`,
+        );
+
+        portada.style.setProperty(
+          '--escala-portada',
+          String(ESCALA_INICIAL + (ESCALA_FINAL - ESCALA_INICIAL) * avance),
         );
       });
     }

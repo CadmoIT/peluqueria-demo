@@ -313,7 +313,7 @@
       animation-timeline: view();
       /* Termina bastante antes de que la sección llegue al medio: si no, se
          lee el texto todavía moviéndose. */
-      animation-range: entry 0% cover 30%;
+      animation-range: entry 0% cover 42%;
     }
   }
 }
@@ -330,7 +330,7 @@
    ningún fotograma. */
 @keyframes revelar-entrada {
   from {
-    transform: translateY(44px);
+    transform: translateY(72px);
   }
   to {
     transform: none;
@@ -357,17 +357,24 @@
     .portada-parallax {
       animation: portada-parallax linear both;
       animation-timeline: scroll(root block);
-      animation-range: 0 90vh;
+      animation-range: 0 100vh;
     }
   }
 }
 
+/* La fotografía se abre: entra cerrada en 1,35 y va soltando hasta 1,12
+   mientras baja. El zoom es lo que hace que el movimiento se lea de lejos; el
+   desplazamiento solo, por grande que fuera, pasaba desapercibido.
+
+   El 4 % de recorrido no es arbitrario: al final la imagen queda en 1,12 y le
+   sobran seis puntos por lado, así que cualquier recorrido mayor dejaría ver
+   el borde justo cuando la escala es más chica. */
 @keyframes portada-parallax {
   from {
-    transform: translateY(0) scale(1.28);
+    transform: translateY(0) scale(1.35);
   }
   to {
-    transform: translateY(12%) scale(1.28);
+    transform: translateY(4%) scale(1.12);
   }
 }
 
@@ -383,14 +390,14 @@
     .revelar-tarjeta {
       animation: revelar-tarjeta linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 24%;
+      animation-range: entry 0% cover 36%;
     }
   }
 }
 
 @keyframes revelar-tarjeta {
   from {
-    transform: translateY(26px);
+    transform: translateY(56px) scale(0.94);
   }
   to {
     transform: none;
@@ -414,11 +421,11 @@
 }
 
 [data-movimiento-js] .revelar {
-  transform: translateY(44px);
+  transform: translateY(72px);
 }
 
 [data-movimiento-js] .revelar-tarjeta {
-  transform: translateY(26px);
+  transform: translateY(56px) scale(0.94);
 }
 
 [data-movimiento-js] .revelar[data-a-la-vista],
@@ -429,5 +436,5 @@
 /* La portada no espera a entrar: sigue al desplazamiento desde el primer
    píxel, y el componente le va escribiendo cuánto bajar. */
 [data-movimiento-js] .portada-parallax {
-  transform: translateY(var(--desplazamiento-portada, 0px)) scale(1.28);
+  transform: translateY(var(--desplazamiento-portada, 0px)) scale(var(--escala-portada, 1.35));
 }
