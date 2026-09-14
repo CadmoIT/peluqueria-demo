@@ -313,7 +313,7 @@
       animation-timeline: view();
       /* Termina bastante antes de que la sección llegue al medio: si no, se
          lee el texto todavía moviéndose. */
-      animation-range: entry 5% cover 22%;
+      animation-range: entry 0% cover 30%;
     }
   }
 }
@@ -330,7 +330,7 @@
    ningún fotograma. */
 @keyframes revelar-entrada {
   from {
-    transform: translateY(20px);
+    transform: translateY(44px);
   }
   to {
     transform: none;
@@ -364,10 +364,10 @@
 
 @keyframes portada-parallax {
   from {
-    transform: translateY(0) scale(1.16);
+    transform: translateY(0) scale(1.28);
   }
   to {
-    transform: translateY(6%) scale(1.16);
+    transform: translateY(12%) scale(1.28);
   }
 }
 
@@ -383,14 +383,14 @@
     .revelar-tarjeta {
       animation: revelar-tarjeta linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 16%;
+      animation-range: entry 0% cover 24%;
     }
   }
 }
 
 @keyframes revelar-tarjeta {
   from {
-    transform: translateY(10px);
+    transform: translateY(26px);
   }
   to {
     transform: none;
@@ -414,11 +414,11 @@
 }
 
 [data-movimiento-js] .revelar {
-  transform: translateY(20px);
+  transform: translateY(44px);
 }
 
 [data-movimiento-js] .revelar-tarjeta {
-  transform: translateY(10px);
+  transform: translateY(26px);
 }
 
 [data-movimiento-js] .revelar[data-a-la-vista],
@@ -429,5 +429,5 @@
 /* La portada no espera a entrar: sigue al desplazamiento desde el primer
    píxel, y el componente le va escribiendo cuánto bajar. */
 [data-movimiento-js] .portada-parallax {
-  transform: translateY(var(--desplazamiento-portada, 0px)) scale(1.16);
+  transform: translateY(var(--desplazamiento-portada, 0px)) scale(1.28);
 }

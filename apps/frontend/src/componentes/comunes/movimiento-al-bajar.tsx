@@ -18,7 +18,7 @@
 import { useEffect } from 'react';
 
 /** Cuánto baja la fotografía de portada, en proporción a su alto. */
-const RECORRIDO_PORTADA = 0.06;
+const RECORRIDO_PORTADA = 0.12;
 
 export function MovimientoAlBajar() {
   useEffect(() => {
