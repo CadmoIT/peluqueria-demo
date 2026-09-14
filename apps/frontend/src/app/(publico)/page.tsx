@@ -80,7 +80,7 @@ export default async function PaginaInicio() {
           imagen={IMAGENES.inicio.portada}
           prioritaria
           sizes="100vw"
-          className="absolute inset-0 -z-20"
+          className="portada-parallax absolute inset-0 -z-20"
         />
 
         {/*
@@ -178,7 +178,7 @@ export default async function PaginaInicio() {
               IMAGENES.marca.pomadaTransparente,
               IMAGENES.marca.polvoTexturizador,
             ].map((producto) => (
-              <li key={producto.ruta} className="bg-papel rounded-tarjeta overflow-hidden">
+              <li key={producto.ruta} className="revelar-tarjeta bg-papel rounded-tarjeta overflow-hidden">
                 <Imagen
                   imagen={producto}
                   sizes="(min-width: 640px) 33vw, 100vw"
@@ -218,7 +218,7 @@ export default async function PaginaInicio() {
               {servicios.map((servicio) => (
                 <li
                   key={servicio.id}
-                  className="border-borde flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b py-5"
+                  className="revelar-tarjeta border-borde flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b py-5"
                 >
                   <div>
                     <h3 className="text-subtitulo">{servicio.nombre}</h3>
@@ -268,7 +268,7 @@ export default async function PaginaInicio() {
               {sucursales.map((sucursal) => (
                 <li
                   key={sucursal.id}
-                  className="bg-papel border-borde rounded-tarjeta flex flex-col border p-5"
+                  className="revelar-tarjeta bg-papel border-borde rounded-tarjeta flex flex-col border p-5"
                 >
                   <h3 className="text-subtitulo">{sucursal.nombre}</h3>
                   <p className="text-menor text-grafito mt-1">{sucursal.barrio}</p>
@@ -303,7 +303,7 @@ export default async function PaginaInicio() {
           ) : (
             <ul className="mt-bloque grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {sucursales.map((sucursal) => (
-                <li key={sucursal.id} className="border-borde rounded-tarjeta border p-5">
+                <li key={sucursal.id} className="revelar-tarjeta border-borde rounded-tarjeta border p-5">
                   <h3 className="text-subtitulo">{sucursal.nombre}</h3>
                   <p className="text-menor text-grafito mt-1">{sucursal.barrio}</p>
 

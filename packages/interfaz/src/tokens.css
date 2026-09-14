@@ -336,3 +336,59 @@
     transform: none;
   }
 }
+
+/* ── Parallax de la portada ────────────────────────────────────────────────
+   La fotografía baja mientras la página sube, así que se mueve más lento que
+   el texto que tiene encima. Es lo que da sensación de profundidad.
+
+   El `scale` no es decorativo: sin él, al desplazar la imagen un 6 % de su
+   alto quedaría a la vista el borde de abajo. Con un 16 % de aumento sobran
+   ocho puntos de cada lado, más que el recorrido.
+
+   Va contra el desplazamiento de la página y no contra la entrada del
+   elemento: la portada arranca visible, así que necesita un origen fijo —el
+   scroll— y no uno relativo a cuándo asoma. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .portada-parallax {
+      animation: portada-parallax linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 90vh;
+    }
+  }
+}
+
+@keyframes portada-parallax {
+  from {
+    transform: translateY(0) scale(1.16);
+  }
+  to {
+    transform: translateY(6%) scale(1.16);
+  }
+}
+
+/* ── Entrada escalonada de las tarjetas ────────────────────────────────────
+   Cada tarjeta tiene su propia línea de tiempo, así que entra cuando le toca
+   a ella y no cuando entra la sección. El escalonado sale solo de que están
+   una al lado de la otra: no hay retardos que mantener sincronizados.
+
+   El recorrido es corto —10 px— porque la sección que las contiene ya se está
+   moviendo: los dos desplazamientos se suman mientras duran. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .revelar-tarjeta {
+      animation: revelar-tarjeta linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 16%;
+    }
+  }
+}
+
+@keyframes revelar-tarjeta {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: none;
+  }
+}
