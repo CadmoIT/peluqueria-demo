@@ -1,4 +1,5 @@
 // Estructura común de las páginas públicas: encabezado, contenido y pie.
+import { MovimientoAlBajar } from '@/componentes/comunes/movimiento-al-bajar';
 import { Encabezado } from '@/componentes/navegacion/encabezado';
 import { PieDePagina } from '@/componentes/navegacion/pie-de-pagina';
 
@@ -9,6 +10,8 @@ export default function LayoutPublico({ children }: { children: React.ReactNode 
       <a href="#contenido" className="salto-al-contenido versales text-menor">
         Saltar al contenido
       </a>
+
+      <MovimientoAlBajar />
 
       <Encabezado />
 

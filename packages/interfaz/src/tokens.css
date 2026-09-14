@@ -348,7 +348,11 @@
    Va contra el desplazamiento de la página y no contra la entrada del
    elemento: la portada arranca visible, así que necesita un origen fijo —el
    scroll— y no uno relativo a cuándo asoma. */
-@supports (animation-timeline: scroll()) {
+/* Se pregunta por `view()` y no por `scroll()` aunque esta animación use la
+   segunda: las dos llegan juntas en los navegadores, y el componente de
+   respaldo decide con esa misma condición. Si acá se preguntara distinto,
+   podría darse el caso de que el CSS se aplique y el respaldo también. */
+@supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .portada-parallax {
       animation: portada-parallax linear both;
@@ -391,4 +395,39 @@
   to {
     transform: none;
   }
+}
+
+/* ── Respaldo para navegadores sin línea de tiempo de desplazamiento ────────
+   Firefox todavía no implementa `animation-timeline`, así que sin esto el
+   sitio se queda quieto. El movimiento lo maneja un componente del frontend
+   con un observador, y estas reglas son las que aplica.
+
+   Todo cuelga de `data-movimiento-js`, que ese componente pone recién cuando
+   arranca. Si el script no corre, ninguna de estas reglas existe y las
+   secciones se ven en su sitio: el respaldo agrega movimiento, nunca esconde.
+
+   No hace falta protegerlas de `prefers-reduced-motion` acá: el componente ni
+   siquiera pone el atributo cuando esa preferencia está activa. */
+[data-movimiento-js] .revelar,
+[data-movimiento-js] .revelar-tarjeta {
+  transition: transform var(--duracion-lenta) var(--ease-manly);
+}
+
+[data-movimiento-js] .revelar {
+  transform: translateY(20px);
+}
+
+[data-movimiento-js] .revelar-tarjeta {
+  transform: translateY(10px);
+}
+
+[data-movimiento-js] .revelar[data-a-la-vista],
+[data-movimiento-js] .revelar-tarjeta[data-a-la-vista] {
+  transform: none;
+}
+
+/* La portada no espera a entrar: sigue al desplazamiento desde el primer
+   píxel, y el componente le va escribiendo cuánto bajar. */
+[data-movimiento-js] .portada-parallax {
+  transform: translateY(var(--desplazamiento-portada, 0px)) scale(1.16);
 }
