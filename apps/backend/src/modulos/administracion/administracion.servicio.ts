@@ -7,7 +7,13 @@
 // Nada se borra. Todo se da de baja con su bandera `activo`: un DELETE
 // arrastraría reservas históricas o quedaría trabado por las claves foráneas, y
 // en los dos casos se perdería el rastro de lo que pasó.
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   actualizarConfiguracion,
   actualizarProfesional,
@@ -23,6 +29,7 @@ import {
   listarServiciosAdmin,
   listarSucursalesAdmin,
   reemplazarHorarioSemanal,
+  sucursalesDelProfesional,
   type BaseDatos,
   type ConfiguracionEditable,
   type FranjaSemanal,
@@ -37,6 +44,7 @@ import type {
   DatosServicioPanel,
   DatosSucursalPanel,
   HorarioSemanal,
+  UsuarioSesion,
 } from '@manly/contratos';
 
 import { BASE_DATOS } from '../../comun/base-datos/base-datos.modulo';
@@ -107,11 +115,25 @@ export class AdministracionServicio {
 
   // ── Horarios ───────────────────────────────────────────────────────────────
 
-  listarHorarios(filtros: {
-    profesionalId?: string;
-    sucursalId?: string;
-  }): Promise<FranjaSemanal[]> {
-    return listarHorarios(this.bd, filtros);
+  /**
+   * El horario semanal, recortado a lo que el rol puede ver.
+   *
+   * Quien tiene rol profesional ve el suyo y nada más. No es un dato sensible
+   * —el horario de atención es público en la práctica—, pero devolverle la
+   * semana de toda la sucursal cuando pide la propia es ruido, y con el filtro
+   * forzado la pantalla no necesita acordarse de mandarlo.
+   */
+  listarHorarios(
+    filtros: { profesionalId?: string; sucursalId?: string },
+    usuario: UsuarioSesion,
+  ): Promise<FranjaSemanal[]> {
+    if (usuario.rol !== 'profesional') return listarHorarios(this.bd, filtros);
+
+    if (!usuario.profesionalId) {
+      throw new ForbiddenException('Tu usuario todavía no está asociado a un profesional.');
+    }
+
+    return listarHorarios(this.bd, { ...filtros, profesionalId: usuario.profesionalId });
   }
 
   /**
@@ -121,8 +143,30 @@ export class AdministracionServicio {
    * cancela lo que ya tenía ese jueves. Eso se ve en la agenda y se resuelve a
    * mano, que es lo correcto —cancelar turnos como efecto colateral de editar
    * un horario sería una sorpresa cara.
+   *
+   * Cada profesional carga su propia semana; gerencia, la de cualquiera. Las
+   * dos restricciones del rol profesional son por lo que pasaría si no
+   * estuvieran: sin la primera, cualquiera con acceso al panel podría abrirle o
+   * cerrarle la agenda a un compañero; sin la segunda, podría darse horario en
+   * un local donde no trabaja.
    */
-  async guardarHorario(horario: HorarioSemanal): Promise<void> {
+  async guardarHorario(horario: HorarioSemanal, usuario: UsuarioSesion): Promise<void> {
+    if (usuario.rol === 'profesional') {
+      if (!usuario.profesionalId) {
+        throw new ForbiddenException('Tu usuario todavía no está asociado a un profesional.');
+      }
+
+      if (horario.profesionalId !== usuario.profesionalId) {
+        throw new ForbiddenException('Sólo podés editar tu propio horario.');
+      }
+
+      const suyas = await sucursalesDelProfesional(this.bd, usuario.profesionalId);
+
+      if (!suyas.includes(horario.sucursalId)) {
+        throw new ForbiddenException('No atendés en esa sucursal.');
+      }
+    }
+
     await reemplazarHorarioSemanal(this.bd, horario);
   }
 

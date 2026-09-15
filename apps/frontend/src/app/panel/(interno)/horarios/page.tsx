@@ -24,6 +24,7 @@ import {
   TituloPanel,
   Vacio,
 } from '@/componentes/panel/primitivos';
+import { usarSesion } from '@/caracteristicas/autenticacion/usar-sesion';
 import { ErrorApi } from '@/servicios/api';
 import {
   guardarHorario,
@@ -49,9 +50,15 @@ function mensajeDe(error: unknown): string {
 
 export default function PaginaHorarios() {
   const clientes = useQueryClient();
+  const { usuario, cargando: cargandoSesion } = usarSesion();
   const [profesionalId, setProfesionalId] = useState('');
   const [sucursalId, setSucursalId] = useState('');
   const [franjas, setFranjas] = useState<Franja[]>([]);
+
+  // Quien es profesional edita lo suyo y nada más, así que no elige de una
+  // lista: se fija en su propia sesión. La API aplica la misma regla, que es la
+  // que de verdad protege —acá sólo se evita mostrar un selector inútil—.
+  const esProfesional = usuario?.rol === 'profesional';
 
   const profesionales = useQuery({
     queryKey: ['panel', 'profesionales'],
@@ -90,37 +97,74 @@ export default function PaginaHorarios() {
     },
   });
 
-  if (profesionales.isPending || sucursales.isPending) return <Cargando />;
-
   const elegido = (profesionales.data ?? []).find((uno) => uno.id === profesionalId);
   const susSucursales = (sucursales.data ?? []).filter(
     (una) => elegido?.sucursalIds.includes(una.id) ?? false,
   );
 
+  // Si atiende en un solo local no hay nada que elegir. Se guarda el id suelto
+  // y no el arreglo: `susSucursales` se arma en cada pintada, así que como
+  // dependencia del efecto cambiaría siempre.
+  const unicaSucursalId = susSucursales.length === 1 ? susSucursales[0]!.id : null;
+
+  // El profesional queda fijado a sí mismo.
+  const miProfesionalId = esProfesional ? usuario?.profesionalId : null;
+
+  useEffect(() => {
+    if (miProfesionalId) setProfesionalId(miProfesionalId);
+  }, [miProfesionalId]);
+
+  useEffect(() => {
+    if (esProfesional && sucursalId === '' && unicaSucursalId) setSucursalId(unicaSucursalId);
+  }, [esProfesional, sucursalId, unicaSucursalId]);
+
+  if (profesionales.isPending || sucursales.isPending || cargandoSesion) return <Cargando />;
+
+  // Un usuario con rol profesional que todavía no está atado a una ficha no
+  // tiene semana que editar. Decirlo es mejor que mostrarle la pantalla vacía.
+  if (esProfesional && !miProfesionalId) {
+    return (
+      <>
+        <TituloPanel>Mi horario</TituloPanel>
+        <Vacio>
+          Tu usuario todavía no está asociado a un profesional. Pedile a gerencia que lo vincule.
+        </Vacio>
+      </>
+    );
+  }
+
   return (
     <>
-      <TituloPanel>Horarios</TituloPanel>
+      <TituloPanel>{esProfesional ? 'Mi horario' : 'Horarios'}</TituloPanel>
+
+      <p className="text-menor text-grafito max-w-lectura mb-6">
+        {esProfesional
+          ? 'Cargá los días y las horas en las que vas a estar trabajando. Los turnos se ofrecen solamente dentro de estas franjas.'
+          : 'La semana de cada profesional en cada sucursal. Los turnos se ofrecen solamente dentro de estas franjas.'}
+      </p>
 
       <div className="mb-6 flex flex-wrap gap-3">
-        <label className="block">
-          <span className="versales text-nota text-grafito block">Profesional</span>
-          <Seleccion
-            value={profesionalId}
-            onChange={(evento) => {
-              setProfesionalId(evento.target.value);
-              setSucursalId('');
-              setFranjas([]);
-            }}
-            className="w-56"
-          >
-            <option value="">Elegí</option>
-            {(profesionales.data ?? []).map((uno) => (
-              <option key={uno.id} value={uno.id}>
-                {uno.nombreVisible ?? uno.nombre}
-              </option>
-            ))}
-          </Seleccion>
-        </label>
+        {esProfesional ? null : (
+          <label className="block">
+            <span className="versales text-nota text-grafito block">Profesional</span>
+            <Seleccion
+              value={profesionalId}
+              onChange={(evento) => {
+                setProfesionalId(evento.target.value);
+                setSucursalId('');
+                setFranjas([]);
+              }}
+              className="w-56"
+            >
+              <option value="">Elegí</option>
+              {(profesionales.data ?? []).map((uno) => (
+                <option key={uno.id} value={uno.id}>
+                  {uno.nombreVisible ?? uno.nombre}
+                </option>
+              ))}
+            </Seleccion>
+          </label>
+        )}
 
         <label className="block">
           <span className="versales text-nota text-grafito block">Sucursal</span>
@@ -141,7 +185,11 @@ export default function PaginaHorarios() {
       </div>
 
       {profesionalId === '' || sucursalId === '' ? (
-        <Vacio>Elegí un profesional y una sucursal para ver su semana.</Vacio>
+        <Vacio>
+          {esProfesional
+            ? 'Elegí la sucursal para ver tu semana.'
+            : 'Elegí un profesional y una sucursal para ver su semana.'}
+        </Vacio>
       ) : (
         <Tarjeta>
           <ul className="space-y-2">
@@ -208,7 +256,9 @@ export default function PaginaHorarios() {
 
           {franjas.length === 0 && (
             <p className="text-menor text-humo">
-              Sin franjas: este profesional no atiende en esta sucursal.
+              {esProfesional
+                ? 'Sin franjas: no atendés en esta sucursal.'
+                : 'Sin franjas: este profesional no atiende en esta sucursal.'}
             </p>
           )}
 

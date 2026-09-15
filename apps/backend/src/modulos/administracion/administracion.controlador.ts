@@ -228,10 +228,11 @@ export class AdministracionControlador {
   @Get('horarios')
   @ApiOperation({ summary: 'Horario semanal de un profesional o de una sucursal' })
   horarios(
+    @Usuario() usuario: UsuarioSesion,
     @Query('profesionalId') profesionalId?: string,
     @Query('sucursalId') sucursalId?: string,
   ) {
-    return this.administracion.listarHorarios({ profesionalId, sucursalId });
+    return this.administracion.listarHorarios({ profesionalId, sucursalId }, usuario);
   }
 
   /**
@@ -240,8 +241,12 @@ export class AdministracionControlador {
    * Es PUT y no PATCH porque reemplaza: lo que no venga en la lista deja de
    * existir. Aplicarlo franja por franja abriría la puerta a dejar media semana
    * cargada si algo falla en el medio.
+   *
+   * No lleva `@Roles`: cada profesional carga su propia semana, que es quien
+   * sabe cuándo va a estar. Quién puede tocar qué lo decide el servicio, que es
+   * donde están los datos para decirlo —de qué profesional es el usuario y en
+   * qué sucursales atiende—; el decorador sólo sabe de roles.
    */
-  @Roles('gerencia')
   @Put('horarios')
   @ApiOperation({ summary: 'Reemplaza el horario semanal' })
   async guardarHorario(
@@ -249,12 +254,14 @@ export class AdministracionControlador {
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
   ) {
-    const antes = await this.administracion.listarHorarios({
-      profesionalId: horario.profesionalId,
-      sucursalId: horario.sucursalId,
-    });
+    // Se lee antes de guardar y con la misma sesión: si el pedido no está
+    // permitido, lo que corta es el guardado, no esta consulta.
+    const antes = await this.administracion.listarHorarios(
+      { profesionalId: horario.profesionalId, sucursalId: horario.sucursalId },
+      usuario,
+    );
 
-    await this.administracion.guardarHorario(horario);
+    await this.administracion.guardarHorario(horario, usuario);
 
     await this.auditoria.registrar({
       usuario,

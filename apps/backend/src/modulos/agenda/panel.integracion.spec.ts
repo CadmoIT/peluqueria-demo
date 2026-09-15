@@ -535,16 +535,19 @@ describe('administración', () => {
   it('reemplazar el horario semanal borra lo anterior', async () => {
     const profesionalId = contexto.profesionalIds[0]!;
 
-    await contexto.administracion.guardarHorario({
-      profesionalId,
-      sucursalId: contexto.sucursalId,
-      franjas: [{ diaSemana: 3, comienza: '09:00', termina: '13:00' }],
-    });
+    await contexto.administracion.guardarHorario(
+      {
+        profesionalId,
+        sucursalId: contexto.sucursalId,
+        franjas: [{ diaSemana: 3, comienza: '09:00', termina: '13:00' }],
+      },
+      contexto.gerencia,
+    );
 
-    const horarios = await contexto.administracion.listarHorarios({
-      profesionalId,
-      sucursalId: contexto.sucursalId,
-    });
+    const horarios = await contexto.administracion.listarHorarios(
+      { profesionalId, sucursalId: contexto.sucursalId },
+      contexto.gerencia,
+    );
 
     expect(horarios).toHaveLength(1);
     expect(horarios[0]?.diaSemana).toBe(3);
@@ -608,5 +611,89 @@ describe('auditoría', () => {
         entidadId: 'esto-no-es-un-uuid',
       }),
     ).resolves.toBeUndefined();
+  });
+});
+
+describe('horario semanal', () => {
+  // Cada profesional carga los días que va a trabajar. Lo que se prueba acá es
+  // el borde: que cargar el propio funcione y que no se pueda tocar el ajeno.
+  const LUNES_DE_DIEZ_A_SEIS = [{ diaSemana: 1, comienza: '10:00', termina: '18:00' }];
+
+  it('un profesional guarda su propia semana', async () => {
+    await contexto.administracion.guardarHorario(
+      {
+        profesionalId: contexto.profesionalIds[0]!,
+        sucursalId: contexto.sucursalId,
+        franjas: LUNES_DE_DIEZ_A_SEIS,
+      },
+      contexto.profesional,
+    );
+
+    const guardado = await contexto.administracion.listarHorarios(
+      { sucursalId: contexto.sucursalId },
+      contexto.profesional,
+    );
+
+    expect(guardado).toHaveLength(1);
+    expect(guardado[0]?.diaSemana).toBe(1);
+    expect(guardado[0]?.comienza.slice(0, 5)).toBe('10:00');
+  });
+
+  it('no deja que un profesional edite el horario de otro', async () => {
+    await expect(
+      contexto.administracion.guardarHorario(
+        {
+          profesionalId: contexto.profesionalIds[1]!,
+          sucursalId: contexto.sucursalId,
+          franjas: LUNES_DE_DIEZ_A_SEIS,
+        },
+        contexto.profesional,
+      ),
+    ).rejects.toThrow(/tu propio horario/i);
+  });
+
+  it('no deja cargar horario en una sucursal donde no atiende', async () => {
+    const otra = await contexto.administracion.crearSucursal({
+      nombre: 'Sucursal ajena',
+      barrio: 'Otro',
+      direccion: 'Ahí',
+      telefono: null,
+      whatsapp: null,
+      urlMapa: null,
+      horasMinimasCancelacion: null,
+      activa: true,
+      orden: 0,
+    });
+
+    await expect(
+      contexto.administracion.guardarHorario(
+        {
+          profesionalId: contexto.profesionalIds[0]!,
+          sucursalId: otra,
+          franjas: LUNES_DE_DIEZ_A_SEIS,
+        },
+        contexto.profesional,
+      ),
+    ).rejects.toThrow(/no atendés en esa sucursal/i);
+  });
+
+  it('a un profesional le devuelve su horario y no el de sus compañeros', async () => {
+    await contexto.administracion.guardarHorario(
+      {
+        profesionalId: contexto.profesionalIds[1]!,
+        sucursalId: contexto.sucursalId,
+        franjas: [{ diaSemana: 3, comienza: '09:00', termina: '13:00' }],
+      },
+      contexto.gerencia,
+    );
+
+    const suyo = await contexto.administracion.listarHorarios({}, contexto.profesional);
+
+    expect(suyo.every((franja) => franja.profesionalId === contexto.profesionalIds[0])).toBe(true);
+
+    // Gerencia sí ve los dos.
+    const todos = await contexto.administracion.listarHorarios({}, contexto.gerencia);
+
+    expect(new Set(todos.map((franja) => franja.profesionalId)).size).toBeGreaterThan(1);
   });
 });

@@ -29,7 +29,9 @@ const ENLACES: Enlace[] = [
   { href: '/panel', etiqueta: 'Agenda' },
   { href: '/panel/solicitudes', etiqueta: 'Solicitudes', soloGerencia: true },
   { href: '/panel/catalogo', etiqueta: 'Catálogo', soloGerencia: true },
-  { href: '/panel/horarios', etiqueta: 'Horarios', soloGerencia: true },
+  // Horarios lo ve todo el mundo: cada profesional carga la semana que va a
+  // trabajar. La pantalla se recorta sola según el rol.
+  { href: '/panel/horarios', etiqueta: 'Horarios' },
   { href: '/panel/usuarios', etiqueta: 'Accesos', soloGerencia: true },
   { href: '/panel/fallas', etiqueta: 'Avisos', soloGerencia: true },
   { href: '/panel/auditoria', etiqueta: 'Historial', soloGerencia: true },

@@ -375,6 +375,27 @@ export interface FranjaSemanal {
   termina: string;
 }
 
+/**
+ * Las sucursales donde un profesional atiende.
+ *
+ * Se usa para validar quién puede cargarle horario a qué local. Un horario en
+ * una sucursal donde el profesional no está asignado no rompe nada —el motor de
+ * disponibilidad arranca filtrando por `profesionales_sucursales`, así que esas
+ * franjas nunca se ofrecen—, pero deja a alguien creyendo que cargó su semana
+ * cuando en realidad no cargó nada. Es mejor rechazarlo y decirlo.
+ */
+export async function sucursalesDelProfesional(
+  bd: BaseDatos,
+  profesionalId: string,
+): Promise<string[]> {
+  const filas = await bd
+    .select({ sucursalId: profesionalesSucursales.sucursalId })
+    .from(profesionalesSucursales)
+    .where(eq(profesionalesSucursales.profesionalId, profesionalId));
+
+  return filas.map((fila) => fila.sucursalId);
+}
+
 export async function listarHorarios(
   bd: BaseDatos,
   filtros: { profesionalId?: string; sucursalId?: string } = {},

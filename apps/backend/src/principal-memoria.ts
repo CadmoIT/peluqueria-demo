@@ -21,7 +21,9 @@ import {
   asegurarConfiguracion,
   cargarDemostracion,
   CARPETA_MIGRACIONES,
+  listarProfesionalesAdmin,
   SEPARADOR_SENTENCIAS,
+  vincularProfesionalConUsuario,
   type BaseDatos,
 } from '@manly/base-datos';
 import { drizzle } from 'drizzle-orm/pglite';
@@ -35,8 +37,26 @@ import { AutenticacionServicio } from './modulos/autenticacion/autenticacion.ser
 const PUERTO = Number(process.env.API_PUERTO ?? 3001);
 const PREFIJO = process.env.API_PREFIJO ?? 'api/v1';
 
-/** Cuenta de gerencia del modo memoria. Nunca sale de este archivo. */
-const CUENTA_DEMO = { email: 'gerencia@manly.local', contrasenia: 'panel-de-desarrollo' };
+/**
+ * Cuentas del modo memoria. Nunca salen de este archivo.
+ *
+ * Son dos porque el panel no se ve igual desde los dos lados: gerencia
+ * administra todo y el profesional sólo su agenda y su horario. Con una sola
+ * cuenta, la mitad de las pantallas no se puede probar sin inventar datos a
+ * mano.
+ */
+const CUENTAS_DEMO = {
+  gerencia: {
+    email: 'gerencia@manly.local',
+    contrasenia: 'panel-de-desarrollo',
+    nombre: 'Gerencia',
+  },
+  profesional: {
+    email: 'peluquero@manly.local',
+    contrasenia: 'panel-de-desarrollo',
+    nombre: 'Peluquero',
+  },
+} as const;
 
 async function crearBaseEnMemoria(): Promise<BaseDatos> {
   const { PGlite } = await import('@electric-sql/pglite');
@@ -91,26 +111,50 @@ async function arrancar(): Promise<void> {
     SwaggerModule.createDocument(aplicacion, documento),
   );
 
-  // Una cuenta de gerencia lista para entrar al panel. Existe **sólo acá**: la
-  // base en memoria no llega a ningún entorno real. En producción el primer
-  // acceso se crea con el comando `invitar`.
+  // Cuentas listas para entrar al panel. Existen **sólo acá**: la base en
+  // memoria no llega a ningún entorno real. En producción el primer acceso se
+  // crea con el comando `invitar`.
   const autenticacion = modulo.get(AutenticacionServicio);
-  const invitacion = await autenticacion.invitar({
-    email: CUENTA_DEMO.email,
-    nombre: 'Gerencia',
-    rol: 'gerencia',
-  });
 
-  await autenticacion.aceptarInvitacion(
-    invitacion.url.split('/').pop() ?? '',
-    CUENTA_DEMO.contrasenia,
-  );
+  async function crearCuenta(
+    cuenta: { email: string; contrasenia: string; nombre: string },
+    rol: 'gerencia' | 'profesional',
+  ) {
+    const invitacion = await autenticacion.invitar({
+      email: cuenta.email,
+      nombre: cuenta.nombre,
+      rol,
+    });
+
+    await autenticacion.aceptarInvitacion(
+      invitacion.url.split('/').pop() ?? '',
+      cuenta.contrasenia,
+    );
+
+    return invitacion.usuarioId;
+  }
+
+  await crearCuenta(CUENTAS_DEMO.gerencia, 'gerencia');
+  const usuarioProfesional = await crearCuenta(CUENTAS_DEMO.profesional, 'profesional');
+
+  // Sin esta atadura el usuario tiene el rol pero no es nadie: no hay agenda
+  // que mostrarle ni horario que dejarle editar.
+  const [primerProfesional] = await listarProfesionalesAdmin(bd);
+
+  if (primerProfesional) {
+    await vincularProfesionalConUsuario(bd, primerProfesional.id, usuarioProfesional);
+  }
 
   await aplicacion.listen(PUERTO, '0.0.0.0');
 
   console.warn(`API en memoria escuchando en http://localhost:${String(PUERTO)}/${PREFIJO}`);
   console.warn('Los datos se pierden al cortar el proceso.');
-  console.warn(`Panel: ${CUENTA_DEMO.email} / ${CUENTA_DEMO.contrasenia}`);
+  console.warn(
+    `Panel gerencia:    ${CUENTAS_DEMO.gerencia.email} / ${CUENTAS_DEMO.gerencia.contrasenia}`,
+  );
+  console.warn(
+    `Panel profesional: ${CUENTAS_DEMO.profesional.email} / ${CUENTAS_DEMO.profesional.contrasenia}`,
+  );
 }
 
 arrancar().catch((error: unknown) => {
