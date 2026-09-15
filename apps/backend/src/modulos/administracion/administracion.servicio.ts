@@ -16,15 +16,18 @@ import {
 } from '@nestjs/common';
 import {
   actualizarConfiguracion,
+  actualizarProducto,
   actualizarProfesional,
   actualizarServicio,
   actualizarSucursal,
   buscarSucursalAdmin,
+  crearProducto,
   crearProfesional,
   crearServicio,
   crearSucursal,
   leerConfiguracion,
   listarHorarios,
+  listarProductosAdmin,
   listarProfesionalesAdmin,
   listarServiciosAdmin,
   listarSucursalesAdmin,
@@ -33,6 +36,7 @@ import {
   type BaseDatos,
   type ConfiguracionEditable,
   type FranjaSemanal,
+  type ProductoAdministrado,
   type ProfesionalAdministrado,
   type ServicioAdministrado,
   type SucursalAdministrada,
@@ -40,6 +44,7 @@ import {
 import type {
   CambioConfiguracion,
   CambioSucursal,
+  DatosProductoPanel,
   DatosProfesionalPanel,
   DatosServicioPanel,
   DatosSucursalPanel,
@@ -94,6 +99,25 @@ export class AdministracionServicio {
   async actualizarServicio(id: string, datos: Partial<DatosServicioPanel>): Promise<void> {
     if (!(await actualizarServicio(this.bd, id, datos))) {
       throw new NotFoundException('No encontramos ese servicio.');
+    }
+  }
+
+  // ── Productos ──────────────────────────────────────────────────────────────
+  //
+  // La vitrina de la portada. No hay stock ni compra: se administra el qué se
+  // muestra y en qué orden.
+
+  listarProductos(): Promise<ProductoAdministrado[]> {
+    return listarProductosAdmin(this.bd);
+  }
+
+  crearProducto(datos: DatosProductoPanel): Promise<string> {
+    return crearProducto(this.bd, datos);
+  }
+
+  async actualizarProducto(id: string, datos: Partial<DatosProductoPanel>): Promise<void> {
+    if (!(await actualizarProducto(this.bd, id, datos))) {
+      throw new NotFoundException('No encontramos ese producto.');
     }
   }
 

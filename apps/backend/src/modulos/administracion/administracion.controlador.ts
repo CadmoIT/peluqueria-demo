@@ -1,8 +1,12 @@
 // Rutas de administración del catálogo.
 //
-// **Modificar** es de gerencia. Un profesional no cambia precios ni da de alta
-// sucursales, y ni siquiera edita su propio horario: lo suyo lo define el local,
-// si no cada uno se armaría la semana que le conviene.
+// **Modificar** es de gerencia: un profesional no cambia precios, no da de alta
+// sucursales y no toca la vitrina de productos.
+//
+// La excepción es el horario semanal, que cada profesional carga para sí mismo
+// —quien mejor sabe qué días va a estar es él—. Esa ruta no lleva `@Roles` y la
+// regla la aplica el servicio, que es el único que puede mirar de quién es el
+// horario y en qué sucursales atiende.
 //
 // **Leer** lo puede hacer cualquiera con sesión, porque el panel lo necesita
 // para funcionar: sin la lista de sucursales y profesionales no hay agenda que
@@ -18,12 +22,14 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   esquemaCambioConfiguracion,
   esquemaCambioSucursal,
+  esquemaDatosProducto,
   esquemaDatosProfesional,
   esquemaDatosServicio,
   esquemaDatosSucursal,
   esquemaHorarioSemanal,
   type CambioConfiguracion,
   type CambioSucursal,
+  type DatosProductoPanel,
   type DatosProfesionalPanel,
   type DatosServicioPanel,
   type DatosSucursalPanel,
@@ -156,6 +162,67 @@ export class AdministracionControlador {
       usuario,
       accion: 'servicio.modificado',
       entidad: 'servicios',
+      entidadId: id,
+      antes,
+      despues: datos,
+      peticion,
+    });
+
+    return { ok: true };
+  }
+
+  // ── Productos ──────────────────────────────────────────────────────────────
+  //
+  // La vitrina de la portada. Antes estaba escrita en el código de la página,
+  // así que renombrar un producto o sacarlo pedía un despliegue.
+
+  @Get('productos')
+  @ApiOperation({ summary: 'Productos, incluidos los dados de baja' })
+  productos() {
+    return this.administracion.listarProductos();
+  }
+
+  @Roles('gerencia')
+  @Post('productos')
+  @ApiOperation({ summary: 'Agrega un producto a la vitrina' })
+  async crearProducto(
+    @Body(new ValidacionZodTuberia(esquemaDatosProducto)) datos: DatosProductoPanel,
+    @Usuario() usuario: UsuarioSesion,
+    @Req() peticion: Request,
+  ) {
+    const id = await this.administracion.crearProducto(datos);
+
+    await this.auditoria.registrar({
+      usuario,
+      accion: 'producto.creado',
+      entidad: 'productos',
+      entidadId: id,
+      despues: datos,
+      peticion,
+    });
+
+    return { id };
+  }
+
+  @Roles('gerencia')
+  @Patch('productos/:id')
+  @ApiOperation({ summary: 'Modifica un producto' })
+  async actualizarProducto(
+    @Param('id', new UuidTuberia('ese producto')) id: string,
+    @Body(new ValidacionZodTuberia(esquemaDatosProducto)) datos: DatosProductoPanel,
+    @Usuario() usuario: UsuarioSesion,
+    @Req() peticion: Request,
+  ) {
+    const antes = (await this.administracion.listarProductos()).find(
+      (producto) => producto.id === id,
+    );
+
+    await this.administracion.actualizarProducto(id, datos);
+
+    await this.auditoria.registrar({
+      usuario,
+      accion: 'producto.modificado',
+      entidad: 'productos',
       entidadId: id,
       antes,
       despues: datos,

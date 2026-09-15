@@ -20,6 +20,7 @@ import {
   profesionales,
   profesionalesServicios,
   profesionalesSucursales,
+  productos,
   servicios,
   serviciosSucursales,
   sucursales,
@@ -80,6 +81,34 @@ const SERVICIOS_DEMO = [
 
 const PROFESIONALES_DEMO = ['Ana', 'Beto', 'Carla'];
 
+/**
+ * La vitrina de productos.
+ *
+ * `imagenClave` no es una ruta: es la clave con la que el sitio busca la
+ * fotografía en su propio catálogo. Si acá se pusiera una ruta y el archivo no
+ * existiera, la portada mostraría un hueco roto.
+ */
+const PRODUCTOS_DEMO = [
+  {
+    nombre: 'Pomada mate',
+    detalle: 'Fijación fuerte · base agua',
+    imagenClave: 'pomada-mate',
+    orden: 0,
+  },
+  {
+    nombre: 'Pomada transparente',
+    detalle: 'Estructura · base agua',
+    imagenClave: 'pomada-transparente',
+    orden: 1,
+  },
+  {
+    nombre: 'Polvo texturizador',
+    detalle: 'Volumen · acabado seco',
+    imagenClave: 'polvo-texturizador',
+    orden: 2,
+  },
+];
+
 export async function cargarDemostracion(bd: BaseSembrable): Promise<void> {
   const yaHay = await bd.select({ id: sucursales.id }).from(sucursales).limit(1);
 
@@ -90,6 +119,7 @@ export async function cargarDemostracion(bd: BaseSembrable): Promise<void> {
 
   const sucursalesCreadas = await bd.insert(sucursales).values(SUCURSALES_DEMO).returning();
   const serviciosCreados = await bd.insert(servicios).values(SERVICIOS_DEMO).returning();
+  const productosCreados = await bd.insert(productos).values(PRODUCTOS_DEMO).returning();
   const profesionalesCreados = await bd
     .insert(profesionales)
     .values(PROFESIONALES_DEMO.map((nombre, orden) => ({ nombre, orden })))
@@ -135,6 +165,7 @@ export async function cargarDemostracion(bd: BaseSembrable): Promise<void> {
   console.warn(
     `Demostración cargada: ${String(sucursalesCreadas.length)} sucursales, ` +
       `${String(serviciosCreados.length)} servicios, ` +
+      `${String(productosCreados.length)} productos, ` +
       `${String(profesionalesCreados.length)} profesionales.`,
   );
 }

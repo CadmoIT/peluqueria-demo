@@ -23,6 +23,7 @@ import {
   Seleccion,
   Tarjeta,
   TituloPanel,
+  Vacio,
 } from '@/componentes/panel/primitivos';
 import { ErrorApi } from '@/servicios/api';
 import {
@@ -32,16 +33,21 @@ import {
   crearProfesional,
   crearServicio,
   crearSucursal,
+  actualizarProducto,
+  crearProducto,
+  obtenerProductosAdmin,
   obtenerProfesionalesAdmin,
   obtenerServiciosAdmin,
   obtenerSucursalesAdmin,
+  type ProductoAdmin,
   type ProfesionalAdmin,
   type ServicioAdmin,
   type SucursalAdmin,
 } from '@/servicios/panel';
 import { formatearPrecio } from '@/utilidades/formato';
+import { CLAVES_IMAGEN_PRODUCTO } from '@/utilidades/imagenes';
 
-type Pestania = 'servicios' | 'sucursales' | 'profesionales';
+type Pestania = 'servicios' | 'sucursales' | 'profesionales' | 'productos';
 
 function mensajeDe(error: unknown): string {
   if (!(error instanceof ErrorApi)) return 'Algo salió mal. Probá de nuevo.';
@@ -60,7 +66,7 @@ export default function PaginaCatalogo() {
         className="border-borde mb-6 flex flex-wrap gap-x-4 border-b"
         aria-label="Secciones del catálogo"
       >
-        {(['servicios', 'sucursales', 'profesionales'] as const).map((una) => (
+        {(['servicios', 'sucursales', 'profesionales', 'productos'] as const).map((una) => (
           <button
             key={una}
             type="button"
@@ -81,6 +87,7 @@ export default function PaginaCatalogo() {
       {pestania === 'servicios' && <Servicios />}
       {pestania === 'sucursales' && <Sucursales />}
       {pestania === 'profesionales' && <Profesionales />}
+      {pestania === 'productos' && <Productos />}
     </>
   );
 }
@@ -370,6 +377,206 @@ function FormularioServicio({
             Cancelar
           </Boton>
         </div>
+      </form>
+    </Tarjeta>
+  );
+}
+
+// ── Productos ────────────────────────────────────────────────────────────────
+//
+// La vitrina de la portada. No es una tienda: no hay stock ni compra, así que
+// acá se administra qué se muestra, con qué foto y en qué orden.
+//
+// La fotografía se elige de una lista cerrada y no se escribe la ruta: un
+// archivo que no existe dejaría un hueco en la portada. Sumar una foto nueva
+// sigue siendo dejarla en `public/imagenes` y anotarla en `imagenes.ts`.
+
+const PRODUCTO_NUEVO: ProductoAdmin = {
+  id: '',
+  nombre: '',
+  detalle: null,
+  precioCentavos: null,
+  imagenClave: CLAVES_IMAGEN_PRODUCTO[0] ?? '',
+  activo: true,
+  orden: 0,
+};
+
+function Productos() {
+  const clientes = useQueryClient();
+  const [editando, setEditando] = useState<string | null>(null);
+
+  const productos = useQuery({ queryKey: ['panel', 'productos'], queryFn: obtenerProductosAdmin });
+
+  function refrescar() {
+    void clientes.invalidateQueries({ queryKey: ['panel', 'productos'] });
+    setEditando(null);
+  }
+
+  if (productos.isPending) return <Cargando />;
+
+  return (
+    <div className="space-y-4">
+      {editando === 'nuevo' ? (
+        <FormularioProducto
+          inicial={PRODUCTO_NUEVO}
+          alGuardar={refrescar}
+          alCancelar={() => setEditando(null)}
+        />
+      ) : (
+        <Boton type="button" onClick={() => setEditando('nuevo')}>
+          Producto nuevo
+        </Boton>
+      )}
+
+      {(productos.data ?? []).length === 0 && <Vacio>Todavía no hay productos cargados.</Vacio>}
+
+      <ul className="space-y-3">
+        {(productos.data ?? []).map((producto) =>
+          editando === producto.id ? (
+            <li key={producto.id}>
+              <FormularioProducto
+                inicial={producto}
+                alGuardar={refrescar}
+                alCancelar={() => setEditando(null)}
+              />
+            </li>
+          ) : (
+            <li key={producto.id}>
+              <Tarjeta className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-menor">
+                    <strong>{producto.nombre}</strong>
+                    {!producto.activo && <span className="text-humo ml-2">(fuera de la web)</span>}
+                  </p>
+                  <p className="text-nota text-grafito">
+                    {producto.detalle ?? 'Sin bajada'}
+                    {producto.precioCentavos !== null &&
+                      ` · ${formatearPrecio(producto.precioCentavos)}`}
+                  </p>
+                </div>
+                <Boton variante="contorno" type="button" onClick={() => setEditando(producto.id)}>
+                  Editar
+                </Boton>
+              </Tarjeta>
+            </li>
+          ),
+        )}
+      </ul>
+    </div>
+  );
+}
+
+function FormularioProducto({
+  inicial,
+  alGuardar,
+  alCancelar,
+}: {
+  inicial: ProductoAdmin;
+  alGuardar: () => void;
+  alCancelar: () => void;
+}) {
+  const [datos, setDatos] = useState(inicial);
+  const esNuevo = inicial.id === '';
+
+  const guardar = useMutation({
+    mutationFn: async (): Promise<void> => {
+      const { id, ...campos } = datos;
+
+      if (esNuevo) await crearProducto(campos);
+      else await actualizarProducto(id, campos);
+    },
+    onSuccess: alGuardar,
+  });
+
+  function cambiar<C extends keyof ProductoAdmin>(campo: C, valor: ProductoAdmin[C]) {
+    setDatos((previo) => ({ ...previo, [campo]: valor }));
+  }
+
+  return (
+    <Tarjeta>
+      <form
+        onSubmit={(evento) => {
+          evento.preventDefault();
+          guardar.mutate();
+        }}
+        className="grid gap-4 sm:grid-cols-2"
+      >
+        <Campo etiqueta="Nombre">
+          <Entrada
+            required
+            value={datos.nombre}
+            onChange={(evento) => cambiar('nombre', evento.target.value)}
+          />
+        </Campo>
+
+        <Campo etiqueta="Bajada" ayuda="La línea en versales sobre el nombre.">
+          <Entrada
+            value={datos.detalle ?? ''}
+            onChange={(evento) =>
+              cambiar('detalle', evento.target.value === '' ? null : evento.target.value)
+            }
+          />
+        </Campo>
+
+        <Campo etiqueta="Precio" ayuda="En pesos. Vacío no muestra precio en la web.">
+          <Entrada
+            type="number"
+            min={0}
+            value={datos.precioCentavos === null ? '' : datos.precioCentavos / 100}
+            onChange={(evento) =>
+              cambiar(
+                'precioCentavos',
+                evento.target.value === '' ? null : Math.round(Number(evento.target.value) * 100),
+              )
+            }
+          />
+        </Campo>
+
+        <Campo etiqueta="Fotografía">
+          <Seleccion
+            value={datos.imagenClave}
+            onChange={(evento) => cambiar('imagenClave', evento.target.value)}
+          >
+            {CLAVES_IMAGEN_PRODUCTO.map((clave) => (
+              <option key={clave} value={clave}>
+                {clave}
+              </option>
+            ))}
+          </Seleccion>
+        </Campo>
+
+        <Campo etiqueta="Orden">
+          <Entrada
+            type="number"
+            min={0}
+            value={datos.orden}
+            onChange={(evento) => cambiar('orden', Number(evento.target.value))}
+          />
+        </Campo>
+
+        <label className="text-menor flex items-center gap-2 self-end">
+          <input
+            type="checkbox"
+            checked={datos.activo}
+            onChange={(evento) => cambiar('activo', evento.target.checked)}
+          />
+          Se muestra en la web
+        </label>
+
+        <div className="flex flex-wrap gap-2 sm:col-span-2">
+          <Boton type="submit" disabled={guardar.isPending}>
+            {guardar.isPending ? 'Guardando…' : 'Guardar'}
+          </Boton>
+          <Boton variante="contorno" type="button" onClick={alCancelar}>
+            Cancelar
+          </Boton>
+        </div>
+
+        {guardar.isError && (
+          <div className="sm:col-span-2">
+            <Aviso tono="error">{mensajeDe(guardar.error)}</Aviso>
+          </div>
+        )}
       </form>
     </Tarjeta>
   );

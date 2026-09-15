@@ -3,6 +3,7 @@
 export * from './comunes';
 export * from './sucursales';
 export * from './servicios';
+export * from './productos';
 export * from './usuarios';
 export * from './profesionales';
 export * from './horarios';

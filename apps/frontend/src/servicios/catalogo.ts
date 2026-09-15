@@ -1,6 +1,7 @@
 // Consultas del catálogo público a la API.
 import type {
   ConfiguracionPublica,
+  ProductoPublico,
   ProfesionalPublico,
   ServicioPublico,
   SucursalPublica,
@@ -10,6 +11,10 @@ import { consultarApi } from './api';
 
 export function obtenerSucursales(): Promise<SucursalPublica[]> {
   return consultarApi<SucursalPublica[]>('/sucursales');
+}
+
+export function obtenerProductos(): Promise<ProductoPublico[]> {
+  return consultarApi<ProductoPublico[]>('/productos');
 }
 
 export function obtenerServicios(sucursalId: string): Promise<ServicioPublico[]> {

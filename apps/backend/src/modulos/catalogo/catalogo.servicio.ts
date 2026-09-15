@@ -5,6 +5,7 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   buscarSucursal,
+  listarProductos,
   listarProfesionalesDeServicio,
   listarServiciosDeSucursal,
   configuracionDelNegocio,
@@ -13,6 +14,7 @@ import {
 } from '@manly/base-datos';
 import type {
   ConfiguracionPublica,
+  ProductoPublico,
   ProfesionalPublico,
   ServicioPublico,
   SucursalPublica,
@@ -26,6 +28,11 @@ export class CatalogoServicio {
 
   listarSucursales(): Promise<SucursalPublica[]> {
     return listarSucursales(this.bd);
+  }
+
+  /** La línea de productos que se muestra en la portada. */
+  listarProductos(): Promise<ProductoPublico[]> {
+    return listarProductos(this.bd);
   }
 
   /** Si el sitio está tomando reservas, y qué decir cuando no. */

@@ -3,6 +3,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import type {
   ConfiguracionPublica,
+  ProductoPublico,
   ProfesionalPublico,
   ServicioPublico,
   SucursalPublica,
@@ -36,6 +37,12 @@ export class CatalogoControlador {
   @ApiOperation({ summary: 'Sucursales activas' })
   sucursales(): Promise<SucursalPublica[]> {
     return this.catalogo.listarSucursales();
+  }
+
+  @Get('productos')
+  @ApiOperation({ summary: 'Línea de productos activa' })
+  productos(): Promise<ProductoPublico[]> {
+    return this.catalogo.listarProductos();
   }
 
   @Get('sucursales/:id/servicios')

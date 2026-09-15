@@ -35,14 +35,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { clasesBoton, cn, Contenedor, EncabezadoSeccion, Seccion } from '@manly/interfaz';
-import type { ServicioPublico, SucursalPublica } from '@manly/contratos';
+import type { ProductoPublico, ServicioPublico, SucursalPublica } from '@manly/contratos';
 
 import { Imagen } from '@/componentes/comunes/imagen';
 import { DatosEstructurados } from '@/componentes/comunes/datos-estructurados';
 import { Cinta } from '@/componentes/inicio/cinta';
 import { consultarApi } from '@/servicios/api';
 import { formatearDuracion, formatearPrecio } from '@/utilidades/formato';
-import { IMAGENES } from '@/utilidades/imagenes';
+import { IMAGENES, obtenerImagenProducto } from '@/utilidades/imagenes';
 import { RUTAS, SECCIONES } from '@/utilidades/rutas';
 
 export const metadata: Metadata = {
@@ -56,32 +56,6 @@ export const revalidate = 1800;
 interface ServicioConSucursales extends ServicioPublico {
   sucursales: string[];
 }
-
-/**
- * La línea de productos.
- *
- * Va escrita acá y no en la API porque no se vende online: es una vitrina, no
- * un catálogo. Los nombres son los descriptivos en castellano, los mismos del
- * texto alternativo de cada foto; si Manly prefiere los comerciales de la lata,
- * se cambian en este arreglo y en `imagenes.ts`.
- */
-const PRODUCTOS = [
-  {
-    imagen: IMAGENES.marca.pomadaMate,
-    nombre: 'Pomada mate',
-    detalle: 'Fijación fuerte · base agua',
-  },
-  {
-    imagen: IMAGENES.marca.pomadaTransparente,
-    nombre: 'Pomada transparente',
-    detalle: 'Estructura · base agua',
-  },
-  {
-    imagen: IMAGENES.marca.polvoTexturizador,
-    nombre: 'Polvo texturizador',
-    detalle: 'Volumen · acabado seco',
-  },
-];
 
 /**
  * Catálogo unificado: un servicio aparece una vez, con las sucursales donde se
@@ -112,6 +86,7 @@ export default async function PaginaInicio() {
   // catálogo vacío es mejor que un error en la cara.
   const sucursales = await consultarApi<SucursalPublica[]>('/sucursales').catch(() => []);
   const servicios = await cargarCatalogo(sucursales).catch(() => []);
+  const productos = await consultarApi<ProductoPublico[]>('/productos').catch(() => []);
 
   // Las cifras salen de los datos, no de una promesa de folleto: si mañana
   // abren una sucursal, el número cambia solo. Las que no se pueden contar
@@ -373,20 +348,36 @@ export default async function PaginaInicio() {
                 <p>Son los mismos que usamos en el sillón y se consiguen en cualquier sucursal.</p>
               </div>
 
-              <ul className="revelar-lista mt-7 grid grid-cols-3 gap-3 sm:gap-4">
-                {PRODUCTOS.map((producto) => (
-                  <li key={producto.imagen.ruta} className="flex flex-col">
-                    <Imagen
-                      imagen={producto.imagen}
-                      sizes="(min-width: 1024px) 16vw, 30vw"
-                      className="rounded-tarjeta bg-papel aspect-[4/5] object-cover"
-                    />
+              {/* La vitrina sale de la base: cambiarla es entrar al panel, no
+                  desplegar. Si la API no responde, la sección se muestra sin
+                  las fichas en vez de romperse. */}
+              {productos.length > 0 && (
+                <ul className="revelar-lista mt-7 grid grid-cols-3 gap-3 sm:gap-4">
+                  {productos.map((producto) => (
+                    <li key={producto.id} className="flex flex-col">
+                      <Imagen
+                        imagen={obtenerImagenProducto(producto.imagenClave)}
+                        sizes="(min-width: 1024px) 16vw, 30vw"
+                        className="rounded-tarjeta bg-papel aspect-[4/5] object-cover"
+                      />
 
-                    <p className="versales text-nota text-grafito mt-3">{producto.detalle}</p>
-                    <p className="text-menor mt-1">{producto.nombre}</p>
-                  </li>
-                ))}
-              </ul>
+                      {producto.detalle !== null && (
+                        <p className="versales text-nota text-grafito mt-3">{producto.detalle}</p>
+                      )}
+
+                      <p className="text-menor mt-1">{producto.nombre}</p>
+
+                      {/* Sin precio cargado no se dibuja ninguno: mejor eso que
+                          mostrar uno viejo. */}
+                      {producto.precioCentavos !== null && (
+                        <p className="text-menor text-grafito">
+                          {formatearPrecio(producto.precioCentavos)}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </Contenedor>

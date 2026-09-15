@@ -6,6 +6,7 @@ import { and, asc, eq } from 'drizzle-orm';
 
 import type { BaseDatos } from '../conexion';
 import {
+  productos,
   profesionales,
   profesionalesServicios,
   profesionalesSucursales,
@@ -145,4 +146,27 @@ export async function buscarSucursal(
     .limit(1);
 
   return fila ?? null;
+}
+
+export interface ProductoDelCatalogo {
+  id: string;
+  nombre: string;
+  detalle: string | null;
+  precioCentavos: number | null;
+  imagenClave: string;
+}
+
+/** La línea de productos activa, en el orden en que se muestra. */
+export async function listarProductos(bd: BaseDatos): Promise<ProductoDelCatalogo[]> {
+  return bd
+    .select({
+      id: productos.id,
+      nombre: productos.nombre,
+      detalle: productos.detalle,
+      precioCentavos: productos.precioCentavos,
+      imagenClave: productos.imagenClave,
+    })
+    .from(productos)
+    .where(eq(productos.activo, true))
+    .orderBy(asc(productos.orden), asc(productos.nombre));
 }

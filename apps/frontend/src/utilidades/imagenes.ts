@@ -90,3 +90,32 @@ export const IMAGENES = {
 export function obtenerImagen(imagen: ImagenCatalogo | undefined): ImagenCatalogo {
   return imagen ?? IMAGEN_RESPALDO;
 }
+
+/**
+ * Fotografías que un producto puede usar, por clave.
+ *
+ * La base guarda la clave y no la ruta. Es a propósito: el archivo tiene que
+ * existir, y una ruta escrita a mano en el panel dejaría un hueco roto en la
+ * portada. Sumar una fotografía nueva es dejar el archivo en `public/imagenes`
+ * y anotarla acá; a partir de ahí el panel la ofrece sola.
+ */
+export const IMAGENES_PRODUCTO: Record<string, ImagenCatalogo> = {
+  'pomada-mate': IMAGENES.marca.pomadaMate,
+  'pomada-transparente': IMAGENES.marca.pomadaTransparente,
+  'polvo-texturizador': IMAGENES.marca.polvoTexturizador,
+  'linea-completa': IMAGENES.marca.lineaProductos,
+};
+
+/** Las claves que el panel puede ofrecer, en orden estable. */
+export const CLAVES_IMAGEN_PRODUCTO = Object.keys(IMAGENES_PRODUCTO);
+
+/**
+ * La fotografía de un producto.
+ *
+ * Con una clave que no se reconoce devuelve el respaldo en vez de romper: la
+ * portada tiene que seguir en pie aunque alguien borre una imagen del catálogo
+ * sin actualizar los productos que la usaban.
+ */
+export function obtenerImagenProducto(clave: string): ImagenCatalogo {
+  return IMAGENES_PRODUCTO[clave] ?? IMAGEN_RESPALDO;
+}

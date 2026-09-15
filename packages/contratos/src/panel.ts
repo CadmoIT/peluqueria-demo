@@ -280,6 +280,31 @@ export const esquemaDatosProfesional = z.object({
 });
 export type DatosProfesionalPanel = z.infer<typeof esquemaDatosProfesional>;
 
+// ── Productos ────────────────────────────────────────────────────────────────
+
+/**
+ * La línea de productos, desde el panel.
+ *
+ * No hay stock ni nada de compra: es la vitrina de la portada. La fotografía se
+ * elige por clave de un catálogo cerrado —la web lo publica en
+ * `/productos/imagenes`— y no se escribe la ruta a mano, porque una ruta
+ * inventada dejaría un hueco roto en la portada.
+ */
+export const esquemaDatosProducto = z.object({
+  nombre: z.string().trim().min(2).max(80),
+  /** La línea en versales sobre el nombre: «Fijación fuerte · base agua». */
+  detalle: z.string().trim().max(80).nullable().default(null),
+  /** En null la portada no muestra precio. */
+  precioCentavos: z.number().int().min(0).nullable().default(null),
+  imagenClave: z.string().trim().min(1).max(60),
+  activo: z.boolean().default(true),
+  orden: z.number().int().min(0).default(0),
+});
+export type DatosProductoPanel = z.infer<typeof esquemaDatosProducto>;
+
+export const esquemaCambioProducto = esquemaDatosProducto.partial();
+export type CambioProducto = z.infer<typeof esquemaCambioProducto>;
+
 // ── Horarios semanales ───────────────────────────────────────────────────────
 
 /** Hora del local en formato `HH:MM`. Un horario semanal no tiene fecha. */

@@ -12,6 +12,7 @@ import type {
   CambioConfiguracion,
   CambioSucursal,
   ConfiguracionNegocio,
+  DatosProductoPanel,
   DatosProfesionalPanel,
   DatosServicioPanel,
   DatosSucursalPanel,
@@ -171,6 +172,10 @@ export interface ServicioAdmin extends DatosServicioPanel {
   id: string;
 }
 
+export interface ProductoAdmin extends DatosProductoPanel {
+  id: string;
+}
+
 export interface ProfesionalAdmin extends DatosProfesionalPanel {
   id: string;
   usuarioId: string | null;
@@ -186,6 +191,18 @@ export function crearSucursal(datos: DatosSucursalPanel): Promise<{ id: string }
 
 export function actualizarSucursal(id: string, datos: CambioSucursal): Promise<SucursalAdmin> {
   return enviar<SucursalAdmin>(`/panel/sucursales/${id}`, 'PATCH', datos);
+}
+
+export function obtenerProductosAdmin(): Promise<ProductoAdmin[]> {
+  return consultarApi<ProductoAdmin[]>('/panel/productos');
+}
+
+export function crearProducto(datos: DatosProductoPanel): Promise<{ id: string }> {
+  return enviar<{ id: string }>('/panel/productos', 'POST', datos);
+}
+
+export function actualizarProducto(id: string, datos: DatosProductoPanel): Promise<{ ok: true }> {
+  return enviar<{ ok: true }>(`/panel/productos/${id}`, 'PATCH', datos);
 }
 
 export function obtenerServiciosAdmin(): Promise<ServicioAdmin[]> {

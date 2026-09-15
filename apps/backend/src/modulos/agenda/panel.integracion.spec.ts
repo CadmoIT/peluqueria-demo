@@ -14,6 +14,7 @@ import {
   CARPETA_MIGRACIONES,
   crearSolicitudCambio,
   crearUsuarioInvitado,
+  listarProductos,
   listarSolicitudes,
   vincularProfesionalConUsuario,
   SEPARADOR_SENTENCIAS,
@@ -744,5 +745,61 @@ describe('levantar bloqueos', () => {
     const id = await bloquearComo(contexto.gerencia, contexto.profesionalIds[1]!);
 
     await expect(contexto.agenda.borrarBloqueo(id, contexto.gerencia)).resolves.toBe(true);
+  });
+});
+
+describe('vitrina de productos', () => {
+  // Lo que importa acá es la separación entre las dos listas: el panel
+  // administra todo y la web publica sólo lo activo. Dar de baja un producto
+  // tiene que sacarlo de la portada sin borrarlo.
+  it('un producto nuevo se publica y se puede sacar sin borrarlo', async () => {
+    const id = await contexto.administracion.crearProducto({
+      nombre: 'Cera de acabado',
+      detalle: 'Brillo bajo · base agua',
+      precioCentavos: 2_500_000,
+      imagenClave: 'pomada-mate',
+      activo: true,
+      orden: 9,
+    });
+
+    const publicados = await listarProductos(contexto.bd);
+
+    expect(publicados.map((producto) => producto.nombre)).toContain('Cera de acabado');
+
+    await contexto.administracion.actualizarProducto(id, { activo: false });
+
+    const despues = await listarProductos(contexto.bd);
+
+    expect(despues.map((producto) => producto.nombre)).not.toContain('Cera de acabado');
+
+    // Sigue estando para el panel: se sacó de la web, no se borró.
+    const enElPanel = await contexto.administracion.listarProductos();
+
+    expect(enElPanel.find((producto) => producto.id === id)?.activo).toBe(false);
+  });
+
+  it('avisa cuando el producto no existe', async () => {
+    await expect(
+      contexto.administracion.actualizarProducto('00000000-0000-4000-8000-000000000000', {
+        nombre: 'Otro',
+      }),
+    ).rejects.toThrow(/no encontramos ese producto/i);
+  });
+
+  it('la web los recibe en el orden que fija el panel', async () => {
+    const antes = await listarProductos(contexto.bd);
+    const primero = antes[0]!;
+
+    // Se manda al final el que venía primero. El nombre no puede explicar el
+    // cambio: lo único que se tocó es el orden.
+    const enElPanel = await contexto.administracion.listarProductos();
+    const id = enElPanel.find((producto) => producto.nombre === primero.nombre)!.id;
+
+    await contexto.administracion.actualizarProducto(id, { orden: 99 });
+
+    const despues = await listarProductos(contexto.bd);
+
+    expect(despues[0]?.nombre).not.toBe(primero.nombre);
+    expect(despues[despues.length - 1]?.nombre).toBe(primero.nombre);
   });
 });

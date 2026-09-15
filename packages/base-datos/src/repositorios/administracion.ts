@@ -15,6 +15,7 @@ import type { BaseDatos } from '../conexion';
 import {
   configuracionNegocio,
   horariosSemanales,
+  productos,
   profesionales,
   profesionalesServicios,
   profesionalesSucursales,
@@ -360,6 +361,59 @@ export async function vincularProfesionalConUsuario(
     .set({ usuarioId, actualizadoEn: new Date() })
     .where(eq(profesionales.id, profesionalId))
     .returning({ id: profesionales.id });
+
+  return actualizados.length > 0;
+}
+
+// ── Productos ────────────────────────────────────────────────────────────────
+
+export interface DatosProducto {
+  nombre: string;
+  detalle: string | null;
+  precioCentavos: number | null;
+  imagenClave: string;
+  activo: boolean;
+  orden: number;
+}
+
+export interface ProductoAdministrado extends DatosProducto {
+  id: string;
+}
+
+/** Todos, incluidos los dados de baja: el panel los tiene que poder volver. */
+export async function listarProductosAdmin(bd: BaseDatos): Promise<ProductoAdministrado[]> {
+  return bd
+    .select({
+      id: productos.id,
+      nombre: productos.nombre,
+      detalle: productos.detalle,
+      precioCentavos: productos.precioCentavos,
+      imagenClave: productos.imagenClave,
+      activo: productos.activo,
+      orden: productos.orden,
+    })
+    .from(productos)
+    .orderBy(asc(productos.orden), asc(productos.nombre));
+}
+
+export async function crearProducto(bd: BaseDatos, datos: DatosProducto): Promise<string> {
+  const [creado] = await bd.insert(productos).values(datos).returning({ id: productos.id });
+
+  if (!creado) throw new Error('No se pudo crear el producto.');
+
+  return creado.id;
+}
+
+export async function actualizarProducto(
+  bd: BaseDatos,
+  id: string,
+  datos: Partial<DatosProducto>,
+): Promise<boolean> {
+  const actualizados = await bd
+    .update(productos)
+    .set({ ...datos, actualizadoEn: new Date() })
+    .where(eq(productos.id, id))
+    .returning({ id: productos.id });
 
   return actualizados.length > 0;
 }

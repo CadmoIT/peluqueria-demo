@@ -36,3 +36,21 @@ export const esquemaProfesionalPublico = z.object({
   nombre: z.string(),
 });
 export type ProfesionalPublico = z.infer<typeof esquemaProfesionalPublico>;
+
+/**
+ * Un producto de la línea propia, como lo ve el sitio.
+ *
+ * No lleva stock ni nada de compra: la vitrina muestra qué hay y cuánto sale;
+ * el producto se lleva del local.
+ */
+export const esquemaProductoPublico = z.object({
+  id: esquemaId,
+  nombre: z.string(),
+  /** La línea en versales sobre el nombre. */
+  detalle: z.string().nullable(),
+  /** En null no se muestra precio: mejor eso que mostrar uno viejo. */
+  precioCentavos: z.number().int().nonnegative().nullable(),
+  /** Clave de la fotografía en el catálogo de imágenes de la web. */
+  imagenClave: z.string(),
+});
+export type ProductoPublico = z.infer<typeof esquemaProductoPublico>;
