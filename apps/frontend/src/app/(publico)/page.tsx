@@ -72,10 +72,7 @@ export default async function PaginaInicio() {
       <DatosEstructurados sucursales={sucursales} />
 
       {/* ── Portada ──────────────────────────────────────────────────────── */}
-      <section
-        data-portada-oscura
-        className="bg-tinta text-lino relative isolate overflow-hidden"
-      >
+      <section data-portada-oscura className="bg-tinta text-lino relative isolate overflow-hidden">
         <Imagen
           imagen={IMAGENES.inicio.portada}
           prioritaria
@@ -90,7 +87,7 @@ export default async function PaginaInicio() {
         */}
         <div
           aria-hidden
-          className="from-tinta via-tinta/85 to-tinta/35 sm:via-tinta/65 sm:via-45% sm:to-transparent absolute inset-0 -z-10 bg-gradient-to-t sm:bg-gradient-to-r"
+          className="from-tinta via-tinta/85 to-tinta/35 sm:via-tinta/65 absolute inset-0 -z-10 bg-gradient-to-t sm:bg-gradient-to-r sm:via-45% sm:to-transparent"
         />
 
         <Contenedor className="py-seccion relative flex min-h-[clamp(26rem,58vh,36rem)] items-center">

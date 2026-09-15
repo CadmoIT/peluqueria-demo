@@ -9,13 +9,13 @@ si cambió el nombre, esa entrada del catálogo.
 
 ## Carpetas
 
-| Carpeta          | Contenido                         |
-| ---------------- | --------------------------------- |
+| Carpeta          | Contenido                              |
+| ---------------- | -------------------------------------- |
 | `marca/`         | Productos propios e imagen de respaldo |
-| `inicio/`        | Portada y secciones de la home    |
-| `servicios/`     | Una por servicio o categoría      |
-| `sucursales/`    | Fachada e interior de cada local  |
-| `profesionales/` | Retratos del equipo               |
+| `inicio/`        | Portada y secciones de la home         |
+| `servicios/`     | Una por servicio o categoría           |
+| `sucursales/`    | Fachada e interior de cada local       |
+| `profesionales/` | Retratos del equipo                    |
 
 ## Nombres
 
@@ -68,7 +68,7 @@ Mal:   "Foto"
 | `marca/`         | Los tres productos de la línea propia y el conjunto en diagonal |
 | `inicio/`        | Portada editorial y un detalle del trabajo con la máquina       |
 | `servicios/`     | Un perfil con el corte terminado                                |
-| `sucursales/`    | **Nada**: la sección muestra sólo los nombres                    |
+| `sucursales/`    | **Nada**: la sección muestra sólo los nombres                   |
 | `profesionales/` | **Nada todavía**                                                |
 
 Casi todo el material entregado es **vertical** (9:16, 3:4 y 4:5), entre 640 y

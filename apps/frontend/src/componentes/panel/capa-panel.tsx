@@ -119,7 +119,7 @@ function EnlaceNav({
         // `py-1` no es decoracion: sin el, el enlace mide 22 px de alto y queda
         // por debajo del minimo de 24 px de WCAG 2.2. Es el menu que el equipo
         // usa desde el telefono, en el mostrador y apurado.
-        'text-menor py-1 duration-(--duracion-rapida) transition-colors',
+        'text-menor duration-(--duracion-rapida) py-1 transition-colors',
         activo ? 'text-tinta underline underline-offset-4' : 'text-grafito hover:text-tinta',
       )}
     >

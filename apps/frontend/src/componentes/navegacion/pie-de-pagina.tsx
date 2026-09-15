@@ -70,7 +70,7 @@ export async function PieDePagina() {
           <p className="text-nota text-ceniza">© {anio} Manly Barber Studio</p>
           <Link
             href={RUTAS.panel}
-            className="text-nota text-ceniza py-1 transition-colors hover:text-lino"
+            className="text-nota text-ceniza hover:text-lino py-1 transition-colors"
           >
             Acceso del equipo
           </Link>

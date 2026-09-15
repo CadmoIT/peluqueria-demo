@@ -294,7 +294,6 @@
   animation: tijeras-mechon 1800ms var(--ease-entrada) infinite;
 }
 
-
 /* ── Parallax de la portada ────────────────────────────────────────────────
    La fotografía baja mientras la página sube, así que se mueve más lento que
    el texto que tiene encima. Es lo que da sensación de profundidad.
@@ -336,7 +335,6 @@
   }
 }
 
-
 /* ── Aparición al entrar en pantalla ───────────────────────────────────────
    El elemento arranca corrido y transparente, y se acomoda cuando entra en la
    pantalla. La diferencia con lo que había antes es de fondo: aquello estaba
@@ -370,7 +368,6 @@
 [data-movimiento-js] .revelar-lista > * {
   transform: translateY(36px) scale(0.96);
 }
-
 
 /* La portada no espera a entrar: sigue al desplazamiento desde el primer
    píxel. Sólo la maneja el script donde el CSS no puede. */
