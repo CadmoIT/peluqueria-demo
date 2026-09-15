@@ -68,6 +68,12 @@ export const IMAGENES = {
       ancho: 814,
       alto: 1446,
     },
+    estudio: {
+      ruta: '/imagenes/inicio/portada-estudio.webp',
+      alt: 'Cliente de perfil con el pelo peinado, sosteniendo una lata de pomada Manly',
+      ancho: 1320,
+      alto: 1760,
+    },
   },
 
   servicios: {

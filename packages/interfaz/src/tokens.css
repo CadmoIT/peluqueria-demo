@@ -77,9 +77,19 @@
   --tracking-titulo: -0.02em;
 
   /* ── Espaciado ──────────────────────────────────────────────────────────
-     Ritmo vertical de las secciones, también fluido. */
-  --spacing-seccion: clamp(3.5rem, 6vw, 7rem);
-  --spacing-bloque: clamp(1.5rem, 3vw, 3rem);
+     Ritmo vertical de las secciones, también fluido.
+
+     Los valores bajaron de 7rem y 3rem. Dos secciones seguidas suman su
+     relleno de abajo y el de arriba de la siguiente: con 7rem eso daba 14rem
+     —224 px— de aire entre un párrafo y el próximo, y el sitio se leía vacío.
+     Con 5rem el corte entre secciones se sigue notando y la página se compacta
+     casi un cuarto.
+
+     Lo que separa dos secciones acá es el cambio de fondo, no el vacío. Si
+     hiciera falta subir estos números, primero revisar si a la sección le
+     falta contenido. */
+  --spacing-seccion: clamp(3rem, 4.5vw, 5rem);
+  --spacing-bloque: clamp(1.25rem, 2.2vw, 2.25rem);
 
   /* Ancho máximo de lectura y de contenido. */
   --container-lectura: 68ch;
@@ -373,4 +383,36 @@
    píxel. Sólo la maneja el script donde el CSS no puede. */
 [data-movimiento-js] .portada-parallax {
   transform: translateY(var(--desplazamiento-portada, 0px)) scale(var(--escala-portada, 1.35));
+}
+
+/* ── Cinta de datos ────────────────────────────────────────────────────────
+   La franja que corre debajo de la portada. No decora: es lo que impide que
+   entre la fotografía y el primer párrafo haya sólo aire, y de paso repite los
+   datos que alguien busca apenas entra.
+
+   La pista lleva la lista dos veces y se desplaza exactamente la mitad: al
+   terminar el recorrido, la segunda copia está donde arrancó la primera, así
+   que el salto al reiniciar no se ve. La segunda copia va `aria-hidden`, para
+   que un lector de pantalla no lea todo repetido.
+
+   Con movimiento reducido el navegador salta al último fotograma —el bloque
+   global de arriba pone la duración en 0,01 ms— y ahí queda la segunda copia a
+   la vista, que dice lo mismo que la primera. La cinta se ve quieta y entera. */
+@keyframes cinta-desliza {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.cinta-pista {
+  animation: cinta-desliza 38s linear infinite;
+}
+
+/* Se detiene si alguien apoya el puntero encima: puede estar leyendo un dato. */
+.cinta:hover .cinta-pista,
+.cinta:focus-within .cinta-pista {
+  animation-play-state: paused;
 }

@@ -4,7 +4,11 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'reac
 
 import { cn } from '../utilidades';
 
-export type VarianteBoton = 'solido' | 'contorno' | 'texto';
+// Las variantes «claras» son las mismas dos de siempre pero pensadas para las
+// franjas de fondo negro —la portada, la cita, el cierre—, donde la sólida
+// normal desaparecería contra el fondo. Existen acá y no escritas a mano en la
+// página porque son el mismo botón en otro contexto, no otro botón.
+export type VarianteBoton = 'solido' | 'contorno' | 'texto' | 'solido-claro' | 'contorno-claro';
 export type TamanioBoton = 'normal' | 'grande';
 
 const BASE = [
@@ -22,6 +26,8 @@ const VARIANTES: Record<VarianteBoton, string> = {
   contorno: 'bg-transparent text-tinta border-tinta hover:bg-tinta hover:text-lino',
   texto:
     'bg-transparent text-tinta border-transparent hover:text-grafito underline-offset-4 hover:underline',
+  'solido-claro': 'bg-lino text-tinta border-lino hover:bg-white hover:border-white',
+  'contorno-claro': 'bg-transparent text-lino border-lino hover:bg-lino hover:text-tinta',
 };
 
 const TAMANIOS: Record<TamanioBoton, string> = {
