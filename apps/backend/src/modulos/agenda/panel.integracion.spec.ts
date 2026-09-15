@@ -697,3 +697,52 @@ describe('horario semanal', () => {
     expect(new Set(todos.map((franja) => franja.profesionalId)).size).toBeGreaterThan(1);
   });
 });
+
+describe('levantar bloqueos', () => {
+  async function bloquearComo(usuario: UsuarioSesion, profesionalId: string | null) {
+    const comienza = horarioHabil();
+
+    const { id } = await contexto.agenda.crearBloqueo(
+      {
+        profesionalId,
+        sucursalId: contexto.sucursalId,
+        tipo: profesionalId === null ? 'feriado' : 'bloqueo',
+        comienzaEn: comienza.toISOString(),
+        terminaEn: new Date(comienza.getTime() + 3_600_000).toISOString(),
+        motivo: null,
+      },
+      usuario,
+    );
+
+    return id;
+  }
+
+  it('un profesional levanta el bloqueo que se puso', async () => {
+    const id = await bloquearComo(contexto.profesional, contexto.profesionalIds[0]!);
+
+    await expect(contexto.agenda.borrarBloqueo(id, contexto.profesional)).resolves.toBe(true);
+  });
+
+  it('no deja que un profesional levante el bloqueo de otro', async () => {
+    const id = await bloquearComo(contexto.gerencia, contexto.profesionalIds[1]!);
+
+    await expect(contexto.agenda.borrarBloqueo(id, contexto.profesional)).rejects.toThrow(
+      /tus propios bloqueos/i,
+    );
+  });
+
+  it('no deja que un profesional levante el feriado de la sucursal', async () => {
+    // Si pudiera, abriría el local por su cuenta un día que está cerrado.
+    const id = await bloquearComo(contexto.gerencia, null);
+
+    await expect(contexto.agenda.borrarBloqueo(id, contexto.profesional)).rejects.toThrow(
+      /lo levanta gerencia/i,
+    );
+  });
+
+  it('gerencia levanta cualquiera', async () => {
+    const id = await bloquearComo(contexto.gerencia, contexto.profesionalIds[1]!);
+
+    await expect(contexto.agenda.borrarBloqueo(id, contexto.gerencia)).resolves.toBe(true);
+  });
+});

@@ -273,6 +273,28 @@ export async function listarBloqueos(
     .orderBy(asc(excepcionesHorario.comienzaEn));
 }
 
+/**
+ * El alcance de un bloqueo, para decidir quién puede levantarlo.
+ *
+ * Devuelve sólo las dos referencias y no el bloqueo entero: lo único que hay
+ * que preguntarle es de quién es.
+ */
+export async function alcanceDelBloqueo(
+  bd: BaseDatos,
+  id: string,
+): Promise<{ profesionalId: string | null; sucursalId: string | null } | null> {
+  const [fila] = await bd
+    .select({
+      profesionalId: excepcionesHorario.profesionalId,
+      sucursalId: excepcionesHorario.sucursalId,
+    })
+    .from(excepcionesHorario)
+    .where(eq(excepcionesHorario.id, id))
+    .limit(1);
+
+  return fila ?? null;
+}
+
 export async function borrarBloqueo(bd: BaseDatos, id: string): Promise<boolean> {
   const borrados = await bd
     .delete(excepcionesHorario)

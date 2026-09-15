@@ -28,7 +28,7 @@ import {
 } from '@manly/contratos';
 import type { Request } from 'express';
 
-import { Roles, Usuario } from '../../comun/decoradores/sesion.decorador';
+import { Usuario } from '../../comun/decoradores/sesion.decorador';
 import { ValidacionZodTuberia } from '../../comun/tuberias/validacion-zod.tuberia';
 import { UuidTuberia } from '../../comun/tuberias/uuid.tuberia';
 import { AuditoriaServicio } from '../auditoria/auditoria.servicio';
@@ -86,8 +86,10 @@ export class AgendaControlador {
     return creado;
   }
 
+  // Sin `@Roles`: cada profesional levanta los bloqueos que se puso. Quién
+  // puede levantar cuál lo decide el servicio, que es el que puede mirar de
+  // quién es el bloqueo; el decorador sólo sabe de roles.
   @Delete('bloqueos/:id')
-  @Roles('gerencia')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Levanta un bloqueo' })
   async borrarBloqueo(
@@ -95,7 +97,7 @@ export class AgendaControlador {
     @Usuario() usuario: UsuarioSesion,
     @Req() peticion: Request,
   ): Promise<{ ok: true }> {
-    if (!(await this.agenda.borrarBloqueo(id))) {
+    if (!(await this.agenda.borrarBloqueo(id, usuario))) {
       throw new NotFoundException('Ese bloqueo no existe.');
     }
 

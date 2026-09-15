@@ -11,6 +11,7 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import {
   agendaDeSucursal,
+  alcanceDelBloqueo,
   borrarBloqueo,
   crearBloqueo,
   listarBloqueos,
@@ -123,7 +124,35 @@ export class AgendaServicio {
     }));
   }
 
-  async borrarBloqueo(id: string): Promise<boolean> {
+  /**
+   * Levanta un bloqueo.
+   *
+   * Quien es profesional levanta los suyos. Faltaba la mitad de la regla: podía
+   * bloquearse la agenda pero no desbloquearse, así que anotar mal un día libre
+   * obligaba a pedirle a gerencia que lo borrara.
+   *
+   * Los bloqueos sin profesional —el feriado de la sucursal, el cierre de
+   * todas— siguen siendo de gerencia. Ahí no está cerrando su agenda: está
+   * abriendo el local.
+   */
+  async borrarBloqueo(id: string, usuario: UsuarioSesion): Promise<boolean> {
+    if (usuario.rol === 'profesional') {
+      if (!usuario.profesionalId) {
+        throw new ForbiddenException('Tu usuario todavía no está asociado a un profesional.');
+      }
+
+      const alcance = await alcanceDelBloqueo(this.bd, id);
+
+      // Si no existe, que conteste quien llama: es un 404, no un permiso.
+      if (alcance && alcance.profesionalId !== usuario.profesionalId) {
+        throw new ForbiddenException(
+          alcance.profesionalId === null
+            ? 'Ese bloqueo es de la sucursal y lo levanta gerencia.'
+            : 'Sólo podés levantar tus propios bloqueos.',
+        );
+      }
+    }
+
     return borrarBloqueo(this.bd, id);
   }
 

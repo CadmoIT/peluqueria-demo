@@ -12,13 +12,19 @@
 // país.
 import Link from 'next/link';
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { BloqueAgenda } from '@manly/contratos';
 
 import { Boton, cn } from '@manly/interfaz';
 
 import { usarSesion } from '@/caracteristicas/autenticacion/usar-sesion';
-import { obtenerAgenda, obtenerBloqueos, obtenerProfesionalesAdmin } from '@/servicios/panel';
+import {
+  borrarBloqueo,
+  obtenerAgenda,
+  obtenerBloqueos,
+  obtenerProfesionalesAdmin,
+  type BloqueoListado,
+} from '@/servicios/panel';
 import { formatearHora, formatearPrecio } from '@/utilidades/formato';
 import { Cargando, Seleccion, Tarjeta, Vacio } from './primitivos';
 
@@ -109,6 +115,7 @@ export function Agenda({
   setDia: (valor: string) => void;
 }) {
   const { usuario } = usarSesion();
+  const clientes = useQueryClient();
 
   const rango = useMemo(() => limitesDelDia(dia), [dia]);
 
@@ -132,6 +139,29 @@ export function Agenda({
     queryFn: obtenerProfesionalesAdmin,
     staleTime: 300_000,
   });
+
+  const levantar = useMutation({
+    mutationFn: borrarBloqueo,
+    onSuccess: () => {
+      // Se recarga también la agenda: levantar un bloqueo devuelve horarios a
+      // la vista.
+      void clientes.invalidateQueries({ queryKey: ['panel', 'bloqueos'] });
+      void clientes.invalidateQueries({ queryKey: ['panel', 'agenda'] });
+    },
+  });
+
+  /**
+   * Quién puede levantar cada bloqueo.
+   *
+   * Gerencia, cualquiera. El profesional, los suyos: los de la sucursal entera
+   * —un feriado, un cierre— no son su agenda, son el local. La API aplica lo
+   * mismo; acá sólo se evita ofrecer un botón que va a responder 403.
+   */
+  function puedeLevantar(bloqueo: BloqueoListado): boolean {
+    if (usuario?.rol !== 'profesional') return true;
+
+    return bloqueo.profesionalId !== null && bloqueo.profesionalId === usuario.profesionalId;
+  }
 
   // Las columnas salen del catálogo, no de los turnos: si sólo se dibujaran los
   // profesionales con reservas, un día flojo escondería a quien está libre, que
@@ -197,13 +227,36 @@ export function Agenda({
           <p className="versales text-nota text-grafito">Bloqueos del día</p>
           <ul className="text-menor mt-2 space-y-1">
             {(bloqueos.data ?? []).map((bloqueo) => (
-              <li key={bloqueo.id}>
-                {formatearHora(bloqueo.comienzaEn)}–{formatearHora(bloqueo.terminaEn)} ·{' '}
-                {bloqueo.profesionalNombre ?? 'Toda la sucursal'}
-                {bloqueo.motivo !== null && ` · ${bloqueo.motivo}`}
+              <li key={bloqueo.id} className="flex flex-wrap items-center gap-x-3">
+                <span>
+                  {formatearHora(bloqueo.comienzaEn)}–{formatearHora(bloqueo.terminaEn)} ·{' '}
+                  {bloqueo.profesionalNombre ?? 'Toda la sucursal'}
+                  {bloqueo.motivo !== null && ` · ${bloqueo.motivo}`}
+                </span>
+
+                {puedeLevantar(bloqueo) && (
+                  <button
+                    type="button"
+                    // Sin relleno el botón no llega al mínimo de 24x24 que pide
+                    // WCAG para un objetivo de puntero.
+                    className="text-nota hover:text-tinta -mx-1.5 px-1.5 py-1 underline underline-offset-4"
+                    disabled={levantar.isPending}
+                    onClick={() => {
+                      levantar.mutate(bloqueo.id);
+                    }}
+                  >
+                    Levantar
+                  </button>
+                )}
               </li>
             ))}
           </ul>
+
+          {levantar.isError && (
+            <p className="text-nota text-error mt-2">
+              No pudimos levantar el bloqueo. Probá de nuevo.
+            </p>
+          )}
         </Tarjeta>
       )}
 
