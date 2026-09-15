@@ -18,6 +18,23 @@ allowBuilds:
   # navegador llegan minificadas y sirven la mitad.
   '@sentry/cli': false
 
+# ── Reemplazos de dependencias indirectas ────────────────────────────────────
+# Sólo para avisos de seguridad que no se arreglan actualizando lo que pedimos
+# nosotros: el paquete de arriba fija una versión vulnerable y no publicó
+# todavía una que no lo sea. Cada línea dice qué la justifica.
+#
+# Se revisan cada vez que se suben NestJS o Next: cuando el paquete de arriba
+# alcance la versión sana, el reemplazo sobra y hay que sacarlo.
+overrides:
+  # `@nestjs/platform-express@11` fija multer 2.2.0 y los avisos piden 2.3.0.
+  # Sólo lo usa la subida de archivos, que este backend no tiene, pero el
+  # auditor no puede saberlo. La 12 ya trae 2.4.0; cuando se pueda subir —es
+  # ESM pura y este backend es CommonJS—, esto se va.
+  multer: '^2.4.0'
+  # `next@15.5` fija postcss 8.4.31 y los avisos piden 8.5.18. Es un salto
+  # menor dentro de la misma mayor.
+  postcss: '^8.5.28'
+
 minimumReleaseAgeExclude:
   - '@sentry/core@10.74.0'
   - '@sentry/node-core@10.74.0'
@@ -32,3 +49,7 @@ minimumReleaseAgeExclude:
   - '@sentry/replay-canvas@10.74.0'
   - '@sentry/replay@10.74.0'
   - '@sentry/vercel-edge@10.74.0'
+  - '@nestjs/common@11.2.5'
+  - '@nestjs/core@11.2.5'
+  - '@nestjs/platform-express@11.2.5'
+  - '@nestjs/testing@11.2.5'

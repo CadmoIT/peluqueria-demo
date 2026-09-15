@@ -167,26 +167,39 @@ vulnerabilidad nueva en una dependencia transitiva aparece cualquier martes sin
 que nadie haya tocado nada, y frenar los despliegues por eso hace que el paso se
 termine ignorando. Queda en el registro para que alguien lo mire.
 
-Estado al cerrar la fase 9:
+**Hoy el auditor no encuentra nada.** `pnpm audit --prod --audit-level high`
+pasa limpio. Cómo se llegó:
 
-- **Corregido:** `drizzle-orm` tenía una inyección SQL por identificadores mal
-  escapados (alta). Se subió de 0.38.4 a 0.45.2, con drizzle-kit a la par. Las
-  325 pruebas pasan sin cambios de código.
-- **Aceptado por ahora:** `@nestjs/core` y el grupo que arrastra Express
-  —`multer`, `qs`, `body-parser`, `ajv`— sólo se corrigen subiendo a NestJS 11,
-  que trae Express 5. Es una migración con su propio riesgo y merece un pase
-  dedicado, no la cola de otra fase. Ninguna de las cuatro es alcanzable acá:
-  no se suben archivos (multer), no se arma ninguna cadena de consulta con
-  entrada del cliente (qs) y los límites del cuerpo no son configurables desde
-  afuera (body-parser).
-- **De herramientas:** `glob`, `lodash`, `js-yaml`, `picomatch`, `postcss`,
-  `webpack` y `tmp` entran por Next, el CLI de Nest y drizzle-kit. No corren en
-  producción.
+- **`drizzle-orm`** tenía una inyección SQL por identificadores mal escapados
+  (alta). Se subió de 0.38.4 a 0.45.2, con drizzle-kit a la par.
+- **NestJS 10 → 11**, que trae Express 5. Cierra los avisos de `qs`,
+  `body-parser` y `ajv`, y los de `lodash` y `js-yaml` que entraban por
+  `@nestjs/swagger`.
+- **Dos reemplazos** en `pnpm-workspace.yaml`, para lo que el salto de versión
+  no alcanzó a cubrir: `multer` —NestJS 11 fija la 2.2.0 y los avisos piden
+  2.3.0— y `postcss` —Next 15.5 fija la 8.4.31 y piden 8.5.18—. Los dos son
+  saltos menores dentro de la misma mayor.
+
+### Por qué no NestJS 12
+
+Es ESM pura y este backend es CommonJS: al probarlo, TypeScript rechaza cada
+`import` de `@nestjs/*` con un TS1479. Pasar el backend a ESM es un trabajo
+propio —resolución de módulos, la compilación, vitest, las rutas de las
+migraciones— y no entraba en un pase de seguridad. Cuando se haga, los dos
+reemplazos de arriba sobran: la 12 ya trae multer 2.4.0.
+
+`@nestjs/throttler` también la ata: su última versión declara compatibilidad
+hasta NestJS 11.
+
+### Al subir NestJS o Next
+
+Revisar si los reemplazos siguen haciendo falta. Cuando el paquete de arriba
+alcance la versión sana, el reemplazo sobra, y uno que quedó de más esconde el
+próximo aviso.
 
 ## Qué falta
 
 - Política de contenido en la web.
-- Subir a NestJS 11, que cierra cinco advertencias de una.
 - Rotación de credenciales documentada como procedimiento.
 - Subir los mapas de fuentes a Sentry. Necesita un token de organización; sin
   ellos, las trazas del navegador llegan minificadas y sirven la mitad. Cuando
