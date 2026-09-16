@@ -178,7 +178,7 @@ export default async function PaginaInicio() {
       <Seccion id={SECCIONES.nosotros} className="revelar">
         <Contenedor className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
           <div>
-            <EncabezadoSeccion etiqueta="01 · Quiénes somos" titulo="El oficio" />
+            <EncabezadoSeccion etiqueta="Quiénes somos" titulo="El oficio" />
 
             <div className="text-guia text-grafito max-w-lectura mt-4 flex flex-col gap-3">
               <p>
@@ -272,7 +272,7 @@ export default async function PaginaInicio() {
       <Seccion fondo="niebla" id={SECCIONES.servicios} className="revelar">
         <Contenedor>
           <EncabezadoSeccion
-            etiqueta="02 · Qué hacemos"
+            etiqueta="Qué hacemos"
             titulo="Servicios"
             bajada="Precio único, sin diferencia por medio de pago."
           />
@@ -338,7 +338,7 @@ export default async function PaginaInicio() {
             />
 
             <div>
-              <EncabezadoSeccion etiqueta="03 · Línea propia" titulo="Productos Manly" />
+              <EncabezadoSeccion etiqueta="Línea propia" titulo="Productos Manly" />
 
               <div className="text-guia text-grafito max-w-lectura mt-4 flex flex-col gap-3">
                 <p>
@@ -393,7 +393,7 @@ export default async function PaginaInicio() {
       <Seccion fondo="niebla" id={SECCIONES.sucursales} className="revelar">
         <Contenedor>
           <EncabezadoSeccion
-            etiqueta="04 · Dónde estamos"
+            etiqueta="Dónde estamos"
             titulo="Nuestras sucursales"
             bajada="Tres locales en Buenos Aires. Elegí el que te queda más cómodo."
           />
@@ -483,7 +483,7 @@ export default async function PaginaInicio() {
           <div>
             <EncabezadoSeccion
               sobreOscuro
-              etiqueta="05 · Contacto"
+              etiqueta="Contacto"
               titulo="Reservá en un minuto"
               bajada="Elegís sucursal, servicio y horario. No hace falta llamar ni esperar una respuesta."
             />
