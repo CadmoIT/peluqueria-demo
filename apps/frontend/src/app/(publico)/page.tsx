@@ -143,7 +143,18 @@ export default async function PaginaInicio() {
           className="from-tinta via-tinta/85 to-tinta/35 sm:via-tinta/65 absolute inset-0 -z-10 bg-gradient-to-t sm:bg-gradient-to-r sm:via-45% sm:to-transparent"
         />
 
-        <Contenedor className="py-seccion relative flex min-h-[clamp(28rem,68vh,42rem)] items-center">
+        {/*
+          El alto de la portada. La fotografía no se estira nunca: va con
+          `object-cover`, así que al crecer la caja se recorta menos y se ve
+          más foto, y el aumento del parallax es uniforme. Lo único que cambia
+          acá es cuánto ocupa.
+
+          Se queda en el 80 % de la pantalla y no en el 100 % a propósito: que
+          asome el borde de lo que sigue es lo que le dice a alguien que la
+          página continúa. Una portada de pantalla completa se lee como el
+          final.
+        */}
+        <Contenedor className="py-seccion relative flex min-h-[clamp(32rem,80vh,48rem)] items-center">
           <div className="max-w-[34rem]">
             <p className="versales text-nota mb-4 opacity-80">Buenos Aires</p>
 
