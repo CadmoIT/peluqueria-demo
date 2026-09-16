@@ -96,9 +96,23 @@ export function Encabezado() {
   return (
     <header
       ref={encabezadoRef}
+      // El fondo oscuro va opaco, y el claro translúcido con desenfoque.
+      //
+      // No es una asimetría caprichosa. La barra es pegajosa pero **no se
+      // monta sobre la portada**: ocupa su lugar en el flujo y la portada
+      // empieza justo donde ella termina. Detrás suyo no está la fotografía
+      // sino el fondo del sitio, que es casi blanco, así que un negro al 80 %
+      // no daba negro: daba un gris de #3d3d3d, más claro que la foto que
+      // tenía debajo, y la barra se leía como una franja pegada encima.
+      //
+      // Con el fondo claro sí tiene sentido la transparencia: ahí lo que pasa
+      // por detrás es el contenido de la página, y verlo desenfocado ayuda a
+      // entender que uno está desplazando algo.
       className={cn(
-        'duration-(--duracion-rapida) sticky top-0 z-50 border-b backdrop-blur-sm transition-colors',
-        oscuro ? 'bg-tinta/80 text-lino border-transparent' : 'bg-lino/90 border-borde',
+        'duration-(--duracion-rapida) sticky top-0 z-50 border-b transition-colors',
+        oscuro
+          ? 'bg-tinta text-lino border-transparent'
+          : 'bg-lino/90 border-borde backdrop-blur-sm',
       )}
     >
       <Contenedor className="flex h-16 items-center justify-between gap-4 sm:h-20">
