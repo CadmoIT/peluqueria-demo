@@ -411,8 +411,7 @@
   animation: cinta-desliza 38s linear infinite;
 }
 
-/* Se detiene si alguien apoya el puntero encima: puede estar leyendo un dato. */
-.cinta:hover .cinta-pista,
-.cinta:focus-within .cinta-pista {
-  animation-play-state: paused;
-}
+/* La cinta no se frena al pasar el puntero por encima. Se probó pausarla —la
+   idea era dejar leer un dato— y el efecto es el contrario: el movimiento es
+   lo que la hace notar, y detenerlo justo cuando alguien la mira la apaga.
+   Además el texto se repite cada vuelta, así que nadie se pierde nada. */

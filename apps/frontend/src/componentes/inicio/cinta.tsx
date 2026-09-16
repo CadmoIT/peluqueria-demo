@@ -8,8 +8,9 @@
 // La lista va dos veces: el desplazamiento recorre la mitad de la pista, así
 // que al reiniciar la segunda copia está exactamente donde arrancó la primera
 // y el ciclo no tiene costura. La copia repetida se oculta a los lectores de
-// pantalla, que si no leerían todo dos veces. El movimiento y la pausa al
-// pasar el puntero están en `tokens.css`.
+// pantalla, que si no leerían todo dos veces. El movimiento está en
+// `tokens.css`, y no se frena al pasar el puntero por encima: el movimiento es
+// lo que la hace notar.
 import { Fragment } from 'react';
 
 interface Propiedades {
@@ -19,7 +20,7 @@ interface Propiedades {
 
 export function Cinta({ piezas }: Propiedades) {
   return (
-    <div className="cinta bg-tinta text-lino border-carbon overflow-hidden border-y py-3.5">
+    <div className="bg-tinta text-lino border-carbon overflow-hidden border-y py-3.5">
       <div className="cinta-pista flex w-max">
         {[0, 1].map((copia) => (
           <ul
