@@ -40,6 +40,7 @@ import type { ProductoPublico, ServicioPublico, SucursalPublica } from '@manly/c
 import { Imagen } from '@/componentes/comunes/imagen';
 import { DatosEstructurados } from '@/componentes/comunes/datos-estructurados';
 import { Cinta } from '@/componentes/inicio/cinta';
+import { IconoMapa } from '@/componentes/inicio/icono-mapa';
 import { consultarApi } from '@/servicios/api';
 import { formatearDuracion, formatearPrecio } from '@/utilidades/formato';
 import { IMAGENES, obtenerImagenProducto } from '@/utilidades/imagenes';
@@ -436,13 +437,18 @@ export default async function PaginaInicio() {
                       </a>
                     ) : null}
 
+                    {/* La chinche acompaña al texto, no lo reemplaza: un icono
+                        solo obliga a adivinar, y «Cómo llegar» ya dice a dónde
+                        va. El icono es lo que hace que se encuentre de un
+                        vistazo entre los otros dos enlaces. */}
                     {sucursal.urlMapa ? (
                       <a
                         href={sucursal.urlMapa}
                         rel="noopener noreferrer"
                         target="_blank"
-                        className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+                        className="inline-flex min-h-11 items-center gap-1.5 underline-offset-4 hover:underline"
                       >
+                        <IconoMapa />
                         Cómo llegar
                       </a>
                     ) : null}
