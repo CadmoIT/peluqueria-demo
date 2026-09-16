@@ -124,66 +124,88 @@ export default async function PaginaInicio() {
     <>
       <DatosEstructurados sucursales={sucursales} />
 
-      {/* ── Portada ──────────────────────────────────────────────────────── */}
-      <section data-portada-oscura className="bg-tinta text-lino relative isolate overflow-hidden">
-        <Imagen
-          imagen={IMAGENES.inicio.portada}
-          prioritaria
-          sizes="100vw"
-          className="portada-parallax absolute inset-0 -z-20"
-        />
+      {/*
+        ── Portada y cinta ───────────────────────────────────────────────────
+        Van juntas en una columna que mide lo que queda de pantalla bajo el
+        encabezado, y la portada se estira para llenarla. Así lo último que se
+        ve al entrar es la cinta, sin una franja blanca abajo.
 
-        {/*
-          El velo corre en vertical en el teléfono, donde el texto queda sobre
-          la foto, y en horizontal de tablet para arriba, que es cuando hay
-          sitio para dejar el texto de un lado y los sillones del otro.
-        */}
-        <div
-          aria-hidden
-          className="from-tinta via-tinta/85 to-tinta/35 sm:via-tinta/65 absolute inset-0 -z-10 bg-gradient-to-t sm:bg-gradient-to-r sm:via-45% sm:to-transparent"
-        />
+        El reparto lo hace el flex y no una cuenta de altos: la cinta ocupa lo
+        suyo —lo que midan su texto y sus márgenes— y la portada se queda con
+        el resto. Restar un alto fijo obligaría a mantener a mano un número que
+        cambia con la tipografía.
 
-        {/*
-          El alto de la portada. La fotografía no se estira nunca: va con
-          `object-cover`, así que al crecer la caja se recorta menos y se ve
-          más foto, y el aumento del parallax es uniforme. Lo único que cambia
-          acá es cuánto ocupa.
+        Y es la cinta, moviéndose justo en el borde, la que avisa que la página
+        sigue. Por eso no hace falta dejar asomando el principio de la sección
+        siguiente.
+      */}
+      <div className="flex min-h-[calc(100dvh-var(--alto-encabezado))] flex-col">
+        <section
+          data-portada-oscura
+          className="bg-tinta text-lino relative isolate flex flex-1 flex-col overflow-hidden"
+        >
+          <Imagen
+            imagen={IMAGENES.inicio.portada}
+            prioritaria
+            sizes="100vw"
+            className="portada-parallax absolute inset-0 -z-20"
+          />
 
-          Se queda en el 80 % de la pantalla y no en el 100 % a propósito: que
-          asome el borde de lo que sigue es lo que le dice a alguien que la
-          página continúa. Una portada de pantalla completa se lee como el
-          final.
-        */}
-        <Contenedor className="py-seccion relative flex min-h-[clamp(32rem,80vh,48rem)] items-center">
-          <div className="max-w-[34rem]">
-            <p className="versales text-nota mb-4 opacity-80">Buenos Aires</p>
+          {/*
+            El velo corre en vertical en el teléfono, donde el texto queda sobre
+            la foto, y en horizontal de tablet para arriba, que es cuando hay
+            sitio para dejar el texto de un lado y los sillones del otro.
+          */}
+          <div
+            aria-hidden
+            className="from-tinta via-tinta/85 to-tinta/35 sm:via-tinta/65 absolute inset-0 -z-10 bg-gradient-to-t sm:bg-gradient-to-r sm:via-45% sm:to-transparent"
+          />
 
-            <h1 className="text-portada max-w-[13ch]">Peluquería para hombres</h1>
+          {/*
+            El texto va centrado en lo que la portada haya terminado midiendo,
+            por eso el contenedor se estira con ella.
 
-            <p className="text-guia mt-5 max-w-[42ch] opacity-85">
-              Tres sucursales, turnos online y el mismo trabajo de siempre.
-            </p>
+            Las 32rem son un piso para ventanas muy bajas: ahí no entran una
+            portada decente y la cinta, y entre encoger la portada hasta que el
+            titular no respire o dejar que se scrollee un poco, se elige lo
+            segundo.
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={RUTAS.reservar}
-                className={clasesBoton({ variante: 'solido-claro', tamanio: 'grande' })}
-              >
-                Reservar turno
-              </Link>
-              <Link
-                href={RUTAS.servicios}
-                className={clasesBoton({ variante: 'contorno-claro', tamanio: 'grande' })}
-              >
-                Ver servicios
-              </Link>
+            La fotografía no se deforma en ningún tamaño: va con `object-cover`,
+            así que al crecer la caja se recorta menos y se ve más foto, y el
+            aumento del parallax es uniforme en los dos ejes.
+          */}
+          <Contenedor className="py-seccion relative flex min-h-[32rem] flex-1 items-center">
+            <div className="max-w-[34rem]">
+              <p className="versales text-nota mb-4 opacity-80">Buenos Aires</p>
+
+              <h1 className="text-portada max-w-[13ch]">Peluquería para hombres</h1>
+
+              <p className="text-guia mt-5 max-w-[42ch] opacity-85">
+                Tres sucursales, turnos online y el mismo trabajo de siempre.
+              </p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href={RUTAS.reservar}
+                  className={clasesBoton({ variante: 'solido-claro', tamanio: 'grande' })}
+                >
+                  Reservar turno
+                </Link>
+                <Link
+                  href={RUTAS.servicios}
+                  className={clasesBoton({ variante: 'contorno-claro', tamanio: 'grande' })}
+                >
+                  Ver servicios
+                </Link>
+              </div>
             </div>
-          </div>
-        </Contenedor>
-      </section>
+          </Contenedor>
+        </section>
 
-      {/* ── Cinta de datos ───────────────────────────────────────────────── */}
-      <Cinta piezas={piezasCinta} />
+        {/* La cinta cierra la primera pantalla: es lo último que se ve al
+            entrar, y su movimiento es lo que invita a seguir bajando. */}
+        <Cinta piezas={piezasCinta} />
+      </div>
 
       {/* ── Nosotros ─────────────────────────────────────────────────────── */}
       <Seccion id={SECCIONES.nosotros} className="revelar">

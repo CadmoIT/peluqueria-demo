@@ -113,8 +113,26 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    /* Compensa el encabezado fijo cuando se navega a un ancla. */
-    scroll-padding-top: 5rem;
+    /* Compensa el encabezado pegajoso cuando se navega a un ancla. */
+    scroll-padding-top: var(--alto-encabezado);
+  }
+
+  /* Alto del encabezado pegajoso, con su borde.
+     ────────────────────────────────────────────────────────────────────────
+     Está acá y no suelto en cada sitio porque hay tres que necesitan el mismo
+     número: el propio encabezado, el desplazamiento a un ancla —para que el
+     título no quede tapado— y la portada, que se mide contra lo que queda de
+     pantalla debajo de él.
+
+     Si se cambia el alto del encabezado, se cambia acá. */
+  :root {
+    --alto-encabezado: calc(4rem + 1px);
+  }
+
+  @media (width >= 40rem) {
+    :root {
+      --alto-encabezado: calc(5rem + 1px);
+    }
   }
 
   body {
