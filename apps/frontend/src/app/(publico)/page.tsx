@@ -354,12 +354,17 @@ export default async function PaginaInicio() {
               {productos.length > 0 && (
                 <ul className="revelar-lista mt-7 grid grid-cols-3 gap-3 sm:gap-4">
                   {productos.map((producto) => (
-                    <li key={producto.id} className="flex flex-col">
-                      <Imagen
-                        imagen={obtenerImagenProducto(producto.imagenClave)}
-                        sizes="(min-width: 1024px) 16vw, 30vw"
-                        className="rounded-tarjeta bg-papel aspect-[4/5] object-cover"
-                      />
+                    <li key={producto.id} className="group flex flex-col">
+                      {/* El aumento va sobre la fotografía y el recorte sobre
+                          la caja: sin `overflow-hidden` la imagen crecida se
+                          saldría de las esquinas redondeadas. */}
+                      <div className="rounded-tarjeta bg-papel overflow-hidden">
+                        <Imagen
+                          imagen={obtenerImagenProducto(producto.imagenClave)}
+                          sizes="(min-width: 1024px) 16vw, 30vw"
+                          className="duration-(--duracion-media) ease-manly aspect-[4/5] object-cover transition-transform group-hover:scale-[1.06]"
+                        />
+                      </div>
 
                       {producto.detalle !== null && (
                         <p className="versales text-nota text-grafito mt-3">{producto.detalle}</p>
